@@ -15,10 +15,12 @@ sparse_td_matrix = sparse_matrix.T.tocsr()
 # Parentheses are left untouched
 # Everything else is interpreted as a term and fed through td_matrix[t2i["..."]]
 
-d = {"and": "&", "AND": "&",
-     "or": "|", "OR": "|",
-     "not": "1 -", "NOT": "1 -",
+d = {"AND": "&",
+     "OR": "|",
+     "NOT": "1 -",
      "(": "(", ")": ")"}          # operator replacements
+
+# For the operators we'll only use AND, OR, NOT in ALLCAPS in order to avoid conflict with the corresponding words in lowercase letters in the documents
 
 t2i = cv.vocabulary_  # shorter notation: t2i = term-to-index
 
@@ -40,6 +42,4 @@ def test_query(query):
 
 test_query("example AND NOT nothing")
 test_query("NOT example OR great")
-test_query("( NOT example OR great ) AND nothing") # AND, OR, NOT can be written either in ALLCAPS
-test_query("( not example or great ) and nothing") # ... or all small letters
-test_query("not example and not nothing")
+test_query("( NOT example OR great ) AND nothing") # AND, OR, NOT should be written in ALLCAPS
