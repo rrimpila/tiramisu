@@ -1,10 +1,13 @@
 from sklearn.feature_extraction.text import CountVectorizer
+import xml.dom.minidom
 
-# Task
-documents = ["This is a silly example",
-             "A better example",
-             "Nothing to see here",
-             "This is a great and long example"]
+with open('enwiki-20181001-corpus.1000-articles.txt', encoding='utf8') as f:
+    content = f.read()
+
+documents = content.split('</article>')
+
+#TODO drop <article name"..."> from the beginning of each article
+#Maybe save article names for referencing?
 
 cv = CountVectorizer(lowercase=True, binary=True, stop_words=None)
 sparse_matrix = cv.fit_transform(documents)
