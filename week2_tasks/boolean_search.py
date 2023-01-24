@@ -1,13 +1,16 @@
 from sklearn.feature_extraction.text import CountVectorizer
-import xml.dom.minidom
+import re
 
+# read articles from file
 with open('enwiki-20181001-corpus.1000-articles.txt', encoding='utf8') as f:
     content = f.read()
 
-documents = content.split('</article>')
-
-#TODO drop <article name"..."> from the beginning of each article
-#Maybe save article names for referencing?
+# split by closing article tag, and then remove opening tag
+# save document titles in separate array
+documents = content.strip().split('</article>')
+p = re.compile('^\s*<article\s+name="(.*?)"\s*>\s*')
+documents_titles = [p.match(document).group(1) for document in documents if document and p.match(document)]
+documents = [re.sub(p, "", document) for document in documents if document and p.match(document)]
 
 cv = CountVectorizer(lowercase=True, binary=True, stop_words=None)
 sparse_matrix = cv.fit_transform(documents)
