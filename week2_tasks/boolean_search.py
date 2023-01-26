@@ -40,6 +40,21 @@ def test_query(query):
         print("Matching doc:", documents[doc_idx])
     print()
 
-test_query("example AND NOT nothing")
-test_query("NOT example OR great")
-test_query("( NOT example OR great ) AND nothing") # AND, OR, NOT should be written in ALLCAPS
+
+# Program that asks the user for a search query, program quits when an empty string is entered
+
+print("Search engine starts...\n")
+print("*** The query should be of the form of the following examples: ***\n")
+
+print("    example AND NOT nothing")
+print("    NOT example OR great")
+print("    ( NOT example OR great ) AND nothing\n")
+
+print("*** Operators AND, OR, NOT need to be written in ALLCAPS ***\n")
+
+while True:
+    user_query = str(input("Enter your query (empty string quits program): \n"))
+    if user_query == "":
+        break
+    else:
+        test_query(f"{user_query}")
