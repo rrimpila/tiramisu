@@ -63,18 +63,24 @@ def test_query(query):
 
 # Program that asks the user for a search query, program quits when an empty string is entered
 
-print("Search engine starts...\n")
-print("*** The query should be of the form of the following examples: ***\n")
+print("Search engine starts...")
+print("\n*** The query should be of the form of the following examples: ***\n")
 
 print("    example AND NOT nothing")
 print("    NOT example OR great")
-print("    ( NOT example OR great ) AND nothing\n")
+print("    ( NOT example OR great ) AND nothing")
 
-print("*** Operators AND, OR, NOT need to be written in ALLCAPS ***\n")
+print("\n*** Operators AND, OR, NOT need to be written in ALLCAPS ***\n")
+
 
 while True:
     user_query = str(input("Enter your query (empty string quits program): \n"))
     if user_query == "":
         break
     else:
-        test_query(f"{user_query}")
+        try:
+            print("\nResults:")
+            test_query(f"{user_query}")
+        except SyntaxError:
+            print("\n*** The input was erroneous, cannot show all results.\nMake sure the operators are typed in ALLCAPS. ***\n")
+                                        
