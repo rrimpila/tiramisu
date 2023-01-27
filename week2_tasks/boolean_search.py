@@ -39,12 +39,26 @@ def rewrite_query(query): # rewrite every token in the query
 def test_query(query):
     print("Query: '" + query + "'")
     print("Rewritten:", rewrite_query(query))
-    print("Matching:", eval(rewrite_query(query))) # Eval runs the string as a Python command
-    hits_matrix = eval(rewrite_query(query))
-    hits_list = list(hits_matrix.nonzero()[1])
-    for doc_idx in hits_list:
-        print("Matching doc:", documents[doc_idx])
-    print()
+    try:
+        print("Matching:", eval(rewrite_query(query))) # Eval runs the string as a Python command
+        hits_matrix = eval(rewrite_query(query))
+        hits_list = list(hits_matrix.nonzero()[1])
+        for doc_idx in hits_list:
+            print("Matching doc:", documents[doc_idx])
+        print()
+    except KeyError: # This activates if there's a KeyError caused by one or more tokens in the query not being present in the given documents
+        query_list = rewrite_query(query).split("|") # Makes a list of each term requested in a query containing an "OR" statement (so if only one of the terms requested has no matches, we will still be getting results for the terms that do have matches 
+        for i in query_list:
+            iname = re.sub(r"sparse_td_matrix\[t2i\[\"(.*)\"\]\].todense\(\)", r"\1", i) #extract item name for later use
+            try:
+                print("Matching '" + iname + "' :", eval(i))
+                hits_matrix = eval(i)
+                hits_list = list(hits_matrix.nonzero()[1])
+                for doc_idx in hits_list:
+                    print("Matching doc for '" + iname + "' :", documents[doc_idx])
+                print()
+            except KeyError:
+                print("No match: '" + iname + "' cannot be found in any of the given documents")
 
 
 # Program that asks the user for a search query, program quits when an empty string is entered
