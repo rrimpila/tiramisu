@@ -51,7 +51,7 @@ def test_query(query):
                 print("Matching doc:", documents[doc_idx])
             print()
     except KeyError: # This activates if there's a KeyError caused by one or more tokens in the query not being present in the given documents
-        query_list = re.split("\|", rewrite_query(query)) # Makes a list of each term requested in a query containing an "OR" or "AND" statement 
+        query_list = re.split("\||&", rewrite_query(query)) # Makes a list of each term requested in a query containing an "OR" or "AND" statement 
         for i in query_list:
             iname = re.sub(r"sparse_td_matrix\[t2i\[\"(.*)\"\]\].todense\(\)+", r"\1 ", i) #extract item name for later use
             try:
