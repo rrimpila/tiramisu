@@ -47,8 +47,22 @@ def test_query(query):
             print("Matching:", eval(rewrite_query(query))) # Eval runs the string as a Python command
             hits_matrix = eval(rewrite_query(query))
             hits_list = list(hits_matrix.nonzero()[1])
+            # Here we print only the first 10 matching documents and only the first 1000 characters from the documents:
+            doc_number = 1
             for doc_idx in hits_list:
-                print("Matching doc:\n", documents[doc_idx])
+                if doc_number == 11:
+                    break
+                else:
+                    print(f"\nMatching doc #{doc_number}: \n")
+                    cha_number = 1
+                    for character in documents[doc_idx]:
+                        if cha_number == 1000:
+                            print("...\n")
+                            break
+                        else:
+                            print(character, end="")
+                            cha_number += 1
+                    doc_number += 1
             
     except KeyError: # This activates if there's a KeyError caused by one or more tokens in the query not being present in the given documents
         query_list = re.split("\|", rewrite_query(query)) # Makes a list of each term requested in a query containing an "OR" statement 
