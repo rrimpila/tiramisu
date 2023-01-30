@@ -69,11 +69,12 @@ def test_query(query):
 print("Search engine starts...")
 print("\n*** The query should be of the form of the following examples: ***\n")
 
+print("    you AND i")
 print("    example AND NOT nothing")
 print("    NOT example OR great")
 print("    ( NOT example OR great ) AND nothing")
 
-print("\n*** Operators AND, OR, NOT need to be written in ALLCAPS ***")
+print("\n*** Operators AND, OR, NOT need to be written in ALLCAPS, search words in lowercase. ***")
 
 
 while True:
