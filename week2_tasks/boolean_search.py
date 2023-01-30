@@ -48,8 +48,8 @@ def test_query(query):
             hits_matrix = eval(rewrite_query(query))
             hits_list = list(hits_matrix.nonzero()[1])
             for doc_idx in hits_list:
-                print("Matching doc:", documents[doc_idx])
-            print()
+                print("Matching doc:\n", documents[doc_idx])
+            
     except KeyError: # This activates if there's a KeyError caused by one or more tokens in the query not being present in the given documents
         query_list = re.split("\|", rewrite_query(query)) # Makes a list of each term requested in a query containing an "OR" statement 
         for i in query_list:
@@ -60,12 +60,12 @@ def test_query(query):
                     hits_matrix = eval(i)
                     hits_list = list(hits_matrix.nonzero()[1])
                     for doc_idx in hits_list:
-                        print("Matching doc for '" + AND_iname + "' :", documents[doc_idx])
-                    print()
+                        print("Matching doc for '" + AND_iname + "' :\n", documents[doc_idx])
+                    
                 except KeyError:
                     print("No matches: there are no documents matching the query '" + AND_iname + "'") 
                     #it's safe to assume that if there's an AND statement in a query containing a KeyError, either one of the tokens (or both) are not in the documents
-                    print()
+                    
             else:
                 iname = re.sub(r"sparse_td_matrix\[t2i\[\"(.*)\"\]\].todense\(\)+", r"\1 ", i) #extract item name for later use
                 try:
@@ -74,7 +74,7 @@ def test_query(query):
                     hits_list = list(hits_matrix.nonzero()[1])
                     for doc_idx in hits_list:
                         print("Matching doc for '" + iname + "' :", documents[doc_idx])
-                    print()
+                    
                 except KeyError:
                     print("No matches: there are no documents matching the word '" + iname + "'")
 
@@ -88,11 +88,11 @@ print("    example AND NOT nothing")
 print("    NOT example OR great")
 print("    ( NOT example OR great ) AND nothing")
 
-print("\n*** Operators AND, OR, NOT need to be written in ALLCAPS ***\n")
+print("\n*** Operators AND, OR, NOT need to be written in ALLCAPS ***")
 
 
 while True:
-    user_query = str(input("Enter your query (empty string quits program): \n"))
+    user_query = str(input("\nEnter your query (empty string quits program): \n"))
     if user_query == "":
         break
     else:
