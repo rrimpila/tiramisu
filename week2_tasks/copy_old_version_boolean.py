@@ -69,12 +69,28 @@ def test_query(query):
         for i in query_list:
             if "&" in i: #if a query in the list has an AND statement, the query will be processed with the code below
                 AND_iname = re.sub(r"sparse_td_matrix\[t2i\[\"(.*)\"\]\].todense\(\) & sparse_td_matrix\[t2i\[\"(.*)\"\]\].todense\(\)", r"\1 AND \2", i)
-                print("No matches: there are no documents matching the query '" + AND_iname + "'") 
+                try:
+                    print("Matching '" + AND_iname + "' :", eval(i))
+                    hits_matrix = eval(i)
+                    hits_list = list(hits_matrix.nonzero()[1])
+                    for doc_idx in hits_list:
+                        print("Matching doc for '" + AND_iname + "' :\n", documents[doc_idx])
                     
+                except KeyError:
+                    print("No matches: there are no documents matching the query '" + AND_iname + "'") 
+                    #it's safe to assume that if there's an AND statement in a query containing a KeyError, either one of the tokens (or both) are not in the documents
                     
             else:
                 iname = re.sub(r"sparse_td_matrix\[t2i\[\"(.*)\"\]\].todense\(\)+", r"\1 ", i) #extract item name for later use
-                print("No matches: there are no documents matching the query '" + iname + "'")
+                try:
+                    print("Matching '" + iname + "' :", eval(i))
+                    hits_matrix = eval(i)
+                    hits_list = list(hits_matrix.nonzero()[1])
+                    for doc_idx in hits_list:
+                        print("Matching doc for '" + iname + "' :", documents[doc_idx])
+                    
+                except KeyError:
+                    print("No matches: there are no documents matching the word '" + iname + "'")
 
 
 # Program that asks the user for a search query, program quits when an empty string is entered
