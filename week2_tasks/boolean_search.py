@@ -13,7 +13,7 @@ p = re.compile('^\s*<article\s+name="(.*?)"\s*>\s*')
 documents_titles = [p.match(document).group(1) for document in documents if document and p.match(document)]
 documents = [re.sub(p, "", document) for document in documents if document and p.match(document)]
 
-cv = CountVectorizer(lowercase=True, binary=True, stop_words=None)
+cv = CountVectorizer(lowercase=True, binary=True, stop_words=None, token_pattern=r'(?u)\b\w+\b')
 sparse_matrix = cv.fit_transform(documents)
 
 sparse_td_matrix = sparse_matrix.T.tocsr()
