@@ -18,7 +18,7 @@ sparse_matrix = cv.fit_transform(documents)
 
 sparse_td_matrix = sparse_matrix.T.tocsr()
 
-# Operators and/AND, or/OR, not/NOT become &, |, 1 -
+# Operators AND, OR, NOT become &, |, 1 -
 # Parentheses are left untouched
 # Everything else is interpreted as a term and fed through td_matrix[t2i["..."]]
 
