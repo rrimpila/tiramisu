@@ -31,44 +31,37 @@ d = {"AND": "&",
 
 t2i = cv.vocabulary_  # shorter notation: t2i = term-to-index
 
+def query_matrix(t):
+    """
+    Checks if the term is present in any of the documents.
+    If present, returns the hits matrix, and if not, an empty row to be used in calculations
+    """
+    return sparse_td_matrix[t2i[t]].todense() if t in t2i.keys() else np.array([[0] * len(documents)])
+
 def rewrite_token(t):
-    return d.get(t, 'sparse_td_matrix[t2i["{:s}"]].todense()'.format(t)) 
+    return d.get(t, 'query_matrix("{:s}")'.format(t)) 
 
 def rewrite_query(query): # rewrite every token in the query
     return " ".join(rewrite_token(t) for t in query.split())
 
 def test_query(query):
     print("Query: '" + query + "'")
-    print("Rewritten:", rewrite_query(query))
-    try:
-        if np.all(eval(rewrite_query(query)) == 0):
-            print("No matches: there are no documents matching the query '" + query + "'")
-        else:
-            print("Matching:", eval(rewrite_query(query))) # Eval runs the string as a Python command
-            hits_matrix = eval(rewrite_query(query))
-            hits_list = list(hits_matrix.nonzero()[1])
-            print(str(len(hits_list)) + " matching documents in total.")
-            # Here we print only the first 10 matching documents and only the first 1000 characters from the documents:
-            doc_number = 1
-            for doc_idx in hits_list[:10]:
-                print(f"\nMatching doc #{doc_number}: \n")
-                if (len(documents[doc_idx]) > 1000):
-                    print(documents[doc_idx][:1000] + "...")
-                else:
-                    print(documents[doc_idx])
-                doc_number += 1
-            
-    except KeyError: # This activates if there's a KeyError caused by one or more tokens in the query not being present in the given documents
-        query_list = re.split("\|", rewrite_query(query)) # Makes a list of each term requested in a query containing an "OR" statement 
-        for i in query_list:
-            if "&" in i: #if a query in the list has an AND statement, the query will be processed with the code below
-                AND_iname = re.sub(r"sparse_td_matrix\[t2i\[\"(.*)\"\]\].todense\(\) & sparse_td_matrix\[t2i\[\"(.*)\"\]\].todense\(\)", r"\1 AND \2", i)
-                print("No matches: there are no documents matching the query '" + AND_iname + "'") 
-                    
-                    
+    if np.all(eval(rewrite_query(query)) == 0):
+        print("No matches: there are no documents matching the query '" + query + "'")
+    else:
+        print("Matching:", eval(rewrite_query(query))) # Eval runs the string as a Python command
+        hits_matrix = eval(rewrite_query(query))
+        hits_list = list(hits_matrix.nonzero()[1])
+        print(str(len(hits_list)) + " matching documents in total.")
+        # Here we print only the first 10 matching documents and only the first 1000 characters from the documents:
+        doc_number = 1
+        for doc_idx in hits_list[:10]:
+            print(f"\nMatching doc #{doc_number}: \n")
+            if (len(documents[doc_idx]) > 1000):
+                print(documents[doc_idx][:1000] + "...")
             else:
-                iname = re.sub(r"sparse_td_matrix\[t2i\[\"(.*)\"\]\].todense\(\)+", r"\1 ", i) #extract item name for later use
-                print("No matches: there are no documents matching the query '" + iname + "'")
+                print(documents[doc_idx])
+            doc_number += 1
 
 
 # Program that asks the user for a search query, program quits when an empty string is entered
