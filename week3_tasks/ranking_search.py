@@ -1,4 +1,5 @@
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 import re
 import numpy as np
 
@@ -50,6 +51,7 @@ def boolean_test_query(query):
 def boolean_search():
     cv = CountVectorizer(lowercase=True, binary=True, stop_words=None, token_pattern=r'(?u)\b\w+\b')
     sparse_matrix = cv.fit_transform(documents)
+    global sparse_td_matrix
     sparse_td_matrix = sparse_matrix.T.tocsr()
 
     # Operators AND, OR, NOT become &, |, 1 -
@@ -86,6 +88,34 @@ def boolean_search():
                 boolean_test_query(f"{user_query}")
             except SyntaxError:
                 print("\n*** The input was erroneous, cannot show all results.\nMake sure the operators are typed in ALLCAPS. ***\n")
+
+def ranking_search():
+    tfv = TfidfVectorizer(lowercase=True, sublinear_tf=True, use_idf=True, norm="l2")
+    sparse_matrix = tfv.fit_transform(documents).T.tocsr() # CSR: compressed sparse row format => order by terms
+
+    while True:
+        user_query = str(input("\nEnter your query (empty string quits program): \n"))
+        if user_query == "":
+            break
+        else:
+            try:
+                query_vec = tfv.transform([user_query]).tocsc()
+                hits = np.dot(query_vec, sparse_matrix)
+                print("\nResults:")
+                ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
+                for score, i in ranked_scores_and_doc_ids:
+                    print("\nThe score of '{:s}' is {:.4f} in document: ".format(user_query, score))
+                    if (len(documents[i]) > 1000):
+                        print(documents[i][:1000] + "...")
+                    else:
+                        print(documents[i])
+                print()
+            except SyntaxError:
+                print("\n*** The input was erroneous, cannot show all results.\nMake sure the operators are typed in ALLCAPS. ***\n")
+
+    
                                         
 print("Search engine starts...")
-boolean_search()
+#boolean_search()
+ranking_search()
+print("Search engine closed")
