@@ -13,44 +13,26 @@ p = re.compile('^\s*<article\s+name="(.*?)"\s*>\s*')
 documents_titles = [p.match(document).group(1) for document in documents if document and p.match(document)]
 documents = [re.sub(p, "", document) for document in documents if document and p.match(document)]
 
-cv = CountVectorizer(lowercase=True, binary=True, stop_words=None, token_pattern=r'(?u)\b\w+\b')
-sparse_matrix = cv.fit_transform(documents)
-
-sparse_td_matrix = sparse_matrix.T.tocsr()
-
-# Operators AND, OR, NOT become &, |, 1 -
-# Parentheses are left untouched
-# Everything else is interpreted as a term and fed through td_matrix[t2i["..."]]
-
-d = {"AND": "&",
-     "OR": "|",
-     "NOT": "1 -",
-     "(": "(", ")": ")"}          # operator replacements
-
-# For the operators we'll only use AND, OR, NOT in ALLCAPS in order to avoid conflict with the corresponding words in lowercase letters in the documents
-
-t2i = cv.vocabulary_  # shorter notation: t2i = term-to-index
-
-def query_matrix(t):
+def boolean_query_matrix(t):
     """
     Checks if the term is present in any of the documents.
     If present, returns the hits matrix, and if not, an empty row to be used in calculations
     """
     return sparse_td_matrix[t2i[t]].todense() if t in t2i.keys() else np.array([[0] * len(documents)])
 
-def rewrite_token(t):
-    return d.get(t, 'query_matrix("{:s}")'.format(t)) 
+def boolean_rewrite_token(t):
+    return d.get(t, 'boolean_query_matrix("{:s}")'.format(t)) 
 
-def rewrite_query(query): # rewrite every token in the query
-    return " ".join(rewrite_token(t) for t in query.split())
+def boolean_rewrite_query(query): # rewrite every token in the query
+    return " ".join(boolean_rewrite_token(t) for t in query.split())
 
-def test_query(query):
+def boolean_test_query(query):
     print("Query: '" + query + "'")
-    if np.all(eval(rewrite_query(query)) == 0):
+    if np.all(eval(boolean_rewrite_query(query)) == 0):
         print("No matches: there are no documents matching the query '" + query + "'")
     else:
-        print("Matching:", eval(rewrite_query(query))) # Eval runs the string as a Python command
-        hits_matrix = eval(rewrite_query(query))
+        print("Matching:", eval(boolean_rewrite_query(query))) # Eval runs the string as a Python command
+        hits_matrix = eval(boolean_rewrite_query(query))
         hits_list = list(hits_matrix.nonzero()[1])
         print(str(len(hits_list)) + " matching documents in total.")
         # Here we print only the first 10 matching documents and only the first 1000 characters from the documents:
@@ -65,26 +47,45 @@ def test_query(query):
 
 
 # Program that asks the user for a search query, program quits when an empty string is entered
+def boolean_search():
+    cv = CountVectorizer(lowercase=True, binary=True, stop_words=None, token_pattern=r'(?u)\b\w+\b')
+    sparse_matrix = cv.fit_transform(documents)
+    sparse_td_matrix = sparse_matrix.T.tocsr()
 
-print("Search engine starts...")
-print("\n*** The query should be of the form of the following examples: ***\n")
+    # Operators AND, OR, NOT become &, |, 1 -
+    # Parentheses are left untouched
+    # Everything else is interpreted as a term and fed through td_matrix[t2i["..."]]
+    global d
+    d = {"AND": "&",
+         "OR": "|",
+         "NOT": "1 -",
+         "(": "(", ")": ")"}          # operator replacements
 
-print("    you AND i")
-print("    example AND NOT nothing")
-print("    NOT example OR great")
-print("    ( NOT example OR great ) AND nothing")
+    # For the operators we'll only use AND, OR, NOT in ALLCAPS in order to avoid conflict with the corresponding words in lowercase letters in the documents
+    global t2i
+    t2i = cv.vocabulary_  # shorter notation: t2i = term-to-index
 
-print("\n*** Operators AND, OR, NOT need to be written in ALLCAPS, search words in lowercase. ***")
+    
+    print("\n*** The query should be of the form of the following examples: ***\n")
+
+    print("    you AND i")
+    print("    example AND NOT nothing")
+    print("    NOT example OR great")
+    print("    ( NOT example OR great ) AND nothing")
+
+    print("\n*** Operators AND, OR, NOT need to be written in ALLCAPS, search words in lowercase. ***")
 
 
-while True:
-    user_query = str(input("\nEnter your query (empty string quits program): \n"))
-    if user_query == "":
-        break
-    else:
-        try:
-            print("\nResults:")
-            test_query(f"{user_query}")
-        except SyntaxError:
-            print("\n*** The input was erroneous, cannot show all results.\nMake sure the operators are typed in ALLCAPS. ***\n")
+    while True:
+        user_query = str(input("\nEnter your query (empty string quits program): \n"))
+        if user_query == "":
+            break
+        else:
+            try:
+                print("\nResults:")
+                boolean_test_query(f"{user_query}")
+            except SyntaxError:
+                print("\n*** The input was erroneous, cannot show all results.\nMake sure the operators are typed in ALLCAPS. ***\n")
                                         
+print("Search engine starts...")
+boolean_search()
