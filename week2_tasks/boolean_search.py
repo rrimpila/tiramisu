@@ -3,7 +3,7 @@ import re
 import numpy as np
 
 # read articles from file
-with open('enwiki-20181001-corpus.1000-articles.txt', encoding='utf8') as f:
+with open('../data/enwiki-20181001-corpus.1000-articles.txt', encoding='utf8') as f:
     content = f.read()
 
 # split by closing article tag, and then remove opening tag
