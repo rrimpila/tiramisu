@@ -64,20 +64,10 @@ def boolean_search():
          "(": "(", ")": ")"}          # operator replacements
 
     # For the operators we'll only use AND, OR, NOT in ALLCAPS in order to avoid conflict with the corresponding words in lowercase letters in the documents
+
     global t2i
     t2i = cv.vocabulary_  # shorter notation: t2i = term-to-index
-
     
-    print("\n*** The query should be of the form of the following examples: ***\n")
-
-    print("    you AND i")
-    print("    example AND NOT nothing")
-    print("    NOT example OR great")
-    print("    ( NOT example OR great ) AND nothing")
-
-    print("\n*** Operators AND, OR, NOT need to be written in ALLCAPS, search words in lowercase. ***")
-
-
     while True:
         user_query = str(input("\nEnter your query (empty string quits program): \n"))
         if user_query == "":
@@ -116,6 +106,33 @@ def ranking_search():
     
                                         
 print("Search engine starts...")
-#boolean_search()
-ranking_search()
-print("Search engine closed")
+
+# Here we'll let the user choose which search engine is going to be used:
+
+while True:
+    engine_choice = str(input("\nChoose your search engine:\n1: Boolean search\n2: Ranking search method\n\nEnter your choice by typing 1 or 2 (empty string quits program): "))
+    if engine_choice == "":
+        break
+    elif engine_choice == "1" or engine_choice == "2":
+        # Let's print here the instructions for the user:
+        # We'll either print the same instructions for both search engines, or we might have to print different ones (if the same ones don't work), I'll modify this later accordingly //Tiia
+        print("\n*** The query should be of the form of the following examples: ***\n")
+
+        print("    you AND i")
+        print("    example AND NOT nothing")
+        print("    NOT example OR great")
+        print("    ( NOT example OR great ) AND nothing")
+
+        print("\n*** Operators AND, OR, NOT need to be written in ALLCAPS, search words in lowercase. ***")
+        
+        if engine_choice == "1":
+            boolean_search()
+            break
+        elif engine_choice == "2":
+            ranking_search()
+            break
+    else:
+        print("\n*** The input was erroneous, search engine is chosen by only typing 1 or 2. ***\n")
+
+
+print("\nSearch engine closed")
