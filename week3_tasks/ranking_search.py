@@ -36,7 +36,7 @@ def boolean_test_query(query):
         hits_matrix = eval(boolean_rewrite_query(query))
         hits_list = list(hits_matrix.nonzero()[1])
         print(str(len(hits_list)) + " matching documents in total.")
-        # Here we print only the first 10 matching documents and only the first 1000 characters from the documents:
+        # Here we print only the first 10 matching documents and only the first 1000 characters from those documents:
         doc_number = 1
         for doc_idx in hits_list[:10]:
             print(f"\nMatching doc #{doc_number}: \n")
@@ -126,22 +126,29 @@ def ranking_search():
 
     
 
-# The main search engine starts here:
-print("Search engine starts...")
+# The main search engine works here:
 
-# Here we'll let the user decide which search engine is going to be used (Boolean or ranking):
-while True:
-    engine_choice = str(input("\nChoose your search engine:\n1: Boolean search\n2: Ranking search method\n\nEnter your choice by typing 1 or 2 (empty string quits program): "))
-    if engine_choice == "":
-        break
-    elif engine_choice == "1" or engine_choice == "2":        
-        if engine_choice == "1":
-            boolean_search()
-            break
-        elif engine_choice == "2":
-            ranking_search()
-            break
-    else:
-        print("\n*** The input was erroneous, search engine is chosen by only typing 1 or 2. ***\n")
+def main():
+    print("Search engine starts...")
 
-print("\nSearch engine closed")
+    # Here we'll let the user decide which search engine is going to be used (Boolean or ranking):
+    while True:
+        engine_choice = str(input("\nChoose your search engine:\n1: Boolean search\n2: Ranking search method\n\nEnter your choice by typing 1 or 2 (empty string quits program): "))
+        if engine_choice == "":
+            break
+        elif engine_choice == "1" or engine_choice == "2":        
+            if engine_choice == "1":
+                boolean_search()
+                break
+            elif engine_choice == "2":
+                ranking_search()
+                break
+        else:
+            print("\n*** The input was erroneous, search engine is chosen by only typing 1 or 2. ***\n")
+
+    print("\nSearch engine closed")
+
+
+    
+#Let's call the main function here:
+main()
