@@ -113,9 +113,11 @@ def ranking_search():
                 ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
                 # Here we print only the first 10 matching documents and only the first 1000 characters from those documents:
                 print("\nResults:")
+                print(f"Query: {user_query}")
+                print(f"{len(ranked_scores_and_doc_ids)} matching documents in total.")
                 doc_number = 1
                 for score, i in ranked_scores_and_doc_ids[:10]:
-                    print("\nThe score of '{:s}' is {:.4f} in document #{:}: ".format(user_query, score, doc_number))
+                    print("\nThe score of '{:s}' is {:.4f} in document #{:}: \n".format(user_query, score, doc_number))
                     if (len(documents[i]) > 1000):
                         print(documents[i][:1000] + "...")
                     else:
