@@ -110,17 +110,19 @@ def ranking_search():
             try:
                 query_vec = tfv.transform([user_query]).tocsc()
                 hits = np.dot(query_vec, sparse_matrix)
-                print("\nResults:")
                 ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
-                for score, i in ranked_scores_and_doc_ids:
-                    print("\nThe score of '{:s}' is {:.4f} in document: ".format(user_query, score))
+                # Here we print only the first 10 matching documents and only the first 1000 characters from those documents:
+                print("\nResults:")
+                doc_number = 1
+                for score, i in ranked_scores_and_doc_ids[:10]:
+                    print("\nThe score of '{:s}' is {:.4f} in document #{:}: ".format(user_query, score, doc_number))
                     if (len(documents[i]) > 1000):
                         print(documents[i][:1000] + "...")
                     else:
                         print(documents[i])
-                print()
+                    doc_number += 1
             except SyntaxError:
-                print("\n*** The input was erroneous, cannot show all results.\nMake sure the operators are typed in ALLCAPS. ***\n")
+                print("\n*** The input was erroneous, cannot show all results.\nMake sure your query is written in lowercase letters??. ***\n") #I will fix this instruction later //Tiia
 
     
 
