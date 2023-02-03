@@ -47,7 +47,7 @@ def boolean_test_query(query):
             doc_number += 1
 
 
-# Program that asks the user for a search query, program quits when an empty string is entered
+# Boolean search program that asks the user for a search query, program quits when an empty string is entered
 def boolean_search():
     cv = CountVectorizer(lowercase=True, binary=True, stop_words=None, token_pattern=r'(?u)\b\w+\b')
     sparse_matrix = cv.fit_transform(documents)
@@ -58,15 +58,25 @@ def boolean_search():
     # Parentheses are left untouched
     # Everything else is interpreted as a term and fed through td_matrix[t2i["..."]]
     global d
+    
     d = {"AND": "&",
          "OR": "|",
          "NOT": "1 -",
          "(": "(", ")": ")"}          # operator replacements
-
     # For the operators we'll only use AND, OR, NOT in ALLCAPS in order to avoid conflict with the corresponding words in lowercase letters in the documents
 
     global t2i
     t2i = cv.vocabulary_  # shorter notation: t2i = term-to-index
+
+    # Let's print some instructions on the Boolean search query for the user:
+    print("\n*** The searh query should be of the form of the following examples: ***\n")
+
+    print("    you AND i")
+    print("    example AND NOT nothing")
+    print("    NOT example OR great")
+    print("    ( NOT example OR great ) AND nothing")
+    
+    print("\n*** Operators AND, OR, NOT need to be written in ALLCAPS, search words in lowercase. ***")
     
     while True:
         user_query = str(input("\nEnter your query (empty string quits program): \n"))
@@ -79,10 +89,19 @@ def boolean_search():
             except SyntaxError:
                 print("\n*** The input was erroneous, cannot show all results.\nMake sure the operators are typed in ALLCAPS. ***\n")
 
+# Ranking search program that asks the user for a search query, program quits when an empty string is entered
 def ranking_search():
     tfv = TfidfVectorizer(lowercase=True, sublinear_tf=True, use_idf=True, norm="l2")
     sparse_matrix = tfv.fit_transform(documents).T.tocsr() # CSR: compressed sparse row format => order by terms
 
+    # First let's print some instructions on the Ranking search query for the user:
+    print("\n*** The search query should be of the form of the following examples: ***\n")
+
+    print("    an example here")
+    print("    another example here")
+
+    print("\n*** All search words need to be written in lowercase??. ***") #I will fix these instructions later //Tiia
+    
     while True:
         user_query = str(input("\nEnter your query (empty string quits program): \n"))
         if user_query == "":
@@ -104,27 +123,16 @@ def ranking_search():
                 print("\n*** The input was erroneous, cannot show all results.\nMake sure the operators are typed in ALLCAPS. ***\n")
 
     
-                                        
+
+# The main search engine starts here:
 print("Search engine starts...")
 
-# Here we'll let the user choose which search engine is going to be used:
-
+# Here we'll let the user decide which search engine is going to be used (Boolean or ranking):
 while True:
     engine_choice = str(input("\nChoose your search engine:\n1: Boolean search\n2: Ranking search method\n\nEnter your choice by typing 1 or 2 (empty string quits program): "))
     if engine_choice == "":
         break
-    elif engine_choice == "1" or engine_choice == "2":
-        # Let's print here the instructions for the user:
-        # We'll either print the same instructions for both search engines, or we might have to print different ones (if the same ones don't work), I'll modify this later accordingly //Tiia
-        print("\n*** The query should be of the form of the following examples: ***\n")
-
-        print("    you AND i")
-        print("    example AND NOT nothing")
-        print("    NOT example OR great")
-        print("    ( NOT example OR great ) AND nothing")
-
-        print("\n*** Operators AND, OR, NOT need to be written in ALLCAPS, search words in lowercase. ***")
-        
+    elif engine_choice == "1" or engine_choice == "2":        
         if engine_choice == "1":
             boolean_search()
             break
@@ -133,6 +141,5 @@ while True:
             break
     else:
         print("\n*** The input was erroneous, search engine is chosen by only typing 1 or 2. ***\n")
-
 
 print("\nSearch engine closed")
