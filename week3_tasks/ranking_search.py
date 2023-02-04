@@ -108,7 +108,7 @@ def ranking_search():
         user_query = str(input("\nEnter your query (empty string quits program): \n"))
         if user_query == "":
             break
-        elif re.search("\W+", user_query):
+        elif re.fullmatch("\W+", user_query):
             print("\n*** The input was erroneous, cannot show results.\nMake sure your query is typed in as instructed. ***\n")
         elif re.fullmatch("\".+\"", user_query): # Finds multi-word search queries
             print("Quotation marks found, let's now handle this as one phrase and not separate words") #This is for testing //Tiia
