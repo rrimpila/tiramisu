@@ -102,13 +102,15 @@ def ranking_search():
     print("    When searching for intact multi-word phrases, use quotation marks:")
     print("    \"New York\"")
 
-    print("\n*** Search words can be written in lowercase or uppercase letters. ***")
+    print("\n*** Search words can be written in lowercase or uppercase letters, query needs to contain at least one letter. ***")
     
     while True:
         user_query = str(input("\nEnter your query (empty string quits program): \n"))
         if user_query == "":
             break
-        elif re.fullmatch("\".+\"", user_query):
+        elif re.search("\W+", user_query):
+            print("\n*** The input was erroneous, cannot show results.\nMake sure your query is typed in as instructed. ***\n")
+        elif re.fullmatch("\".+\"", user_query): # Finds multi-word search queries
             print("Quotation marks found, let's now handle this as one phrase and not separate words") #This is for testing //Tiia
         else:
             try:
@@ -128,8 +130,9 @@ def ranking_search():
                         print(documents[i])
                     doc_number += 1
             except SyntaxError:
-                print("\n*** The input was erroneous, cannot show all results.\nMake sure your query is written as instructed. ***\n")
-
+                print("\n*** The input was erroneous, cannot show results.\nMake sure your query is typed in as instructed. ***\n")
+            except IndexError:
+                print("\n*** The input was erroneous, cannot show results.\nMake sure your query is typed in as instructed. ***\n")
     
 
 # The main search engine works here:
