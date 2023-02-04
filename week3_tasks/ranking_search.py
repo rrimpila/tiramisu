@@ -102,12 +102,14 @@ def ranking_search():
     print("    When searching for intact multi-word phrases, use quotation marks:")
     print("    \"New York\"")
 
-    print("\n*** Search words can be written in lowercase or uppercase letters. ***") #I will fix these instructions later //Tiia
+    print("\n*** Search words can be written in lowercase or uppercase letters. ***")
     
     while True:
         user_query = str(input("\nEnter your query (empty string quits program): \n"))
         if user_query == "":
             break
+        elif re.fullmatch("\".+\"", user_query):
+            print("Quotation marks found, let's now handle this as one phrase and not separate words") #This is for testing //Tiia
         else:
             try:
                 query_vec = tfv.transform([user_query]).tocsc()
@@ -126,7 +128,7 @@ def ranking_search():
                         print(documents[i])
                     doc_number += 1
             except SyntaxError:
-                print("\n*** The input was erroneous, cannot show all results.\nMake sure your query is written as instructed. ***\n") #I will fix this instruction later //Tiia
+                print("\n*** The input was erroneous, cannot show all results.\nMake sure your query is written as instructed. ***\n")
 
     
 
