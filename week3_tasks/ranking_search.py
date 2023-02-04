@@ -132,7 +132,7 @@ def ranking_search():
             except SyntaxError:
                 print("\n*** The input was erroneous, cannot show results.\nMake sure your query is typed in as instructed. ***\n")
             except IndexError:
-                print("\n*** The input was erroneous, cannot show results.\nMake sure your query is typed in as instructed. ***\n")
+                print(f"\nUnknown word, no matches found for the search query: {user_query}\n")
     
 
 # The main search engine works here:
