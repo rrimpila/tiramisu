@@ -97,10 +97,12 @@ def ranking_search():
     # First let's print some instructions on the Ranking search query for the user:
     print("\n*** The search query should be of the form of the following examples: ***\n")
 
-    print("    an example here")
-    print("    another example here")
+    print("    When searched for one word or multiple different words, type words separated by space:")
+    print("    word anotherword lastword")
+    print("    When searching for intact multi-word phrases, use quotation marks:")
+    print("    \"New York\"")
 
-    print("\n*** All search words need to be written in lowercase??. ***") #I will fix these instructions later //Tiia
+    print("\n*** Search words can be written in lowercase or uppercase letters. ***") #I will fix these instructions later //Tiia
     
     while True:
         user_query = str(input("\nEnter your query (empty string quits program): \n"))
@@ -124,7 +126,7 @@ def ranking_search():
                         print(documents[i])
                     doc_number += 1
             except SyntaxError:
-                print("\n*** The input was erroneous, cannot show all results.\nMake sure your query is written in lowercase letters??. ***\n") #I will fix this instruction later //Tiia
+                print("\n*** The input was erroneous, cannot show all results.\nMake sure your query is written as instructed. ***\n") #I will fix this instruction later //Tiia
 
     
 
