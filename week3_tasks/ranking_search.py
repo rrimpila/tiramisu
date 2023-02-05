@@ -40,12 +40,15 @@ def boolean_test_query(query):
         doc_number = 1
         for doc_idx in hits_list[:10]:
             print(f"\nMatching doc #{doc_number}: \n")
-            if (len(documents[doc_idx]) > 1000):
-                print(documents[doc_idx][:1000] + "...")
-            else:
-                print(documents[doc_idx])
+            print_document(documents[doc_idx])
             doc_number += 1
 
+
+def print_document(document, char_limit = 1000):
+    if (len(document) > char_limit):
+        print(document[:char_limit] + "...")
+    else:
+        print(document)
 
 # Boolean search program that asks the user for a search query, program quits when an empty string is entered
 def boolean_search():
@@ -124,10 +127,7 @@ def ranking_search():
                 doc_number = 1
                 for score, i in ranked_scores_and_doc_ids[:10]:
                     print("\nThe score of '{:s}' is {:.4f} in document #{:}: \n".format(user_query, score, doc_number))
-                    if (len(documents[i]) > 1000):
-                        print(documents[i][:1000] + "...")
-                    else:
-                        print(documents[i])
+                    print_document(documents[i])
                     doc_number += 1
             except SyntaxError:
                 print("\n*** The input was erroneous, cannot show results.\nMake sure your query is typed in as instructed. ***\n")
