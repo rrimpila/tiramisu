@@ -91,7 +91,7 @@ def boolean_search():
 
 # Ranking search program that asks the user for a search query, program quits when an empty string is entered
 def ranking_search():
-    tfv = TfidfVectorizer(lowercase=True, sublinear_tf=True, use_idf=True, norm="l2")
+    tfv = TfidfVectorizer(lowercase=True, sublinear_tf=True, use_idf=True, norm="l2", stop_words=None, token_pattern=r'(?u)\b\w+\b')
     sparse_matrix = tfv.fit_transform(documents).T.tocsr() # CSR: compressed sparse row format => order by terms
 
     # First let's print some instructions on the Ranking search query for the user:
