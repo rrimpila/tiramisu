@@ -107,7 +107,7 @@ def boolean_search():
     print("\n*** Operators AND, OR, NOT need to be written in ALLCAPS, search words in lowercase. ***")
     
     while True:
-        user_query = str(input("\nEnter your query (empty string quits program): \n"))
+        user_query = str(input("\nEnter your query (empty string quits Boolean search): \n"))
         if user_query == "":
             break
         else:
@@ -115,7 +115,7 @@ def boolean_search():
                 print("\nResults:")
                 boolean_test_query(f"{user_query}")
             except SyntaxError:
-                print("\n*** The input was erroneous, cannot show all results.\nMake sure the operators are typed in ALLCAPS. ***\n")
+                print("\n*** The input was erroneous, cannot show results.\nMake sure the operators are typed in ALLCAPS. ***\n")
 
 # Ranking search program that asks the user for a search query, program quits when an empty string is entered
 def ranking_search():
@@ -133,7 +133,7 @@ def ranking_search():
     print("\n*** Search words can be written in lowercase or uppercase letters, query needs to contain at least one letter. ***")
     
     while True:
-        user_query = str(input("\nEnter your query (empty string quits program): \n"))
+        user_query = str(input("\nEnter your query (empty string quits Relevance ranking search): \n"))
         if user_query == "":
             break
         elif re.fullmatch("\W+", user_query):
@@ -172,21 +172,20 @@ def main():
 
     # Here we'll let the user decide which search engine is going to be used (Boolean or Relevance ranking):
     while True:
-        engine_choice = str(input("\nChoose your search engine:\n1: Boolean search\n2: Relevance ranking search\n\nEnter your choice by typing 1 or 2 (empty string quits program): "))
-        if engine_choice == "":
-            break
-        elif engine_choice == "1" or engine_choice == "2":        
-            if engine_choice == "1":
-                boolean_search()
-                break
-            elif engine_choice == "2":
-                ranking_search()
-                break
-        else:
-            print("\n*** The input was erroneous, search engine is chosen by only typing 1 or 2. ***\n")
-
-    print("\nSearch engine closed")
-
+        while True:
+            engine_choice = str(input("\nChoose your search engine:\n1: Boolean search\n2: Relevance ranking search\n\nEnter your choice by typing 1 or 2 (empty string quits program): "))
+            if engine_choice == "":
+                print("\nSearch engine closed")
+                exit()
+            elif engine_choice == "1" or engine_choice == "2":        
+                if engine_choice == "1":
+                    boolean_search()
+                    break
+                elif engine_choice == "2":
+                    ranking_search()
+                    break
+            else:
+                print("\n*** The input was erroneous, search engine is chosen by only typing 1 or 2. ***\n")
 
     
 #Let's call the main function here:
