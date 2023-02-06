@@ -127,7 +127,7 @@ def ranking_search():
 
     print("    When searched for one word or multiple different words, type words separated by space:")
     print("    word anotherword lastword")
-    print("    When searching for intact multi-word phrases, use quotation marks:")
+    print("    When searching for intact multi-word phrases (only bigrams or trigrams), use quotation marks:")
     print("    \"New York\"")
 
     print("\n*** Search words can be written in lowercase or uppercase letters, query needs to contain at least one letter. ***")
