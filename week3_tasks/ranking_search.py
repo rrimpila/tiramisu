@@ -5,6 +5,7 @@ import numpy as np
 import nltk
 from nltk.stem.snowball import EnglishStemmer
 from nltk.tokenize import word_tokenize
+import shlex 
 
 # read articles from file
 with open('../data/enwiki-20181001-corpus.1000-articles.txt', encoding='utf8') as f:
@@ -49,7 +50,7 @@ def boolean_rewrite_query(query): # rewrite every token in the query
     #    query = stem_que(query)
     #else:
     #    query = re.sub('\"','', query)
-    return " ".join(boolean_rewrite_token(t) for t in query.split())
+    return " ".join(boolean_rewrite_token(t) for t in shlex.split(query))
 
 def boolean_test_query(query):
     print("Query: '" + query + "'")
@@ -76,7 +77,7 @@ def print_document(document, char_limit = 1000):
 
 # Boolean search program that asks the user for a search query, program quits when an empty string is entered
 def boolean_search():
-    cv = CountVectorizer(lowercase=True, binary=True, stop_words=None, token_pattern=r'(?u)\b\w+\b')
+    cv = CountVectorizer(lowercase=True, binary=True, stop_words=None, token_pattern=r'(?u)\b\w+\b', ngram_range=(1,3))
     sparse_matrix = cv.fit_transform(documents)
     global sparse_td_matrix
     sparse_td_matrix = sparse_matrix.T.tocsr()
