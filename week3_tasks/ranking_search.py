@@ -170,9 +170,9 @@ def ranking_search():
 def main():
     print("Search engine starts...")
 
-    # Here we'll let the user decide which search engine is going to be used (Boolean or ranking):
+    # Here we'll let the user decide which search engine is going to be used (Boolean or Relevance ranking):
     while True:
-        engine_choice = str(input("\nChoose your search engine:\n1: Boolean search\n2: Ranking search method\n\nEnter your choice by typing 1 or 2 (empty string quits program): "))
+        engine_choice = str(input("\nChoose your search engine:\n1: Boolean search\n2: Relevance ranking search\n\nEnter your choice by typing 1 or 2 (empty string quits program): "))
         if engine_choice == "":
             break
         elif engine_choice == "1" or engine_choice == "2":        
