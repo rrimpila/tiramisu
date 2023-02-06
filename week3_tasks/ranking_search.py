@@ -4,6 +4,7 @@ import re
 import numpy as np
 import nltk
 from nltk.stem.snowball import EnglishStemmer
+from nltk.tokenize import word_tokenize
 
 # read articles from file
 with open('../data/enwiki-20181001-corpus.1000-articles.txt', encoding='utf8') as f:
@@ -20,9 +21,20 @@ documents = [re.sub(p, "", document) for document in documents if document and p
 stemmer = EnglishStemmer()
 
 def stem_que(query):
-    query = stemmer.stem(query)
-    return query
-    
+    return stemmer.stem(query) #returns stemmed query
+
+def stem_doc(documents): 
+    stem_single = []
+    stem_docs = []
+    for d in documents:
+        tok = word_tokenize(d)
+        for t in tok:
+            stem_single.append(" ".join(stemmer.stem(t)))
+        stem_docs.append("".join(stem_single))
+    return stem_docs #returns list of documents stemmed
+            
+            
+
 def boolean_query_matrix(t):
     """
     Checks if the term is present in any of the documents.
@@ -34,10 +46,10 @@ def boolean_rewrite_token(t):
     return d.get(t, 'boolean_query_matrix("{:s}")'.format(t)) 
 
 def boolean_rewrite_query(query): # rewrite every token in the query
-    if bool(re.search(r'\".+\"', query)) is False:
-        query = stem_que(query)
-    else:
-        query = re.sub('\"','', query)
+    #if bool(re.search(r'\".+\"', query)) is False:
+    #    query = stem_que(query)
+    #else:
+    #    query = re.sub('\"','', query)
     return " ".join(boolean_rewrite_token(t) for t in query.split())
 
 def boolean_test_query(query):
@@ -132,6 +144,7 @@ def ranking_search():
             try:
                 if bool(re.search(r"\".+\"", user_query)) is False:
                     user_query = stem_que(user_query)
+                    
                 else:
                     None
                 query_vec = tfv.transform([user_query]).tocsc()
