@@ -23,17 +23,16 @@ stemmer = EnglishStemmer()
 def stem_que(query):
     return stemmer.stem(query) #returns stemmed query
 
-def stem_doc(documents): 
+def stem_doc(): 
     stem_single = []
     stem_docs = []
     for d in documents:
+        d = d.lower()
         tok = word_tokenize(d)
         for t in tok:
             stem_single.append(" ".join(stemmer.stem(t)))
-        stem_docs.append("".join(stem_single))
+            stem_docs.append("".join(stem_single))
     return stem_docs #returns list of documents stemmed
-            
-            
 
 def boolean_query_matrix(t):
     """
@@ -144,7 +143,6 @@ def ranking_search():
             try:
                 if bool(re.search(r"\".+\"", user_query)) is False:
                     user_query = stem_que(user_query)
-                    
                 else:
                     None
                 query_vec = tfv.transform([user_query]).tocsc()
