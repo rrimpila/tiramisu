@@ -124,12 +124,15 @@ def ranking_search():
             break
         elif re.fullmatch("\W+", user_query):
             print("\n*** The input was erroneous, cannot show results.\nMake sure your query is typed in as instructed. ***\n")
-        elif re.fullmatch("\".+\"", user_query): # Finds multi-word search queries
+        elif re.fullmatch("\".+\s.+\"", user_query): # Finds multi-word search queries
             print("Quotation marks found, let's now handle this as one phrase and not separate words") #This is for testing //Tiia
         else:
             try:
-                stemmed_query = stemmer.stem(user_query)
-                query_vec = tfv.transform([stemmed_query]).tocsc()
+                if bool(re.search(r"\".+\"", user_query)) is False:
+                    user_query = stemmer.stem(user_query)
+                else:
+                    None
+                query_vec = tfv.transform([user_query]).tocsc()
                 hits = np.dot(query_vec, sparse_matrix)
                 ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
                 # Here we print only the first 10 matching documents and only the first 1000 characters from those documents:
