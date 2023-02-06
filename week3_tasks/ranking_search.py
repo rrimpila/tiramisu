@@ -35,7 +35,7 @@ def boolean_rewrite_token(t):
 
 def boolean_rewrite_query(query): # rewrite every token in the query
     if bool(re.search(r"\".+\"", query)) is False :
-        query = stemmer.stem(query)
+        query = stem_que(query)
     return " ".join(boolean_rewrite_token(t) for t in query.split())
 
 def boolean_test_query(query):
@@ -129,7 +129,7 @@ def ranking_search():
         else:
             try:
                 if bool(re.search(r"\".+\"", user_query)) is False:
-                    user_query = stemmer.stem(user_query)
+                    user_query = stem_que(user_query)
                 else:
                     None
                 query_vec = tfv.transform([user_query]).tocsc()
