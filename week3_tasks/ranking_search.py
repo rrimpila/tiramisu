@@ -103,6 +103,9 @@ def boolean_search():
     print("    example AND NOT nothing")
     print("    NOT example OR great")
     print("    ( NOT example OR great ) AND nothing")
+    print("    When searching for intact multi-word phrases (only bigrams or trigrams), use quotation marks:")
+    print("    \"new york\"")
+    print("    This may be combined with the Boolean operators")  
     
     print("\n*** Operators AND, OR, NOT need to be written in ALLCAPS, search words in lowercase. ***")
     
