@@ -121,6 +121,18 @@ def ranking_search():
     tfv = TfidfVectorizer(lowercase=True, sublinear_tf=True, use_idf=True, norm="l2", stop_words=None, token_pattern=r'(?u)\b\w+\b')
     sparse_matrix = tfv.fit_transform(documents).T.tocsr() # CSR: compressed sparse row format => order by terms
 
+    # 1-grams for exact match
+    tfv_1grams = TfidfVectorizer(lowercase=True, sublinear_tf=True, use_idf=True, norm="l2", stop_words=None, token_pattern=r'(?u)\b\w+\b', ngram_range=(1,1))
+    sparse_matrix_1grams = tfv_1grams.fit_transform(documents).T.tocsr() # CSR: compressed sparse row format => order by terms
+
+    # 2-grams for exact match
+    tfv_2grams = TfidfVectorizer(lowercase=True, sublinear_tf=True, use_idf=True, norm="l2", stop_words=None, token_pattern=r'(?u)\b\w+\b', ngram_range=(2,2))
+    sparse_matrix_2grams = tfv_2grams.fit_transform(documents).T.tocsr() # CSR: compressed sparse row format => order by terms
+
+    # 3-grams for exact match
+    tfv_3grams = TfidfVectorizer(lowercase=True, sublinear_tf=True, use_idf=True, norm="l2", stop_words=None, token_pattern=r'(?u)\b\w+\b', ngram_range=(3,3))
+    sparse_matrix_3grams = tfv_3grams.fit_transform(documents).T.tocsr() # CSR: compressed sparse row format => order by terms    
+
     # First let's print some instructions on the Ranking search query for the user:
     print("\n*** The search query should be of the form of the following examples: ***\n")
 
@@ -137,14 +149,48 @@ def ranking_search():
             break
         elif re.fullmatch("\W+", user_query):
             print("\n*** The input was erroneous, cannot show results.\nMake sure your query is typed in as instructed. ***\n")
-        elif re.fullmatch("\".+\s.+\"", user_query): # Finds multi-word search queries
-            print("Quotation marks found, let's now handle this as one phrase and not separate words") #This is for testing //Tiia
+        elif re.fullmatch("\".+\"", user_query): # Finds exact queries
+            user_query_stripped = user_query[1:-1]
+            tfv_grams = tfv
+            sparse_matrix_grams = sparse_matrix
+
+            # choose the correct length to only match that string
+            match len(user_query_stripped.split(" ")):
+                case 1:
+                    tfv_grams = tfv_1grams
+                    sparse_matrix_grams = sparse_matrix_1grams
+                case 2:
+                    tfv_grams = tfv_2grams
+                    sparse_matrix_grams = sparse_matrix_2grams
+                case 3:
+                    tfv_grams = tfv_3grams
+                    sparse_matrix_grams = sparse_matrix_3grams
+                case _:
+                    print("\n*** The input was erroneous, cannot show results.\nMake sure your query is typed in as instructed.\nWe currently support exact matching only for 1, 2, or 3 words ***\n")
+                    continue
+            
+            query_vec = tfv_grams.transform([user_query_stripped]).tocsc()
+            hits = np.dot(query_vec, sparse_matrix_grams)
+            try: 
+                ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
+                print("\nResults:")
+                print(f"Query: {user_query}")
+                print(f"{len(ranked_scores_and_doc_ids)} matching documents in total.")
+                doc_number = 1
+                for score, i in ranked_scores_and_doc_ids[:10]:
+                    print("\nThe score of '{:s}' is {:.4f} in document #{:}: \n".format(user_query, score, doc_number))
+                    print_document(documents[i])
+                    doc_number += 1
+            except IndexError:
+                print(f"\nUnknown word, no matches found for the search query: {user_query}\n")
+
         else:
             try:
-                if bool(re.search(r"\".+\"", user_query)) is False:
-                    user_query = stem_que(user_query)
-                else:
-                    None
+# commenting out the stemming for now
+#                if bool(re.search(r"\".+\"", user_query)) is False:
+#                    user_query = stem_que(user_query)
+#                else:
+#                    None
                 query_vec = tfv.transform([user_query]).tocsc()
                 hits = np.dot(query_vec, sparse_matrix)
                 ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
