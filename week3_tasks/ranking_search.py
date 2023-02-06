@@ -34,8 +34,10 @@ def boolean_rewrite_token(t):
     return d.get(t, 'boolean_query_matrix("{:s}")'.format(t)) 
 
 def boolean_rewrite_query(query): # rewrite every token in the query
-    if bool(re.search(r"\".+\"", query)) is False :
+    if bool(re.search(r'\".+\"', query)) is False:
         query = stem_que(query)
+    else:
+        query = re.sub('\"','', query)
     return " ".join(boolean_rewrite_token(t) for t in query.split())
 
 def boolean_test_query(query):
