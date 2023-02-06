@@ -2,6 +2,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 import re
 import numpy as np
+import nltk
+from nltk.stem.snowball import EnglishStemmer
 
 # read articles from file
 with open('../data/enwiki-20181001-corpus.1000-articles.txt', encoding='utf8') as f:
@@ -14,6 +16,13 @@ p = re.compile('^\s*<article\s+name="(.*?)"\s*>\s*')
 documents_titles = [p.match(document).group(1) for document in documents if document and p.match(document)]
 documents = [re.sub(p, "", document) for document in documents if document and p.match(document)]
 
+# define stemmer
+stemmer = EnglishStemmer()
+
+def stem_que(query):
+    query = stemmer.stem(query)
+    return query
+    
 def boolean_query_matrix(t):
     """
     Checks if the term is present in any of the documents.
@@ -25,6 +34,8 @@ def boolean_rewrite_token(t):
     return d.get(t, 'boolean_query_matrix("{:s}")'.format(t)) 
 
 def boolean_rewrite_query(query): # rewrite every token in the query
+    if bool(re.search(r"\".+\"", query)) is False :
+        query = stemmer.stem(query)
     return " ".join(boolean_rewrite_token(t) for t in query.split())
 
 def boolean_test_query(query):
@@ -117,7 +128,8 @@ def ranking_search():
             print("Quotation marks found, let's now handle this as one phrase and not separate words") #This is for testing //Tiia
         else:
             try:
-                query_vec = tfv.transform([user_query]).tocsc()
+                stemmed_query = stemmer.stem(user_query)
+                query_vec = tfv.transform([stemmed_query]).tocsc()
                 hits = np.dot(query_vec, sparse_matrix)
                 ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
                 # Here we print only the first 10 matching documents and only the first 1000 characters from those documents:
