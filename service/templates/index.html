@@ -4,7 +4,7 @@
         <title>Flask example</title>
     </head>
     <body>
-        <h1>Find pictures</h1>
+        <h1>Find documents</h1>
         <!--Reload the page with variable "query" in the URL-->
         <form>
             <input type="text" name="query" autofocus>
@@ -14,15 +14,14 @@
             <!--Go through each item in the "matches" variable sent from
                 search() function in the Flask app-->
             {% for item in matches %}
-            <tr>
+            <div>
                 <!--Display the name of the item based on the "name" key-->
-                <td>{{ item["name"] }}</td>
-                <!--Display the image of the item based on the "source" key-->
-                <td><img src="/static/{{ item["source"] }}" style="width: 400px; height 100%"></td>
-            </tr>
+                <h2>{{ item["name"] }}</h2>
+                <!--Display the contents of the item based on the "source" key-->
+                <p>{{ item["text"] }}</p>
+            </div>
             <!--End for loop-->
             {% endfor %}
         </table>
     </body>
 </html>
-                               
