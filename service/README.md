@@ -4,7 +4,7 @@ We will use a virtual environment to contain the project. This way, if you want 
 
 ## [Install Flask](https://flask.palletsprojects.com/en/2.2.x/installation/)
 
-(NOTE: Instructions for Windows users after this) 
+(NOTE: Instructions for Windows users after this)
 Create a project directory:
 
 ```
@@ -100,7 +100,7 @@ export FLASK_RUN_PORT=8000
 __On Windows command line__, you can the environment variables with:
 
 ```
-set FLASK_APP=flaskdemo.py
+set FLASK_APP=search_server.py
 set FLASK_DEMO=True
 set FLASK_RUN_PORT=8000
 ```
@@ -113,7 +113,7 @@ $env:FLASK_DEMO = "True"
 $env:FLASK_RUN_PORT = "8000"
 ```
 
-FINALLY, typing `flask run` will prompt the virtual environment's Flask package to run an HTTP server using the app object in whatever script the `FLASK_APP` environment variable points to. 
+FINALLY, typing `flask run` will prompt the virtual environment's Flask package to run an HTTP server using the app object in whatever script the `FLASK_APP` environment variable points to.
 
 So, run the app:
 
