@@ -1,7 +1,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Flask example</title>
+        <title>NLP search</title>
     </head>
     <body>
         <h1>Find documents</h1>
@@ -18,7 +18,7 @@
                 <!--Display the name of the item based on the "name" key-->
                 <h2>{{ item["name"] }}</h2>
                 <!--Display the contents of the item based on the "source" key-->
-                <p>{{ item["text"] }}</p>
+                <pre>{{ item["text"] }}</pre>
             </div>
             <!--End for loop-->
             {% endfor %}
