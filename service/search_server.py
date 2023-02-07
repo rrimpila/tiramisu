@@ -98,6 +98,8 @@ def search():
 
     #Get query from URL variable
     query = request.args.get('query')
+    #TODO this needs to be passed to the template to keep the right button selected
+    search_type = request.args.get('search_type')
 
 
     #Initialize list of matches
@@ -105,8 +107,10 @@ def search():
 
     #If query exists (i.e. is not None)
     if query:
-        #Look at each entry in the example data
-        matches = boolean_test_query(f"{query}")
+        if search_type == "boolean_search":
+            matches = boolean_test_query(f"{query}")
+        elif search_type == "ranking_search":
+            matches = []
 
     #Render index.html with matches variable
     return render_template('index.html', matches=matches)

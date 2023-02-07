@@ -9,6 +9,10 @@
         <form>
             <input type="text" name="query" autofocus>
             <input type="submit" value="Search">
+            <input type="radio" id="boolean_search" name="search_type" value="boolean_search" checked>
+            <label for="boolean_search">Boolean search</label>
+            <input type="radio" id="ranking_search" name="search_type" value="ranking_search">
+            <label for="ranking_search">Relevance ranking search</label>
         </form>
         <table>
             <!--Go through each item in the "matches" variable sent from
