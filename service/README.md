@@ -92,7 +92,7 @@ export FLASK_RUN_PORT=8000
 
 Here is everything together to simplify your life:
 ```
-export FLASK_APP=flaskdemo.py
+export FLASK_APP=search_server.py
 export FLASK_DEBUG=True
 export FLASK_RUN_PORT=8000
 ```
