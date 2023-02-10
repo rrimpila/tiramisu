@@ -92,7 +92,7 @@ def boolean_test_query(query):
         hits_list = list(hits_matrix.nonzero()[1])
 #        print(str(len(hits_list)) + " matching documents in total.")
         for doc_idx in hits_list[:10]: #TODO don't restrict here, either add paging or at template
-           matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx][:1000]}) #TODO don't restrict here
+           matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx][:300]}) #TODO don't restrict here
     return matches
 
 def ranking_search(user_query):
@@ -120,7 +120,7 @@ def ranking_search(user_query):
         try:
             ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
             for score, i in ranked_scores_and_doc_ids[:10]: #TODO don't restrict here
-                matches.append({'name': documents_titles[i], 'text': documents[i][:1000], 'score' : score}) #TODO don't restrict here
+                matches.append({'name': documents_titles[i], 'text': documents[i][:300], 'score' : score}) #TODO don't restrict here
         except IndexError:
             #TODO better error handling
             return []
@@ -136,7 +136,7 @@ def ranking_search(user_query):
             hits = np.dot(query_vec, sparse_matrix)
             ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
             for score, i in ranked_scores_and_doc_ids[:10]: #TODO don't restrict here
-                matches.append({'name': documents_titles[i], 'text': documents[i][:1000], 'score' : score}) #TODO don't restrict here
+                matches.append({'name': documents_titles[i], 'text': documents[i][:300], 'score' : score}) #TODO don't restrict here
         except SyntaxError:
             #TODO better error handling
             return []
