@@ -56,26 +56,26 @@ def boolean_test_query(query):
     print("Query: '" + query + "'")
     if np.all(eval(boolean_rewrite_query(query)) == 0):
         print("No matches: there are no documents matching the query '" + query + "'")
-        print("______________________________________________________________________________________________________________________")
+        print("__________________________________________________________________________________________________")
     else:
-        print("Matching:", eval(boolean_rewrite_query(query))) # Eval runs the string as a Python command
         hits_matrix = eval(boolean_rewrite_query(query))
         hits_list = list(hits_matrix.nonzero()[1])
         print(str(len(hits_list)) + " matching documents in total.")
-        print("______________________________________________________________________________________________________________________")
-        # Here we print only the first 10 matching documents:
+        print("Matching:", eval(boolean_rewrite_query(query))) # Eval runs the string as a Python command
+        print("__________________________________________________________________________________________________")
+        # Here we print only the first 10 matching documents and their names:
         doc_number = 1
         for doc_idx in hits_list[:10]:
             print(f"\n\nMatching document #{doc_number}: \n")
+            print(f"Name: {documents_titles[doc_idx]}\n")
             print_document(documents[doc_idx])
             doc_number += 1
 
-# Print document function, which prints the name of the doc and the first 300 characters from the beginning of it:
+# Print document function, which prints the first 300 characters from the beginning of the doc:
 def print_document(document, char_limit = 300):
     if (len(document) > char_limit):
-        print("Name: LET'S ADD DOC NAME HERE\n")
-        print(f"Content: {document[:char_limit]}...")
-        print("\n----------------------------------------------------------------------------------------------------------------------")
+        print(f"Content:\n{document[:char_limit]}...")
+        print("\n--------------------------------------------------------------------------------------------------")
     else:
         print(document)
 
@@ -100,28 +100,36 @@ def boolean_search():
     global t2i
     t2i = cv.vocabulary_  # shorter notation: t2i = term-to-index
 
-    # Let's print some instructions on the Boolean search query for the user:
-    print("\n**********************************************************************************************************************")
-    print("\n   BOOLEAN SEARCH:")
-    print("\n   Please form the searh query in the following manner:")
+    # Let's print some instructions on the Boolean search:
+    print("\n**************************************************************************************************\n")
+
+    print("   BOOLEAN SEARCH:\n")
+
+    print("   Please form the searh query in the following manner:")
     print("       you AND i")
     print("       example AND NOT nothing")
     print("       NOT example OR great")
-    print("       ( NOT example OR great ) AND nothing")
-    print("\n   Use quotation marks when searching for intact multi-word phrases (the program only supports bigrams and trigrams):")
+    print("       ( NOT example OR great ) AND nothing\n")
+    
+    print("   Use quotation marks when searching for intact multi-word phrases,")
+    print("   the program only supports bigrams and trigrams:")
     print("       \"new york\"")
-    print("\n   Multi-word phrases can also be combined with the Boolean operators:")
-    print("       \"new york\" OR london")
-    print("\n   Operators AND, OR, NOT need to be written in ALLCAPS, search words in lowercase.\n")
-    print("**********************************************************************************************************************")
+    print("       \"you and i\"\n")
+    
+    print("   Multi-word phrases can also be combined with the Boolean operators:")
+    print("       \"new york\" OR london\n")
+    
+    print("   Operators AND, OR, NOT need to be written in ALLCAPS, search words in lowercase.")
+    
+    print("\n**************************************************************************************************")
     
     while True:
-        user_query = str(input("\n\nEnter your query (empty string quits Boolean search): "))
+        user_query = str(input("\n\nEnter your query (or press enter to change search engine): "))
         if user_query == "":
             break
         else:
             try:
-                print("\n\n______________________________________________________________________________________________________________________")
+                print("\n\n__________________________________________________________________________________________________")
                 print("\nRESULTS:")
                 boolean_test_query(f"{user_query}")
             except SyntaxError:
@@ -144,19 +152,29 @@ def ranking_search():
     tfv_3grams = TfidfVectorizer(lowercase=True, sublinear_tf=True, use_idf=True, norm="l2", stop_words=None, token_pattern=r'(?u)\b\w+\b', ngram_range=(3,3))
     sparse_matrix_3grams = tfv_3grams.fit_transform(documents).T.tocsr() # CSR: compressed sparse row format => order by terms    
 
-    # First let's print some instructions on the Ranking search query for the user:
-    print("\n**********************************************************************************************************************")
-    print("\n   RELEVANCE RANKING SEARCH:")
-    print("\n   Please form the search query in the following manner:")
-    print("\n   When searched for one word or multiple different words, separate words with space:")
-    print("       word anotherword lastword")
-    print("\n   Use quotation marks when searching for intact multi-word phrases (the program only supports bigrams or trigrams):")
+    # First let's print some instructions on the Ranking search:
+    print("\n**************************************************************************************************\n")
+
+    print("   RELEVANCE RANKING SEARCH:\n")
+
+    print("   Please form the search query in the following manner:")
+    print("       searchword\n")
+
+    print("   When searched for multiple words, separate words with space:")
+    print("       word anotherword lastword\n")
+
+    print("   Use quotation marks when searching for intact multi-word phrases,")
+    print("   the program only supports bigrams or trigrams:")
     print("       \"New York\"")
-    print("\n   Search words can be written in lowercase or uppercase letters, query needs to contain at least one letter.\n")
-    print("**********************************************************************************************************************")
+    print("       \"you and I\"\n")
+    
+    print("   Search words can be written in lowercase or uppercase letters,")
+    print("   query needs to contain at least one letter.\n")
+
+    print("\n**************************************************************************************************")
     
     while True:
-        user_query = str(input("\n\nEnter your query (empty string quits Relevance ranking search): "))
+        user_query = str(input("\n\nEnter your query (or press enter to change search engine): "))
         if user_query == "":
             break
         elif re.fullmatch("\W+", user_query):
@@ -185,24 +203,25 @@ def ranking_search():
             hits = np.dot(query_vec, sparse_matrix_grams)
             try: 
                 ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
-                # Here we print only the first 10 matching documents:
-                print("\n\n______________________________________________________________________________________________________________________")
+                print("\n\n__________________________________________________________________________________________________")
                 print("\nRESULTS:")
                 print(f"Query: {user_query}")
                 print(f"{len(ranked_scores_and_doc_ids)} matching documents in total.")
-                print("______________________________________________________________________________________________________________________")
+                print("__________________________________________________________________________________________________")
+                # Here we print only the first 10 matching documents and their names:
                 doc_number = 1
                 for score, i in ranked_scores_and_doc_ids[:10]:
                     print(f"\n\nMatching document #{doc_number}: \n")
-                    print("The score for query '{:s}' is {:.4f}\n".format(user_query, score))
+                    print("The relevance score for query '{:s}' is {:.4f}\n".format(user_query, score))
+                    print(f"Name: {documents_titles[i]}\n")
                     print_document(documents[i])
                     doc_number += 1
             except IndexError:
-                print("\n\n______________________________________________________________________________________________________________________")
+                print("\n\n__________________________________________________________________________________________________")
                 print("\nRESULTS:")
                 print(f"Query: {user_query}")
                 print(f"Unknown word, no matches found for the search query: {user_query}")
-                print("______________________________________________________________________________________________________________________")
+                print("__________________________________________________________________________________________________")
 
         else:
             try:
@@ -214,45 +233,47 @@ def ranking_search():
                 query_vec = tfv.transform([user_query]).tocsc()
                 hits = np.dot(query_vec, sparse_matrix)
                 ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
-                # Here we print only the first 10 matching documents:
-                print("\n\n______________________________________________________________________________________________________________________")
+                print("\n\n__________________________________________________________________________________________________")
                 print("\nRESULTS:")
                 print(f"Query: {user_query}")
                 print(f"{len(ranked_scores_and_doc_ids)} matching documents in total.")
-                print("______________________________________________________________________________________________________________________")
+                print("__________________________________________________________________________________________________")
+                # Here we print only the first 10 matching documents and their names:
                 doc_number = 1
                 for score, i in ranked_scores_and_doc_ids[:10]:
                     print(f"\n\nMatching document #{doc_number}: \n")
-                    print("The score for query '{:s}' is {:.4f}\n".format(user_query, score))
+                    print("The relevance score for query '{:s}' is {:.4f}\n".format(user_query, score))
+                    print(f"Name: {documents_titles[i]}\n")
                     print_document(documents[i])
                     doc_number += 1
             except SyntaxError:
                 print("\n*** The input was erroneous, cannot show results.\nMake sure your query is typed in as instructed. ***\n")
             except IndexError:
-                print("\n\n______________________________________________________________________________________________________________________")
+                print("\n\n__________________________________________________________________________________________________")
                 print("\nRESULTS:")
                 print(f"Query: {user_query}")
                 print(f"Unknown word, no matches found for the search query: {user_query}")
-                print("______________________________________________________________________________________________________________________")
+                print("__________________________________________________________________________________________________")
     
 
 # The main search engine works here:
 
 def main():
-    print("Search engine starts...")
+    print("\nWelcome to the TIRAMISU Search Engine!")
+    print("\nEngine starting...")
 
-    #Let's do the indexing here:
+    #Let's do the indexing/pre-processing here (before engine_choice while loop) so that it won't happen every time when search engine is being changed:
     
 
     # Here we'll let the user decide which search engine is going to be used (Boolean or Relevance ranking):
     while True:
         while True:
-            print("\n______________________________________________________________________________________________________________________")
-            print("\nChoose your search engine:\n1: Boolean search\n2: Relevance ranking search")
-            print("______________________________________________________________________________________________________________________")
-            engine_choice = str(input("\nEnter your choice by typing 1 or 2 (empty string quits program): "))
+            print("\n__________________________________________________________________________________________________\n")
+            print("Choose your search engine:\n1: Boolean search\n2: Relevance ranking search")
+            print("__________________________________________________________________________________________________\n")
+            engine_choice = str(input("Enter your choice by typing 1 or 2 (or press enter to exit the program): "))
             if engine_choice == "":
-                print("\nSearch engine closed")
+                print("\n\nThe TIRAMISU Search Engine closed.")
                 exit()
             elif engine_choice == "1" or engine_choice == "2":        
                 if engine_choice == "1":
