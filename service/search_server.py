@@ -50,10 +50,10 @@ sparse_matrix_3grams = tfv_3grams.fit_transform(documents).T.tocsr() # CSR: comp
 t2i = cv.vocabulary_  # shorter notation: t2i = term-to-index
 
 # stemming-related functions
-stemmer = EnglishStemmer()
+#stemmer = EnglishStemmer()
 
-def stem_que(query):
-    return stemmer.stem(query) #returns stemmed query
+#def stem_que(query):
+#    return stemmer.stem(query) #returns stemmed query
 
 #def stem_doc():
 #    stem_single = []
@@ -68,14 +68,15 @@ def stem_que(query):
 
 def make_inf_list(query): # makes a list of all possible inflections for a query for non-exact matching                    
     all_inf = getAllInflections(query) # gets all inflections of the query and puts them in a dictionary (credits: https://github.com/bjascob/pyInflect)
-    all_inf_search = []
+    all_inf_list = []
     for i in all_inf.values(): # we only want the values in the dict
         inf = re.sub(r'\W+', '', str(i)) # make a string of the inflections
-        if inf not in all_inf_search:
-            all_inf_search.append(inf) # add to searchlist only if there are no duplicates
-    neat_list= str(all_inf_search)[1:-1] # neat list without square brackets for display :)
+        if inf not in all_inf_list:
+            all_inf_list.append(inf) # add to searchlist only if there are no duplicates
+    neat_list = str(all_inf_list)[1:-1] # neat list without square brackets for display :)
+    inf_query = " OR ".join(all_inf_list)
     print(f"List of words to look for: {neat_list}")
-    return all_inf_search #return searchlist
+    return inf_query #return query as a modified query in format "query OR queries OR quering OR queried"
 
 # boolean search-related functions
 
