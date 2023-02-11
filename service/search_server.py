@@ -7,6 +7,23 @@ from nltk.stem.snowball import EnglishStemmer
 from nltk.tokenize import word_tokenize
 import shlex
 
+# stemming-related definitions                                                                         
+
+stemmer = EnglishStemmer()
+
+def stem_que(query):
+    return stemmer.stem(query) #returns stemmed query                                                  
+
+def stem_doc():
+    stem_single = []
+    stem_docs = []
+    for d in documents:
+        d = d.lower()
+        tok = word_tokenize(d)
+        for t in tok:
+            stem_single.append(" ".join(stemmer.stem(t)))
+            stem_docs.append("".join(stem_single))
+    return stem_docs #returns list of documents stemmed
 
 #Initialize Flask instance
 app = Flask(__name__)
@@ -22,7 +39,7 @@ p = re.compile('^\s*<article\s+name="(.*?)"\s*>\s*')
 documents_titles = [p.match(document).group(1) for document in documents if document and p.match(document)]
 documents = [re.sub(p, "", document) for document in documents if document and p.match(document)]
 
-cv = CountVectorizer(lowercase=True, binary=True, stop_words=None, token_pattern=r'(?u)\b\w+\b', ngram_range=(1,3))
+cv = CountVectorizer(lowercase=True, binary=True, stop_words=None, token_pattern=r'(?u)\b\w+\b', ngram_range=(1,3), preprocessor = stem_doc())
 sparse_matrix = cv.fit_transform(documents)
 sparse_td_matrix = sparse_matrix.T.tocsr()
 
@@ -32,7 +49,7 @@ d = {"AND": "&",
      "(": "(", ")": ")"}          # operator replacements
 # For the operators we'll only use AND, OR, NOT in ALLCAPS in order to avoid conflict with the corresponding words in lowercase letters in the documents
 
-tfv = TfidfVectorizer(lowercase=True, sublinear_tf=True, use_idf=True, norm="l2", stop_words=None, token_pattern=r'(?u)\b\w+\b')
+tfv = TfidfVectorizer(lowercase=True, sublinear_tf=True, use_idf=True, norm="l2", stop_words=None, token_pattern=r'(?u)\b\w+\b', preprocessor = stem_doc())
 sparse_matrix = tfv.fit_transform(documents).T.tocsr() # CSR: compressed sparse row format => order by terms
 
 # 1-grams for exact match
@@ -48,20 +65,6 @@ tfv_3grams = TfidfVectorizer(lowercase=True, sublinear_tf=True, use_idf=True, no
 sparse_matrix_3grams = tfv_3grams.fit_transform(documents).T.tocsr() # CSR: compressed sparse row format => order by terms
 
 t2i = cv.vocabulary_  # shorter notation: t2i = term-to-index
-
-def stem_que(query):
-    return stemmer.stem(query) #returns stemmed query
-
-def stem_doc():
-    stem_single = []
-    stem_docs = []
-    for d in documents:
-        d = d.lower()
-        tok = word_tokenize(d)
-        for t in tok:
-            stem_single.append(" ".join(stemmer.stem(t)))
-            stem_docs.append("".join(stem_single))
-    return stem_docs #returns list of documents stemmed
 
 def boolean_query_matrix(t):
     """
@@ -172,3 +175,5 @@ def search():
 
     #Render index.html with matches variable
     return render_template('index.html', matches=matches)
+BB
+BBB
