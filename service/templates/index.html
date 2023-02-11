@@ -7,11 +7,11 @@
         <h1>Find documents</h1>
         <!--Reload the page with variable "query" in the URL-->
         <form>
-            <input type="text" name="query" autofocus>
+            <input type="text" name="query" value="{{ query }}"autofocus>
             <input type="submit" value="Search">
-            <input type="radio" id="boolean_search" name="search_type" value="boolean_search" checked>
+            <input type="radio" id="boolean_search" name="search_type" value="boolean_search" {% if search_type == "boolean_search" %} checked {% endif %}>
             <label for="boolean_search">Boolean search</label>
-            <input type="radio" id="ranking_search" name="search_type" value="ranking_search">
+            <input type="radio" id="ranking_search" name="search_type" value="ranking_search" {% if search_type == "ranking_search" %} checked {% endif %}>
             <label for="ranking_search">Relevance ranking search</label>
         </form>
 	<div id="error_message">{{ error }}</div>
