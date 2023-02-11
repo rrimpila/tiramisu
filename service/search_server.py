@@ -156,13 +156,12 @@ def search():
 
     #Get query from URL variable
     query = request.args.get('query')
-    #TODO this needs to be passed to the template to keep the right button selected
     search_type = request.args.get('search_type')
 
 
     #Initialize list of matches
     matches = []
-    error = "Viesti"
+    error = ""
 
     #If query exists (i.e. is not None)
     if query:
@@ -172,4 +171,4 @@ def search():
             (matches, error) = ranking_search(f"{query}")
 
     #Render index.html with matches variable
-    return render_template('index.html', matches=matches, error=error)
+    return render_template('index.html', matches=matches, error=error, query=query, search_type=search_type)
