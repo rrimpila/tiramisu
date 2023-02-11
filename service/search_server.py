@@ -84,16 +84,19 @@ def boolean_test_query(query):
     print("Query: '" + query + "'")
 
     matches = []
-    if np.all(eval(boolean_rewrite_query(query)) == 0):
-        return []
-    else:
-#        print("Matching:", eval(boolean_rewrite_query(query))) # Eval runs the string as a Python command
-        hits_matrix = eval(boolean_rewrite_query(query))
-        hits_list = list(hits_matrix.nonzero()[1])
-#        print(str(len(hits_list)) + " matching documents in total.")
-        for doc_idx in hits_list[:10]: #TODO don't restrict here, either add paging or at template
-           matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx][:300]}) #TODO don't restrict here
-    return matches
+    try:
+        if np.all(eval(boolean_rewrite_query(query)) == 0):
+            return [], ""
+        else:
+    #        print("Matching:", eval(boolean_rewrite_query(query))) # Eval runs the string as a Python command
+            hits_matrix = eval(boolean_rewrite_query(query))
+            hits_list = list(hits_matrix.nonzero()[1])
+    #        print(str(len(hits_list)) + " matching documents in total.")
+            for doc_idx in hits_list[:10]: #TODO don't restrict here, either add paging or at template
+               matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx][:300]}) #TODO don't restrict here
+    except SyntaxError:
+        return [], "The input was erroneous, cannot show results.\nMake sure the operators are typed in ALLCAPS."
+    return matches, ""
 
 def ranking_search(user_query):
     matches = []
@@ -122,8 +125,7 @@ def ranking_search(user_query):
             for score, i in ranked_scores_and_doc_ids[:10]: #TODO don't restrict here
                 matches.append({'name': documents_titles[i], 'text': documents[i][:300], 'score' : score}) #TODO don't restrict here
         except IndexError:
-            #TODO better error handling
-            return []
+            return [], "Unknown word, no matches found for the search query."
 
     else:
         try:
@@ -138,13 +140,11 @@ def ranking_search(user_query):
             for score, i in ranked_scores_and_doc_ids[:10]: #TODO don't restrict here
                 matches.append({'name': documents_titles[i], 'text': documents[i][:300], 'score' : score}) #TODO don't restrict here
         except SyntaxError:
-            #TODO better error handling
-            return []
+            return [], "The input was erroneous, cannot show results.\nMake sure your query is typed in as instructed."
         except IndexError:
-            #TODO better error handling
-            return []
+            return [], "Unknown word, no matches found for the search query."
 
-    return matches
+    return matches, ""
 
 @app.route('/')
 def hello_world():
@@ -162,13 +162,14 @@ def search():
 
     #Initialize list of matches
     matches = []
+    error = "Viesti"
 
     #If query exists (i.e. is not None)
     if query:
         if search_type == "boolean_search":
-            matches = boolean_test_query(f"{query}")
+            (matches, error) = boolean_test_query(f"{query}")
         elif search_type == "ranking_search":
-            matches = ranking_search(f"{query}")
+            (matches, error) = ranking_search(f"{query}")
 
     #Render index.html with matches variable
-    return render_template('index.html', matches=matches)
+    return render_template('index.html', matches=matches, error=error)
