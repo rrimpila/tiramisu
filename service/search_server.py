@@ -3,10 +3,10 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 import re
 import numpy as np
 import nltk
-from nltk.stem.snowball import EnglishStemmer
-from nltk.tokenize import word_tokenize
+import simplemma
+import pyinflect
+from pyinflect import getAllInflections
 import shlex
-
 
 #Initialize Flask instance
 app = Flask(__name__)
@@ -49,20 +49,44 @@ sparse_matrix_3grams = tfv_3grams.fit_transform(documents).T.tocsr() # CSR: comp
 
 t2i = cv.vocabulary_  # shorter notation: t2i = term-to-index
 
-def stem_que(query):
-    return stemmer.stem(query) #returns stemmed query
 
-def stem_doc():
-    stem_single = []
-    stem_docs = []
-    for d in documents:
-        d = d.lower()
-        tok = word_tokenize(d)
-        for t in tok:
-            stem_single.append(" ".join(stemmer.stem(t)))
-            stem_docs.append("".join(stem_single))
-    return stem_docs #returns list of documents stemmed
+# functions related to non-exact-word matching
+def single_token_inflection(query): # makes a list of all possible inflections of a token for non-exact matching                                                
+    query = simplemma.lemmatize(query, lang="en") # lemmatizes query in case the token is in inflected form in the query
+    all_inf = getAllInflections(query) # gets all inflections of the token and sets them as value in a dictionary (\credits: https://github.com/bjascob/pyInflect)
+    all_inf_list = []
+    for i in all_inf.values(): # we only want the values in the generated dict                                 
+        inf = re.sub(r'\W+', '', str(i)) # make a string of the inflections                                
+        if inf not in all_inf_list:
+            all_inf_list.append(inf) # add to searchlist only if there are no duplicates                                  
+    inf_token = " OR ".join(all_inf_list)
+    # print(inf_token)
+    return inf_token #return token with added inflections in format "token OR tokens OR tokened OR tokening"  
 
+
+def check_for_inflections(query): # reads the query and returns a rewritten query that includes inflections when a searchword is not enclosed in quotation marks
+    rewritten = ""
+    counter = 0 # counter for last if-statement
+    token_list = query.split() # split query into individual tokens
+    for i in token_list:
+        if i.isupper() is True: 
+            #print(i) 
+            rewritten += " " + i # add uppercase tokens (operators) to string as they are
+        elif "\"" in i:
+            #print(i)
+            rewritten += " " + i.strip("\"") # add tokens enclosed by quotation marks to string without the quotation marks
+            counter += 1
+        elif re.match(r"\W" ,i): # add any non-word character (such as brackets) to string as-is 
+            rewritten += " " + i
+        else:
+            #print(i)
+            rewritten += " ( " + single_token_inflection(i) + " )" # add lowercase unquoted tokens with all their possible inflections to string enclosed by brackets
+            counter += 1
+    if counter == 1 : # if the initial query consisted of only one token...
+        rewritten = re.sub(r" [\(\)]", "", rewritten) # remove unneeded brackets from initial query
+    return rewritten # return rewritten query
+
+# boolean search-related functions
 def boolean_query_matrix(t):
     """
     Checks if the term is present in any of the documents.
@@ -74,15 +98,12 @@ def boolean_rewrite_token(t):
     return d.get(t, 'boolean_query_matrix("{:s}")'.format(t))
 
 def boolean_rewrite_query(query): # rewrite every token in the query
-    #if bool(re.search(r'\".+\"', query)) is False:
-    #    query = stem_que(query)
-    #else:
-    #    query = re.sub('\"','', query)
     return " ".join(boolean_rewrite_token(t) for t in shlex.split(query))
 
 def boolean_test_query(query):
     print("Query: '" + query + "'")
-
+    query = check_for_inflections(query)
+    print("Query with added inflections: '" + query + " '")
     matches = []
     try:
         if np.all(eval(boolean_rewrite_query(query)) == 0):
@@ -99,6 +120,8 @@ def boolean_test_query(query):
     return matches, ""
 
 def ranking_search(user_query):
+    user_query = check_for_inflections(user_query)
+    print("Query with added inflections: '" + user_query + " '")
     matches = []
     if re.fullmatch("\".+\"", user_query): # Finds exact queries
         user_query_stripped = user_query[1:-1]
@@ -129,11 +152,6 @@ def ranking_search(user_query):
 
     else:
         try:
-# commenting out the stemming for now
-#            if bool(re.search(r"\".+\"", user_query)) is False:
-#                user_query = stem_que(user_query)
-#            else:
-#                None
             query_vec = tfv.transform([user_query]).tocsc()
             hits = np.dot(query_vec, sparse_matrix)
             ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
