@@ -66,17 +66,32 @@ t2i = cv.vocabulary_  # shorter notation: t2i = term-to-index
 #            stem_docs.append("".join(stem_single))
 #    return stem_docs #returns list of documents stemmed
 
-def make_inf_list(query): # makes a list of all possible inflections for a query for non-exact matching                    
-    all_inf = getAllInflections(query) # gets all inflections of the query and puts them in a dictionary (credits: https://github.com/bjascob/pyInflect)
+# functions related to issue #17
+def single_token_inflection(query): # makes a list of all possible inflections of a token for non-exact matching                                                
+    all_inf = getAllInflections(query) # gets all inflections of the token and sets them as value in a dictionary (\credits: https://github.com/bjascob/pyInflect)
     all_inf_list = []
-    for i in all_inf.values(): # we only want the values in the dict
-        inf = re.sub(r'\W+', '', str(i)) # make a string of the inflections
+    for i in all_inf.values(): # we only want the values in the generated dict                                 
+        inf = re.sub(r'\W+', '', str(i)) # make a string of the inflections                                
         if inf not in all_inf_list:
-            all_inf_list.append(inf) # add to searchlist only if there are no duplicates
-    neat_list = str(all_inf_list)[1:-1] # neat list without square brackets for display :)
-    inf_query = " OR ".join(all_inf_list)
-    print(f"List of words to look for: {neat_list}")
-    return inf_query #return query as a modified query in format "query OR queries OR quering OR queried"
+            all_inf_list.append(inf) # add to searchlist only if there are no duplicates                                    
+    inf_token = " OR ".join(all_inf_list)
+    # print(inf_token)
+    return inf_token #return token with added inflections in format "token OR tokens OR tokened OR tokening"  
+
+def check_for_inflections(query): # reads the query and returns a rewritten query that includes inflections when a searchword is not enclosed in quotation marks
+    rewritten = ""
+    token_list = query.split() # split query in individual tokens
+    for i in token_list:
+        if i.isupper() is True: 
+            #print(i) 
+            rewritten += " " + i # add uppercase tokens (operators) to string as they are
+        elif "\"" in i:
+            #print(i)
+            rewritten += " " + i.strip("\"") # add tokens enclosed by quotation marks to string without the quotation marks
+        else:
+            #print(i)
+            rewritten += " ( " + single_token_inflection(i) + " ) " # add lowercase unquoted tokens with all their possible inflections to string enclosed by brackets
+    return rewritten # return rewritten query
 
 # boolean search-related functions
 
