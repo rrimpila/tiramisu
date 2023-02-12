@@ -4,7 +4,8 @@
         <title>NLP search</title>
     </head>
     <body>
-        <h1>Find documents</h1>
+      <h1>TIRAMISU Search Engine</h1>
+      <h2>Search for documents:</h2>
         <!--Reload the page with variable "query" in the URL-->
         <form>
             <input type="text" name="query" value="{{ query }}"autofocus>
@@ -21,7 +22,7 @@
             {% for item in matches %}
             <div>
                 <!--Display the name of the item based on the "name" key-->
-                <h2>{{ item["name"] }}</h2>
+                <h3>{{ item["name"] }}</h3>
                 <!--Display the contents of the item based on the "source" key-->
                 <pre>{{ item["text"] }}</pre>
             </div>
