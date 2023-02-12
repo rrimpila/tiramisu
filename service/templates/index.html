@@ -24,9 +24,12 @@
           max-height: 5em; 
           overflow: hidden;
           text-overflow: ellipsis;
+	  transition: max-height 2s ease-out;
       }
       .show-all {
-          max-height: none;
+          max-height: 5000px;
+          transition: max-height 2s ease-in;
+          overflow: auto;
       }
 
       </style>
