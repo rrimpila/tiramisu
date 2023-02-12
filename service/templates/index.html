@@ -19,6 +19,16 @@
 	  text-align: center;
 	  margin: 15 px;
       }
+      .show-less {
+          line-height: 1em;
+          max-height: 5em; 
+          overflow: hidden;
+          text-overflow: ellipsis;
+      }
+      .show-all {
+          max-height: none;
+      }
+
       </style>
         <meta charset="utf-8">
         <title>NLP search</title>
@@ -69,11 +79,31 @@
 		<!--TO DO: Display relevance score only if it exists in the matches:-->
 		<b>Relevance score:</b> {{ item["score"] }}</p>
                 <!--Display the contents of the item based on the "source" key-->
-		<pre>Content: <i>{{ item["text"] }}</i></pre>
+                <div class="show-less">{{ item["text"]|safe }}</div>
+	        <button class="read-more">Read more</button>
             </div>
             <!--End for loop-->
             {% endfor %}
         </table>
 	</div>
+        <script>
+            (function() {
+                document.addEventListener('click', function (event) {
+                    if (!event.target.matches('.read-more')) 
+                        return;
+
+		    if (!event.target.matches('.read-less')) {
+			event.target.parentElement.querySelector('.show-less').classList.add('show-all')
+			event.target.classList.add('read-less')
+			event.target.innerHTML = "Read less";
+		    } else {
+			event.target.parentElement.querySelector('.show-less').classList.remove('show-all')
+			event.target.classList.remove('read-less')
+			event.target.innerHTML = "Read more";
+		    }
+
+                });
+            })();
+        </script>
     </body>
 </html>
