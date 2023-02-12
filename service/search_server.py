@@ -3,7 +3,7 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 import re
 import numpy as np
 import nltk
-import simplemm
+import simplemma
 import pyinflect
 from pyinflect import getAllInflections
 import shlex
