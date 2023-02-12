@@ -148,7 +148,7 @@ def ranking_search(user_query):
 
 @app.route('/')
 def hello_world():
-   return "Hello, World!"
+   return "Hello! Welcome to TIRAMISU search webpage. Access the search engine by adding \"/search\" at the end of this webpage's URL."
 
 #Function search() is associated with the address base URL + "/search"
 @app.route('/search')
