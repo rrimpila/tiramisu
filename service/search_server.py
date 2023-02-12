@@ -148,7 +148,6 @@ def ranking_search(user_query):
         try:
             ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
             # Total number of matching documents:
-            docs_total = str(len(ranked_scores_and_doc_ids))
             for score, i in ranked_scores_and_doc_ids[:10]: #TODO don't restrict here
                 matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
         except IndexError:
@@ -160,7 +159,6 @@ def ranking_search(user_query):
             hits = np.dot(query_vec, sparse_matrix)
             ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
             # Total number of matching documents:
-            docs_total = str(len(ranked_scores_and_doc_ids))
             for score, i in ranked_scores_and_doc_ids[:10]: #TODO don't restrict here
                 matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
         except SyntaxError:
@@ -194,4 +192,4 @@ def search():
             (matches, error) = ranking_search(f"{query}")
 
     #Render index.html with matches variable
-    return render_template('index.html', matches=matches, error=error, query=query, search_type=search_type)
+    return render_template('index.html', matches=matches, error=error, query=query, search_type=search_type, docs_total=str(len(matches)))
