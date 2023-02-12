@@ -16,13 +16,16 @@
             <label for="ranking_search">Relevance ranking search</label>
         </form>
 	<div id="error_message">{{ error }}</div>
+	<!--<h4>{{ docs_total }} matching documents in total.</h4>-->
+	<h3>Matching documents:</h3>
         <table>
             <!--Go through each item in the "matches" variable sent from
                 search() function in the Flask app-->
             {% for item in matches %}
             <div>
                 <!--Display the name of the item based on the "name" key-->
-                <h3>{{ item["name"] }}</h3>
+                <h4>{{ item["name"] }}</h4>
+		<h4>{{ item["score"] }}</h4>
                 <!--Display the contents of the item based on the "source" key-->
                 <pre>{{ item["text"] }}</pre>
             </div>
