@@ -50,7 +50,7 @@ sparse_matrix_3grams = tfv_3grams.fit_transform(documents).T.tocsr() # CSR: comp
 t2i = cv.vocabulary_  # shorter notation: t2i = term-to-index
 
 
-# functions related to issue #17
+# functions related to non-exact-word matching
 def single_token_inflection(query): # makes a list of all possible inflections of a token for non-exact matching                                                
     query = simplemma.lemmatize(query, lang="en") # lemmatizes query in case the token is in inflected form in the query
     all_inf = getAllInflections(query) # gets all inflections of the token and sets them as value in a dictionary (\credits: https://github.com/bjascob/pyInflect)
@@ -66,8 +66,8 @@ def single_token_inflection(query): # makes a list of all possible inflections o
 
 def check_for_inflections(query): # reads the query and returns a rewritten query that includes inflections when a searchword is not enclosed in quotation marks
     rewritten = ""
-    counter = 0
-    token_list = query.split() # split query in individual tokens
+    counter = 0 # counter for last if-statement
+    token_list = query.split() # split query into individual tokens
     for i in token_list:
         if i.isupper() is True: 
             #print(i) 
@@ -87,7 +87,6 @@ def check_for_inflections(query): # reads the query and returns a rewritten quer
     return rewritten # return rewritten query
 
 # boolean search-related functions
-
 def boolean_query_matrix(t):
     """
     Checks if the term is present in any of the documents.
@@ -99,10 +98,6 @@ def boolean_rewrite_token(t):
     return d.get(t, 'boolean_query_matrix("{:s}")'.format(t))
 
 def boolean_rewrite_query(query): # rewrite every token in the query
-    #if bool(re.search(r'\".+\"', query)) is False:
-    #    query = stem_que(query)
-    #else:
-    #    query = re.sub('\"','', query)
     return " ".join(boolean_rewrite_token(t) for t in shlex.split(query))
 
 def boolean_test_query(query):
@@ -155,11 +150,6 @@ def ranking_search(user_query):
 
     else:
         try:
-# commenting out the stemming for now
-#            if bool(re.search(r"\".+\"", user_query)) is False:
-#                user_query = stem_que(user_query)
-#            else:
-#                None
             query_vec = tfv.transform([user_query]).tocsc()
             hits = np.dot(query_vec, sparse_matrix)
             ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
