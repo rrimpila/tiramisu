@@ -3,10 +3,10 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 import re
 import numpy as np
 import nltk
-from nltk.stem.snowball import EnglishStemmer
-import shlex
+import simplemm
 import pyinflect
 from pyinflect import getAllInflections
+import shlex
 
 #Initialize Flask instance
 app = Flask(__name__)
@@ -49,25 +49,10 @@ sparse_matrix_3grams = tfv_3grams.fit_transform(documents).T.tocsr() # CSR: comp
 
 t2i = cv.vocabulary_  # shorter notation: t2i = term-to-index
 
-# stemming-related functions
-#stemmer = EnglishStemmer()
-
-#def stem_que(query):
-#    return stemmer.stem(query) #returns stemmed query
-
-#def stem_doc():
-#    stem_single = []
-#    stem_docs = []
-#    for d in documents:
-#        d = d.lower()
-#        tok = word_tokenize(d)
-#        for t in tok:
-#            stem_single.append(" ".join(stemmer.stem(t)))
-#            stem_docs.append("".join(stem_single))
-#    return stem_docs #returns list of documents stemmed
 
 # functions related to issue #17
 def single_token_inflection(query): # makes a list of all possible inflections of a token for non-exact matching                                                
+    query = simplemma.lemmatize(query, lang="en") # lemmatizes query in case the token is in inflected form in the query
     all_inf = getAllInflections(query) # gets all inflections of the token and sets them as value in a dictionary (\credits: https://github.com/bjascob/pyInflect)
     all_inf_list = []
     for i in all_inf.values(): # we only want the values in the generated dict                                 
@@ -77,7 +62,7 @@ def single_token_inflection(query): # makes a list of all possible inflections o
     inf_token = " OR ".join(all_inf_list)
     # print(inf_token)
     return inf_token #return token with added inflections in format "token OR tokens OR tokened OR tokening"  
-#TODO : fix SyntaxError when an inflected word is already in the initial query
+
 
 def check_for_inflections(query): # reads the query and returns a rewritten query that includes inflections when a searchword is not enclosed in quotation marks
     rewritten = ""
