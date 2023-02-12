@@ -115,7 +115,8 @@ def boolean_test_query(query):
             # Total number of matching documents:
             docs_total = str(len(hits_list))
             for doc_idx in hits_list[:10]: #TODO don't restrict here, either add paging or at template
-               matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx][:300]}) #TODO don't restrict here
+               matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx].replace("\n", "<br />")
+})
     except SyntaxError:
         return [], "The input was erroneous, cannot show results.\nMake sure the operators are typed in ALLCAPS."
     return matches, ""
@@ -149,7 +150,7 @@ def ranking_search(user_query):
             # Total number of matching documents:
             docs_total = str(len(ranked_scores_and_doc_ids))
             for score, i in ranked_scores_and_doc_ids[:10]: #TODO don't restrict here
-                matches.append({'name': documents_titles[i], 'text': documents[i][:300], 'score' : score}) #TODO don't restrict here
+                matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
         except IndexError:
             return [], "Unknown word, no matches found for the search query."
 
@@ -161,7 +162,7 @@ def ranking_search(user_query):
             # Total number of matching documents:
             docs_total = str(len(ranked_scores_and_doc_ids))
             for score, i in ranked_scores_and_doc_ids[:10]: #TODO don't restrict here
-                matches.append({'name': documents_titles[i], 'text': documents[i][:300], 'score' : score}) #TODO don't restrict here
+                matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
         except SyntaxError:
             return [], "The input was erroneous, cannot show results.\nMake sure your query is typed in as instructed."
         except IndexError:
@@ -178,8 +179,8 @@ def hello_tiramisu():
 def search():
 
     #Get query from URL variable
-    query = request.args.get('query')
-    search_type = request.args.get('search_type')
+    query = request.args.get('query', "")
+    search_type = request.args.get('search_type', "boolean_search")
 
     #Initialize list of matches
     matches = []
@@ -194,4 +195,3 @@ def search():
 
     #Render index.html with matches variable
     return render_template('index.html', matches=matches, error=error, query=query, search_type=search_type)
-
