@@ -73,13 +73,15 @@ def single_token_inflection(query): # makes a list of all possible inflections o
     for i in all_inf.values(): # we only want the values in the generated dict                                 
         inf = re.sub(r'\W+', '', str(i)) # make a string of the inflections                                
         if inf not in all_inf_list:
-            all_inf_list.append(inf) # add to searchlist only if there are no duplicates                                    
+            all_inf_list.append(inf) # add to searchlist only if there are no duplicates                                  
     inf_token = " OR ".join(all_inf_list)
     # print(inf_token)
     return inf_token #return token with added inflections in format "token OR tokens OR tokened OR tokening"  
+#TODO : fix SyntaxError when an inflected word is already in the initial query
 
 def check_for_inflections(query): # reads the query and returns a rewritten query that includes inflections when a searchword is not enclosed in quotation marks
     rewritten = ""
+    counter = 0
     token_list = query.split() # split query in individual tokens
     for i in token_list:
         if i.isupper() is True: 
@@ -88,9 +90,15 @@ def check_for_inflections(query): # reads the query and returns a rewritten quer
         elif "\"" in i:
             #print(i)
             rewritten += " " + i.strip("\"") # add tokens enclosed by quotation marks to string without the quotation marks
+            counter += 1
+        elif re.match(r"\W" ,i): # add any non-word character (such as brackets) to string as-is 
+            rewritten += " " + i
         else:
             #print(i)
-            rewritten += " ( " + single_token_inflection(i) + " ) " # add lowercase unquoted tokens with all their possible inflections to string enclosed by brackets
+            rewritten += " ( " + single_token_inflection(i) + " )" # add lowercase unquoted tokens with all their possible inflections to string enclosed by brackets
+            counter += 1
+    if counter == 1 : # if the initial query consisted of only one token...
+        rewritten = re.sub(r" [\(\)]", "", rewritten) # remove unneeded brackets from initial query
     return rewritten # return rewritten query
 
 # boolean search-related functions
@@ -114,6 +122,8 @@ def boolean_rewrite_query(query): # rewrite every token in the query
 
 def boolean_test_query(query):
     print("Query: '" + query + "'")
+    query = check_for_inflections(query)
+    print("Query with added inflections: '" + query + " '")
     matches = []
     if np.all(eval(boolean_rewrite_query(query)) == 0):
         return []
@@ -127,6 +137,8 @@ def boolean_test_query(query):
     return matches
 
 def ranking_search(user_query):
+    user_query = check_for_inflections(user_query)
+    print("Query with added inflections: '" + user_query + " '")
     matches = []
     if re.fullmatch("\".+\"", user_query): # Finds exact queries
         user_query_stripped = user_query[1:-1]
