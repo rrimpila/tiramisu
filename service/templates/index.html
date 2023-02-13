@@ -12,12 +12,20 @@
       .listing {
 	  list-style: none;
       }
+      .headlines {
+	  font-family: Georgia, serif;
+      }
       .instructions {
 	  border: 2px outset MidnightBlue;
 	  color: MidnightBlue;
 	  background-color: Snow;
+	  font-family: Courier New, monospace;
+	  font-size: smaller;
 	  text-align: center;
-	  margin: 30 px;
+	  margin: 50px;
+      }
+      .results {
+	  font-family: Garamond, serif;
       }
       .show-less {
           line-height: 1em;
@@ -38,7 +46,8 @@
     </head>
   <body>
     <div id="bground">
-      <h1 style="color:Teal; text-align:center">TIRAMISU Search Engine</h1>
+      <div class="headlines">
+      <h1 style="color:Teal; text-align:center">TIRAMISU Search Engine</h1><br>
       <h2 style="text-align:center">Search for documents:</h2>
       <!--Reload the page with variable "query" in the URL-->
       <p style="text-align:center">Please, choose a search engine to see instructions.</p><br>
@@ -50,6 +59,7 @@
 	    <br><input type="text" name="query" value="{{ query }}"autofocus>
 	    <input type="submit" value="Search">
         </form>
+	</div>
 	<div class="instructions">
 	<!--TO DO: Show these instructions only if boolean_search chosen:-->
 	<h3>Instructions for Boolean search:</h3>
@@ -67,11 +77,14 @@
 	Use quotation marks when searching for multi-word phrases (the program only supports bigrams and trigrams):<br>
 	<i>"New York"<br>"you and I"</i><br><br>
 	Search words can be written in lowercase or uppercase letters.</p>
-      </div>
+	</div>
+	<div class="headlines">
 	<div id="error_message">{{ error }}</div>
 	<!--TO DO: Show these two rows only if there are matching documents found:-->
 	<p><b>{{ docs_total }}</b> matching documents in total.</p>
-	<h2><u>Matching documents</u>:</h2>
+	<h3><u>Matching documents</u>:</h3>
+	</div>
+	<div class="results">
         <table>
             <!--Go through each item in the "matches" variable sent from
                 search() function in the Flask app-->
@@ -85,6 +98,7 @@
                 <div class="show-less">{{ item["text"]|safe }}</div>
 	        <button class="read-more">Read more</button>
             </div>
+	    </div>
             <!--End for loop-->
             {% endfor %}
         </table>
