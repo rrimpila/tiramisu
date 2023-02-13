@@ -112,8 +112,6 @@ def boolean_test_query(query):
     #        print("Matching:", eval(boolean_rewrite_query(query))) # Eval runs the string as a Python command
             hits_matrix = eval(boolean_rewrite_query(query))
             hits_list = list(hits_matrix.nonzero()[1])
-            # Total number of matching documents:
-            docs_total = str(len(hits_list))
             for doc_idx in hits_list:
                matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx].replace("\n", "<br />")
 })
@@ -147,7 +145,6 @@ def ranking_search(user_query):
         hits = np.dot(query_vec, sparse_matrix_grams)
         try:
             ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
-            # Total number of matching documents:
             for score, i in ranked_scores_and_doc_ids:
                 matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
         except IndexError:
@@ -158,7 +155,6 @@ def ranking_search(user_query):
             query_vec = tfv.transform([user_query]).tocsc()
             hits = np.dot(query_vec, sparse_matrix)
             ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
-            # Total number of matching documents:
             for score, i in ranked_scores_and_doc_ids:
                 matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
         except SyntaxError:
