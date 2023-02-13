@@ -74,7 +74,7 @@ def check_for_inflections(query): # reads the query and returns a rewritten quer
             rewritten += " " + i # add uppercase tokens (operators) to string as they are
         elif "\"" in i:
             #print(i)
-            rewritten += " " + i.strip("\"") # add tokens enclosed by quotation marks to string without the quotation marks
+            rewritten += " " + i # add tokens enclosed by quotation marks to string as-is
             counter += 1
         elif re.match(r"\W" ,i): # add any non-word character (such as brackets) to string as-is 
             rewritten += " " + i
