@@ -9,6 +9,12 @@
 	  background-image: linear-gradient(to top right, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%);
 	  padding: 8px;
       }
+      #boolean {
+	  display: none;
+      }
+      #ranking {
+	  display: none;
+      }
       .listing {
 	  list-style: none;
       }
@@ -46,45 +52,60 @@
     </head>
   <body>
     <div id="bground">
+
+      <!--Headlines etc:-->
       <div class="headlines">
-      <h1 style="color:Teal; text-align:center">TIRAMISU Search Engine</h1><br>
-      <h2 style="text-align:center">Search for documents:</h2>
-      <!--Reload the page with variable "query" in the URL-->
-      <p style="text-align:center">Please, choose a search engine to see instructions.</p><br>
-        <form style="text-align:center">
-            <input type="radio" id="boolean_search" name="search_type" value="boolean_search" {% if search_type == "boolean_search" %} checked {% endif %}>
-            <label for="boolean_search">Boolean search</label>
-            <input type="radio" id="ranking_search" name="search_type" value="ranking_search" {% if search_type == "ranking_search" %} checked {% endif %}>
-            <label for="ranking_search">Relevance ranking search</label><br>
-	    <br><input type="text" name="query" value="{{ query }}"autofocus>
-	    <input type="submit" value="Search">
+	<h1 style="color:Teal; text-align:center">TIRAMISU Search Engine</h1><br>
+	<h2 style="text-align:center">Search for documents:</h2>      
+	<!--Reload the page with variable "query" in the URL-->
+	<p style="text-align:center">Please, choose a search engine to see instructions.</p><br>
+
+	<form style="text-align:center">
+	  <!--Boolean search button:-->
+	  <input type="radio" onclick="myFunction('boolean')" id="boolean_search" name="search_type" value="boolean_search" {% if search_type == "boolean_search" %} checked {% endif %}>
+          <label for="boolean_search">Boolean search</label>
+	  <!--Ranking search button:-->
+          <input type="radio" onclick="myFunction('ranking')" id="ranking_search" name="search_type" value="ranking_search" {% if search_type == "ranking_search" %} checked {% endif %}>
+          <label for="ranking_search">Relevance ranking search</label><br>
+	  <!--Search query input:-->    
+	  <br><input type="text" name="query" value="{{ query }}"autofocus>
+	  <input type="submit" value="Search">
         </form>
-	</div>
-	<div class="instructions">
-	<!--TO DO: Show these instructions only if boolean_search chosen:-->
+      </div>
+      
+      <div class="instructions">
+	<!--Show these instructions if boolean search is chosen:-->
+	<div id="boolean">
 	<h3>Instructions for Boolean search:</h3>
-      <p>When searching for combinations of words, use operators AND, NOT, OR:<br>
+	<p>When searching for combinations of words, use operators AND, NOT, OR:<br>
 	<i>you AND i<br>example AND NOT solution<br>cat OR horse<br>( NOT example OR test ) AND solution</i><br><br>
 	Use quotation marks when searching for multi-word phrases (the program only supports bigrams and trigrams):<br>
 	<i>"you and i"</i><br><br>
 	Multi-word phrases can also be combined with the Boolean operators:<br>
 	<i>"new york" AND "london"</i><br><br>
 	Operators AND, OR, NOT need to be written in ALLCAPS, search words in <u>lowercase</u>.</p>
-      <!--TO DO: Show these instructions only if ranking_search chosen:-->
-      <h3>Instructions for Relevance ranking search:</h3>
-      <p>When searched for multiple words, separate words with space:<br>
+	</div>
+
+	<!--Show these instructions if ranking search is chosen:-->
+	<div id="ranking">
+	<h3>Instructions for Relevance ranking search:</h3>
+	<p>When searched for multiple words, separate words with space:<br>
 	<i>cat dog horse</i><br><br>
 	Use quotation marks when searching for multi-word phrases (the program only supports bigrams and trigrams):<br>
 	<i>"New York"<br>"you and I"</i><br><br>
 	Search words can be written in lowercase or uppercase letters.</p>
 	</div>
-	<div class="headlines">
-	<div id="error_message">{{ error }}</div>
+      </div>
+
+      <div class="headlines">
+	<!--Error message and matching documents:-->
 	<!--TO DO: Show these two rows only if there are matching documents found:-->
+	<div id="error_message">{{ error }}</div>
 	<p><b>{{ docs_total }}</b> matching documents in total.</p>
 	<h3><u>Matching documents</u>:</h3>
-	</div>
-	<div class="results">
+      </div>
+	
+      <div class="results">
         <table>
             <!--Go through each item in the "matches" variable sent from
                 search() function in the Flask app-->
@@ -98,29 +119,53 @@
                 <div class="show-less">{{ item["text"]|safe }}</div>
 	        <button class="read-more">Read more</button>
             </div>
-	    </div>
-            <!--End for loop-->
-            {% endfor %}
-        </table>
-	</div>
-        <script>
-            (function() {
-                document.addEventListener('click', function (event) {
-                    if (!event.target.matches('.read-more')) 
-                        return;
+      <!--End for loop-->
+      {% endfor %}
+	</table>
+      </div>
 
-		    if (!event.target.matches('.read-less')) {
-			event.target.parentElement.querySelector('.show-less').classList.add('show-all')
-			event.target.classList.add('read-less')
-			event.target.innerHTML = "Read less";
-		    } else {
-			event.target.parentElement.querySelector('.show-less').classList.remove('show-all')
-			event.target.classList.remove('read-less')
-			event.target.innerHTML = "Read more";
-		    }
+      <!--Script for which instructions are shown:-->
+      <script>
+	const boolean = document.getElementById("boolean")
+	const ranking = document.getElementById("ranking")
 
-                });
-            })();
-        </script>
-    </body>
+	function myFunction(name) {
+	    if (name == "boolean") {
+		boolean.style.display = "block"
+		ranking.style.display = "none"
+	    }
+	    else if (name == "ranking") {
+		boolean.style.display = "none"
+		ranking.style.display = "block"
+	    }
+	    else {
+		boolean.style.display = "none"
+		ranking.style.display = "none"
+	    }
+	}
+      </script>
+
+      <!--Script for read-more button:-->
+      <script>
+        (function() {
+            document.addEventListener('click', function (event) {
+                if (!event.target.matches('.read-more')) 
+                    return;
+		
+		if (!event.target.matches('.read-less')) {
+		    event.target.parentElement.querySelector('.show-less').classList.add('show-all')
+		    event.target.classList.add('read-less')
+		    event.target.innerHTML = "Read less";
+		} else {
+		    event.target.parentElement.querySelector('.show-less').classList.remove('show-all')
+		    event.target.classList.remove('read-less')
+		    event.target.innerHTML = "Read more";
+		}
+		
+            });
+        })();
+      </script>
+      
+    </div>
+  </body>
 </html>
