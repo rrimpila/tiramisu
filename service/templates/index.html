@@ -63,10 +63,10 @@
 
 	<form style="text-align:center">
 	  <!--Boolean search button:-->
-	  <input type="radio" onclick="myFunction('boolean')" id="boolean_search" name="search_type" value="boolean_search" {% if search_type == "boolean_search" %} checked {% endif %}>
+	  <input type="radio" onclick="userInfo('boolean')" id="boolean_search" name="search_type" value="boolean_search" {% if search_type == "boolean_search" %} checked {% endif %}>
           <label for="boolean_search">Boolean search</label>
 	  <!--Ranking search button:-->
-          <input type="radio" onclick="myFunction('ranking')" id="ranking_search" name="search_type" value="ranking_search" {% if search_type == "ranking_search" %} checked {% endif %}>
+          <input type="radio" onclick="userInfo('ranking')" id="ranking_search" name="search_type" value="ranking_search" {% if search_type == "ranking_search" %} checked {% endif %}>
           <label for="ranking_search">Relevance ranking search</label><br>
 	  <!--Search query input:-->    
 	  <br><input type="text" name="query" value="{{ query }}"autofocus>
@@ -100,10 +100,9 @@
 
       <div class="headlines">
 	<!--Error message and matching documents:-->
-	<!--TO DO: Show these two rows only if there are matching documents found:-->
 	<div id="error_message">{{ error }}</div>
-	<p><b>{{ docs_total }}</b> matching documents in total.</p>
 	<h3><u>Matching documents</u>:</h3>
+	<p><b>{{ docs_total }}</b> matching documents in total.</p><br>
       </div>
 	
       <div class="results">
@@ -130,7 +129,7 @@
 	const boolean = document.getElementById("boolean")
 	const ranking = document.getElementById("ranking")
 
-	function myFunction(name) {
+	function userInfo(name) {
 	    if (name == "boolean") {
 		boolean.style.display = "block"
 		ranking.style.display = "none"
