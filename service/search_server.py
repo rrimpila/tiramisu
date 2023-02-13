@@ -114,7 +114,7 @@ def boolean_test_query(query):
             hits_list = list(hits_matrix.nonzero()[1])
             # Total number of matching documents:
             docs_total = str(len(hits_list))
-            for doc_idx in hits_list[:10]: #TODO don't restrict here, either add paging or at template
+            for doc_idx in hits_list:
                matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx].replace("\n", "<br />")
 })
     except SyntaxError:
@@ -148,7 +148,7 @@ def ranking_search(user_query):
         try:
             ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
             # Total number of matching documents:
-            for score, i in ranked_scores_and_doc_ids[:10]: #TODO don't restrict here
+            for score, i in ranked_scores_and_doc_ids:
                 matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
         except IndexError:
             return [], "Unknown word, no matches found for the search query."
@@ -159,7 +159,7 @@ def ranking_search(user_query):
             hits = np.dot(query_vec, sparse_matrix)
             ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
             # Total number of matching documents:
-            for score, i in ranked_scores_and_doc_ids[:10]: #TODO don't restrict here
+            for score, i in ranked_scores_and_doc_ids:
                 matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
         except SyntaxError:
             return [], "The input was erroneous, cannot show results.\nMake sure your query is typed in as instructed."
@@ -192,4 +192,5 @@ def search():
             (matches, error) = ranking_search(f"{query}")
 
     #Render index.html with matches variable
-    return render_template('index.html', matches=matches, error=error, query=query, search_type=search_type, docs_total=str(len(matches)))
+    #todo paging to show all results?
+    return render_template('index.html', matches=matches[:10], error=error, query=query, search_type=search_type, docs_total=str(len(matches)))
