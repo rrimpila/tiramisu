@@ -1,33 +1,112 @@
 <html>
-    <head>
+  <head>
+    <style>
+      body {
+	  margin: 0;
+      }
+      #bground {
+	  background-color: #e3eeff;
+	  background-image: linear-gradient(to top right, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%);
+	  padding: 8px;
+      }
+      .listing {
+	  list-style: none;
+      }
+      .instructions {
+	  border: 2px outset MidnightBlue;
+	  color: MidnightBlue;
+	  background-color: Snow;
+	  text-align: center;
+	  margin: 30 px;
+      }
+      .show-less {
+          line-height: 1em;
+          max-height: 5em; 
+          overflow: hidden;
+          text-overflow: ellipsis;
+	  transition: max-height 2s ease-out;
+      }
+      .show-all {
+          max-height: 5000px;
+          transition: max-height 2s ease-in;
+          overflow: auto;
+      }
+
+      </style>
         <meta charset="utf-8">
         <title>NLP search</title>
     </head>
-    <body>
-      <h1>TIRAMISU Search Engine</h1>
-      <h2>Search for documents:</h2>
-        <!--Reload the page with variable "query" in the URL-->
-        <form>
-            <input type="text" name="query" value="{{ query }}"autofocus>
-            <input type="submit" value="Search">
+  <body>
+    <div id="bground">
+      <h1 style="color:Teal; text-align:center">TIRAMISU Search Engine</h1>
+      <h2 style="text-align:center">Search for documents:</h2>
+      <!--Reload the page with variable "query" in the URL-->
+      <p style="text-align:center">Please, choose a search engine to see instructions.</p><br>
+        <form style="text-align:center">
             <input type="radio" id="boolean_search" name="search_type" value="boolean_search" {% if search_type == "boolean_search" %} checked {% endif %}>
             <label for="boolean_search">Boolean search</label>
             <input type="radio" id="ranking_search" name="search_type" value="ranking_search" {% if search_type == "ranking_search" %} checked {% endif %}>
-            <label for="ranking_search">Relevance ranking search</label>
+            <label for="ranking_search">Relevance ranking search</label><br>
+	    <br><input type="text" name="query" value="{{ query }}"autofocus>
+	    <input type="submit" value="Search">
         </form>
+	<div class="instructions">
+	<!--TO DO: Show these instructions only if boolean_search chosen:-->
+	<h3>Instructions for Boolean search:</h3>
+      <p>When searching for combinations of words, use operators AND, NOT, OR:<br>
+	<i>you AND i<br>example AND NOT solution<br>cat OR horse<br>( NOT magnificent OR great ) AND amazing</i><br><br>
+	Use quotation marks when searching for multi-word phrases (the program only supports bigrams and trigrams):<br>
+	<i>"you and i"</i><br><br>
+	Multi-word phrases can also be combined with the Boolean operators:<br>
+	<i>"new york" AND "london"</i><br><br>
+	Operators AND, OR, NOT need to be written in ALLCAPS, search words in lowercase.</p>
+      <!--TO DO: Show these instructions only if ranking_search chosen:-->
+      <h3>Instructions for Relevance ranking search:</h3>
+      <p>When searched for multiple words, separate words with space:<br>
+	<i>cat dog horse</i><br><br>
+	Use quotation marks when searching for multi-word phrases (the program only supports bigrams and trigrams):<br>
+	<i>"New York"<br>"you and I"</i><br><br>
+	Search words can be written in lowercase or uppercase letters.</p>
+      </div>
 	<div id="error_message">{{ error }}</div>
+	<!--TO DO: Show these two rows only if there are matching documents found:-->
+	<p><b>{{ docs_total }}</b> matching documents in total.</p>
+	<h2><u>Matching documents</u>:</h2>
         <table>
             <!--Go through each item in the "matches" variable sent from
                 search() function in the Flask app-->
             {% for item in matches %}
             <div>
                 <!--Display the name of the item based on the "name" key-->
-                <h3>{{ item["name"] }}</h3>
+                <p><b>Name:</b> {{ item["name"] }}<br>
+		<!--TO DO: Display relevance score only if it exists in the matches:-->
+		<b>Relevance score:</b> {{ item["score"] }}</p>
                 <!--Display the contents of the item based on the "source" key-->
-                <pre>{{ item["text"] }}</pre>
+                <div class="show-less">{{ item["text"]|safe }}</div>
+	        <button class="read-more">Read more</button>
             </div>
             <!--End for loop-->
             {% endfor %}
         </table>
+	</div>
+        <script>
+            (function() {
+                document.addEventListener('click', function (event) {
+                    if (!event.target.matches('.read-more')) 
+                        return;
+
+		    if (!event.target.matches('.read-less')) {
+			event.target.parentElement.querySelector('.show-less').classList.add('show-all')
+			event.target.classList.add('read-less')
+			event.target.innerHTML = "Read less";
+		    } else {
+			event.target.parentElement.querySelector('.show-less').classList.remove('show-all')
+			event.target.classList.remove('read-less')
+			event.target.innerHTML = "Read more";
+		    }
+
+                });
+            })();
+        </script>
     </body>
 </html>
