@@ -84,6 +84,7 @@ def check_for_inflections(query): # reads the query and returns a rewritten quer
             counter += 1
     if counter == 1 : # if the initial query consisted of only one token...
         rewritten = re.sub(r" [\(\)]", "", rewritten) # remove unneeded brackets from initial query
+    rewritten = rewritten.strip()
     return rewritten # return rewritten query
 
 # boolean search-related functions
