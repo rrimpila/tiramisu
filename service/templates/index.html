@@ -41,11 +41,6 @@
           text-overflow: ellipsis;
 	  transition: max-height 2s ease-out;
       }
-      .show-all {
-          max-height: 5000px;
-          transition: max-height 2s ease-in;
-          overflow: auto;
-      }
 
       </style>
         <meta charset="utf-8">
@@ -117,7 +112,6 @@
 		<b>Relevance score:</b> {{ item["score"] }}</p>
                 <!--Display the contents of the item based on the "source" key-->
                 <div class="show-less">{{ item["text"]|safe }}</div>
-	        <button class="read-more">Read more</button>
             </div>
       <!--End for loop-->
       {% endfor %}
@@ -128,7 +122,6 @@
       <script>
 <!--Script for which instructions are shown:-->
 	function userInfo(target) {
-    console.log("here");
     var name = target.id
 	    if (name == "boolean_search") {
 		boolean.style.display = "block"
@@ -149,24 +142,39 @@
     <!--Script for read-more button:-->
     function showAll(event) {
         if (!event.target.matches('.read-less')) {
-            event.target.parentElement.querySelector('.show-less').classList.add('show-all')
+            event.target.parentElement.querySelector('.show-less').style.maxHeight = event.target.parentElement.querySelector('.show-less').scrollHeight;
             event.target.classList.add('read-less')
             event.target.innerHTML = "Read less";
         } else {
-            event.target.parentElement.querySelector('.show-less').classList.remove('show-all')
+            event.target.parentElement.querySelector('.show-less').style.maxHeight = null;
             event.target.classList.remove('read-less')
             event.target.innerHTML = "Read more";
         }
     }
 
         (function() {
+            // connect all event listeners
             document.addEventListener('click', function (event) {
                 if (event.target.matches('.read-more'))
                     showAll(event);
                 if (event.target.matches('.user-info'))
                     userInfo(event.target);
             });
+
+            // check userInfo current state to show correct instructions
             userInfo(document.querySelector('.user-info:checked'));
+            const documentDivs = document.querySelectorAll(".show-less");
+
+            // create read more buttons for documents needing it
+            documentDivs.forEach((documentDiv) => {
+                if (documentDiv.scrollHeight > documentDiv.clientHeight + 2) {
+                    const button = document.createElement("button");
+                    button.innerHTML = "Read more";
+                    button.classList.add("read-more");
+                    documentDiv.parentNode.insertBefore(button, documentDiv.nextSibling);
+                }
+            });
+
         })();
       </script>
 
