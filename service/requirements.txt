@@ -1,0 +1,8 @@
+flask
+sklearn
+re
+numpy
+nltk
+simplemma
+pyinflect
+shlex
