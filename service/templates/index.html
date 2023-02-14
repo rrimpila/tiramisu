@@ -36,7 +36,7 @@
       }
       .show-less {
           line-height: 1em;
-          max-height: 5em; 
+          max-height: 5em;
           overflow: hidden;
           text-overflow: ellipsis;
 	  transition: max-height 2s ease-out;
@@ -57,23 +57,23 @@
       <!--Headlines etc:-->
       <div class="headlines">
 	<h1 style="color:Teal; text-align:center">TIRAMISU Search Engine</h1><br>
-	<h2 style="text-align:center">Search for documents:</h2>      
+	<h2 style="text-align:center">Search for documents:</h2>
 	<!--Reload the page with variable "query" in the URL-->
 	<p style="text-align:center">Please, choose a search engine to see instructions.</p><br>
 
 	<form style="text-align:center">
 	  <!--Boolean search button:-->
-	  <input type="radio" onclick="userInfo('boolean')" id="boolean_search" name="search_type" value="boolean_search" {% if search_type == "boolean_search" %} checked {% endif %}>
+	  <input type="radio" id="boolean_search" name="search_type" value="boolean_search" {% if search_type == "boolean_search" %} checked {% endif %} class="user-info">
           <label for="boolean_search">Boolean search</label>
 	  <!--Ranking search button:-->
-          <input type="radio" onclick="userInfo('ranking')" id="ranking_search" name="search_type" value="ranking_search" {% if search_type == "ranking_search" %} checked {% endif %}>
+          <input type="radio" id="ranking_search" name="search_type" value="ranking_search" {% if search_type == "ranking_search" %} checked {% endif %} class="user-info">
           <label for="ranking_search">Relevance ranking search</label><br>
-	  <!--Search query input:-->    
+	  <!--Search query input:-->
 	  <br><input type="text" name="query" value="{{ query }}"autofocus>
 	  <input type="submit" value="Search">
         </form>
       </div>
-      
+
       <div class="instructions">
 	<!--Show these instructions if boolean search is chosen:-->
 	<div id="boolean">
@@ -104,7 +104,7 @@
 	<h3><u>Matching documents</u>:</h3>
 	<p><b>{{ docs_total }}</b> matching documents in total.</p><br>
       </div>
-	
+
       <div class="results">
         <table>
             <!--Go through each item in the "matches" variable sent from
@@ -124,17 +124,17 @@
 	</table>
       </div>
 
-      <!--Script for which instructions are shown:-->
-      <script>
-	const boolean = document.getElementById("boolean")
-	const ranking = document.getElementById("ranking")
 
-	function userInfo(name) {
-	    if (name == "boolean") {
+      <script>
+<!--Script for which instructions are shown:-->
+	function userInfo(target) {
+    console.log("here");
+    var name = target.id
+	    if (name == "boolean_search") {
 		boolean.style.display = "block"
 		ranking.style.display = "none"
 	    }
-	    else if (name == "ranking") {
+	    else if (name == "ranking_search") {
 		boolean.style.display = "none"
 		ranking.style.display = "block"
 	    }
@@ -143,29 +143,33 @@
 		ranking.style.display = "none"
 	    }
 	}
-      </script>
 
-      <!--Script for read-more button:-->
-      <script>
+
+
+    <!--Script for read-more button:-->
+    function showAll(event) {
+        if (!event.target.matches('.read-less')) {
+            event.target.parentElement.querySelector('.show-less').classList.add('show-all')
+            event.target.classList.add('read-less')
+            event.target.innerHTML = "Read less";
+        } else {
+            event.target.parentElement.querySelector('.show-less').classList.remove('show-all')
+            event.target.classList.remove('read-less')
+            event.target.innerHTML = "Read more";
+        }
+    }
+
         (function() {
             document.addEventListener('click', function (event) {
-                if (!event.target.matches('.read-more')) 
-                    return;
-		
-		if (!event.target.matches('.read-less')) {
-		    event.target.parentElement.querySelector('.show-less').classList.add('show-all')
-		    event.target.classList.add('read-less')
-		    event.target.innerHTML = "Read less";
-		} else {
-		    event.target.parentElement.querySelector('.show-less').classList.remove('show-all')
-		    event.target.classList.remove('read-less')
-		    event.target.innerHTML = "Read more";
-		}
-		
+                if (event.target.matches('.read-more'))
+                    showAll(event);
+                if (event.target.matches('.user-info'))
+                    userInfo(event.target);
             });
+            userInfo(document.querySelector('.user-info:checked'));
         })();
       </script>
-      
+
     </div>
   </body>
 </html>
