@@ -60,7 +60,7 @@ def single_token_inflection(query): # makes a list of all possible inflections o
         if inf not in all_inf_list:
             all_inf_list.append(inf) # add to searchlist only if there are no duplicates                                  
     inf_token = " OR ".join(all_inf_list)
-    # print(inf_token)
+    
     return inf_token #return token with added inflections in format "token OR tokens OR tokened OR tokening"  
 
 
@@ -70,16 +70,13 @@ def check_for_inflections(query): # reads the query and returns a rewritten quer
     token_list = query.split() # split query into individual tokens
     for i in token_list:
         if i.isupper() is True: 
-            #print(i) 
             rewritten += " " + i # add uppercase tokens (operators) to string as they are
         elif "\"" in i:
-            #print(i)
             rewritten += " " + i # add tokens enclosed by quotation marks to string as-is
             counter += 1
         elif re.match(r"\W" ,i): # add any non-word character (such as brackets) to string as-is 
             rewritten += " " + i
         else:
-            #print(i)
             rewritten += " ( " + single_token_inflection(i) + " )" # add lowercase unquoted tokens with all their possible inflections to string enclosed by brackets
             counter += 1
     if counter == 1 : # if the initial query consisted of only one token...
@@ -110,14 +107,13 @@ def boolean_test_query(query):
         if np.all(eval(boolean_rewrite_query(query)) == 0):
             return [], ""
         else:
-    #        print("Matching:", eval(boolean_rewrite_query(query))) # Eval runs the string as a Python command
             hits_matrix = eval(boolean_rewrite_query(query))
             hits_list = list(hits_matrix.nonzero()[1])
             for doc_idx in hits_list:
                matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx].replace("\n", "<br />")
 })
     except SyntaxError:
-        return [], "The input was erroneous, cannot show results.\nMake sure the operators are typed in ALLCAPS."
+        return [], "Unknown word, no matches found for the search query. Make sure your query is typed in as instructed."
     return matches, ""
 
 def ranking_search(user_query):
@@ -149,7 +145,7 @@ def ranking_search(user_query):
             for score, i in ranked_scores_and_doc_ids:
                 matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
         except IndexError:
-            return [], "Unknown word, no matches found for the search query."
+            return [], "Unknown word, no matches found for the search query. Make sure your query is typed in as instructed."
 
     else:
         try:
@@ -159,18 +155,21 @@ def ranking_search(user_query):
             for score, i in ranked_scores_and_doc_ids:
                 matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
         except SyntaxError:
-            return [], "The input was erroneous, cannot show results.\nMake sure your query is typed in as instructed."
+            return [], "Unknown word, no matches found for the search query. Make sure your query is typed in as instructed."
         except IndexError:
-            return [], "Unknown word, no matches found for the search query."
+            return [], "Unknown word, no matches found for the search query. Make sure your query is typed in as instructed."
 
     return matches, ""
 
-@app.route('/')
-def hello_tiramisu():
-   return "Hello! Welcome to TIRAMISU search webpage. Access the search engine by adding \"/search\" at the end of this webpage's URL."
 
-#Function search() is associated with the address base URL + "/search"
-@app.route('/search')
+'''
+@app.route('/hello')
+def hello_tiramisu():
+   return "Hello! Welcome to TIRAMISU search webpage. Access the search engine by removing \"/hello\" at the end of this webpage's URL."
+'''
+
+#Function search() is associated with the address base URL
+@app.route('/')
 def search():
 
     #Get query from URL variable
