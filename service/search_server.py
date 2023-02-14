@@ -5,6 +5,7 @@ import numpy as np
 import nltk
 import simplemma
 import pyinflect
+import math
 from pyinflect import getAllInflections
 import shlex
 
@@ -51,17 +52,17 @@ t2i = cv.vocabulary_  # shorter notation: t2i = term-to-index
 
 
 # functions related to non-exact-word matching
-def single_token_inflection(query): # makes a list of all possible inflections of a token for non-exact matching                                                
+def single_token_inflection(query): # makes a list of all possible inflections of a token for non-exact matching
     query = simplemma.lemmatize(query, lang="en") # lemmatizes query in case the token is in inflected form in the query
     all_inf = getAllInflections(query) # gets all inflections of the token and sets them as value in a dictionary (\credits: https://github.com/bjascob/pyInflect)
     all_inf_list = []
-    for i in all_inf.values(): # we only want the values in the generated dict                                 
-        inf = re.sub(r'\W+', '', str(i)) # make a string of the inflections                                
+    for i in all_inf.values(): # we only want the values in the generated dict
+        inf = re.sub(r'\W+', '', str(i)) # make a string of the inflections
         if inf not in all_inf_list:
-            all_inf_list.append(inf) # add to searchlist only if there are no duplicates                                  
+            all_inf_list.append(inf) # add to searchlist only if there are no duplicates
     inf_token = " OR ".join(all_inf_list)
     # print(inf_token)
-    return inf_token #return token with added inflections in format "token OR tokens OR tokened OR tokening"  
+    return inf_token #return token with added inflections in format "token OR tokens OR tokened OR tokening"
 
 
 def check_for_inflections(query): # reads the query and returns a rewritten query that includes inflections when a searchword is not enclosed in quotation marks
@@ -69,14 +70,14 @@ def check_for_inflections(query): # reads the query and returns a rewritten quer
     counter = 0 # counter for last if-statement
     token_list = query.split() # split query into individual tokens
     for i in token_list:
-        if i.isupper() is True: 
-            #print(i) 
+        if i.isupper() is True:
+            #print(i)
             rewritten += " " + i # add uppercase tokens (operators) to string as they are
         elif "\"" in i:
             #print(i)
             rewritten += " " + i # add tokens enclosed by quotation marks to string as-is
             counter += 1
-        elif re.match(r"\W" ,i): # add any non-word character (such as brackets) to string as-is 
+        elif re.match(r"\W" ,i): # add any non-word character (such as brackets) to string as-is
             rewritten += " " + i
         else:
             #print(i)
@@ -180,7 +181,7 @@ def search():
     #Initialize list of matches
     matches = []
     error = ""
-    
+
     #If query exists (i.e. is not None)
     if query:
         if search_type == "boolean_search":
@@ -188,6 +189,11 @@ def search():
         elif search_type == "ranking_search":
             (matches, error) = ranking_search(f"{query}")
 
+    # create pagination
+    pages = False
+    if len(matches) > 10:
+        for index in range(math.ceil(len(matches)/10)):
+            pages.append({'url': "/search?search_type={:s}&query={:s}&page={:s}".format(search_type, query, index), 'name': index})
+
     #Render index.html with matches variable
-    #todo paging to show all results?
-    return render_template('index.html', matches=matches[:10], error=error, query=query, search_type=search_type, docs_total=str(len(matches)))
+    return render_template('index.html', matches=matches[:10], error=error, query=query, search_type=search_type, docs_total=str(len(matches)), pages=pages)

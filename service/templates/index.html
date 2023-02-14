@@ -117,6 +117,14 @@
       {% endfor %}
 	</table>
       </div>
+      {% if pages -%}
+      <div class="pagination">
+        {% for page in pages %}
+          <span class="pagination-page"><a href={{ page[url] }}>{{ page[name] }}</a></span>
+        <!--End for loop-->
+        {% endfor %}
+      </div>
+      {% endif %}
 
 
       <script>
