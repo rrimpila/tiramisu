@@ -167,6 +167,10 @@ def ranking_search(user_query):
 
     return matches, ""
 
+def create_url(search_type, query, page):
+    return "/search?search_type={:s}&query={:s}&page={:d}".format(search_type, urllib.parse.quote(query), page)
+    
+
 @app.route('/')
 def hello_tiramisu():
    return "Hello! Welcome to TIRAMISU search webpage. Access the search engine by adding \"/search\" at the end of this webpage's URL."
@@ -198,19 +202,19 @@ def search():
         page_count = math.ceil(len(matches)/documents_per_page)
         shown_pagination_range_one_direction = 2
         if (page > 1):
-            pages.append({'url': "/search?search_type={:s}&query={:s}&page={:d}".format(search_type, urllib.parse.quote(query), page - 1), 'name': '<'})            
+            pages.append({'url': create_url(search_type, query, page - 1), 'name': '<'})
         if (page > shown_pagination_range_one_direction + 1):
-            pages.append({'url': "/search?search_type={:s}&query={:s}&page={:d}".format(search_type, urllib.parse.quote(query), 1), 'name': 1})
+            pages.append({'url': create_url(search_type, query, 1), 'name': 1})
         if (page > shown_pagination_range_one_direction + 2):
             pages.append({'url': False, 'name': '...'})
         for index in range(max(1, page - shown_pagination_range_one_direction), min(page_count+1, page + shown_pagination_range_one_direction + 1)):
-            pages.append({'url': "/search?search_type={:s}&query={:s}&page={:d}".format(search_type, urllib.parse.quote(query), index) if page != index else False, 'name': index})
+            pages.append({'url': create_url(search_type, query, index) if page != index else False, 'name': index})
         if (page < page_count - shown_pagination_range_one_direction - 1):
             pages.append({'url': False, 'name': '...'})
         if (page < page_count - shown_pagination_range_one_direction):
-            pages.append({'url': "/search?search_type={:s}&query={:s}&page={:d}".format(search_type, urllib.parse.quote(query), page_count), 'name': page_count})
+            pages.append({'url': create_url(search_type, query, page_count), 'name': page_count})
         if (page < page_count):
-            pages.append({'url': "/search?search_type={:s}&query={:s}&page={:d}".format(search_type, urllib.parse.quote(query), page + 1), 'name': '>'})
+            pages.append({'url': create_url(search_type, query, page + 1), 'name': '>'})
 
     #Render index.html with matches variable
     return render_template('index.html', matches=matches[:10], error=error, query=query, search_type=search_type, docs_total=str(len(matches)), pages=pages)
