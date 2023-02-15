@@ -182,7 +182,7 @@ def search():
     #Get values from URL variables
     query = request.args.get('query', "")
     search_type = request.args.get('search_type', "boolean_search")
-    page = int(request.args.get('page', "1"))
+    page = max(int(request.args.get('page', "1")), 1)
 
     #Initialize list of matches
     matches = []
@@ -198,23 +198,24 @@ def search():
     # create pagination
     documents_per_page = 10
     pages = []
-    if len(matches) > documents_per_page:
-        page_count = math.ceil(len(matches)/documents_per_page)
-        shown_pagination_range_one_direction = 2
-        if (page > 1):
+    page_count = math.ceil(len(matches)/documents_per_page)
+    shown_pagination_range_one_direction = 2
+    page = min(page, page_count)
+    if page_count > 1:
+        if page > 1:
             pages.append({'url': create_url(search_type, query, page - 1), 'name': '<'})
-        if (page > shown_pagination_range_one_direction + 1):
+        if page > shown_pagination_range_one_direction + 1:
             pages.append({'url': create_url(search_type, query, 1), 'name': 1})
-        if (page > shown_pagination_range_one_direction + 2):
+        if page > shown_pagination_range_one_direction + 2:
             pages.append({'url': False, 'name': '...'})
         for index in range(max(1, page - shown_pagination_range_one_direction), min(page_count+1, page + shown_pagination_range_one_direction + 1)):
             pages.append({'url': create_url(search_type, query, index) if page != index else False, 'name': index})
-        if (page < page_count - shown_pagination_range_one_direction - 1):
+        if page < page_count - shown_pagination_range_one_direction - 1:
             pages.append({'url': False, 'name': '...'})
-        if (page < page_count - shown_pagination_range_one_direction):
+        if page < page_count - shown_pagination_range_one_direction:
             pages.append({'url': create_url(search_type, query, page_count), 'name': page_count})
-        if (page < page_count):
+        if page < page_count:
             pages.append({'url': create_url(search_type, query, page + 1), 'name': '>'})
 
     #Render index.html with matches variable
-    return render_template('index.html', matches=matches[:10], error=error, query=query, search_type=search_type, docs_total=str(len(matches)), pages=pages)
+    return render_template('index.html', matches=matches[(page - 1)*documents_per_page:page*documents_per_page], error=error, query=query, search_type=search_type, docs_total=str(len(matches)), pages=pages)
