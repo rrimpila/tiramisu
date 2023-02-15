@@ -8,6 +8,7 @@ import pyinflect
 import math
 from pyinflect import getAllInflections
 import shlex
+import urllib.parse
 
 #Initialize Flask instance
 app = Flask(__name__)
@@ -174,9 +175,10 @@ def hello_tiramisu():
 @app.route('/search')
 def search():
 
-    #Get query from URL variable
+    #Get values from URL variables
     query = request.args.get('query', "")
     search_type = request.args.get('search_type', "boolean_search")
+    page = int(request.args.get('page', "1"))
 
     #Initialize list of matches
     matches = []
@@ -190,10 +192,25 @@ def search():
             (matches, error) = ranking_search(f"{query}")
 
     # create pagination
-    pages = False
-    if len(matches) > 10:
-        for index in range(math.ceil(len(matches)/10)):
-            pages.append({'url': "/search?search_type={:s}&query={:s}&page={:s}".format(search_type, query, index), 'name': index})
+    documents_per_page = 10
+    pages = []
+    if len(matches) > documents_per_page:
+        page_count = math.ceil(len(matches)/documents_per_page)
+        shown_pagination_range_one_direction = 2
+        if (page > 1):
+            pages.append({'url': "/search?search_type={:s}&query={:s}&page={:d}".format(search_type, urllib.parse.quote(query), page - 1), 'name': '<'})            
+        if (page > shown_pagination_range_one_direction + 1):
+            pages.append({'url': "/search?search_type={:s}&query={:s}&page={:d}".format(search_type, urllib.parse.quote(query), 1), 'name': 1})
+        if (page > shown_pagination_range_one_direction + 2):
+            pages.append({'url': False, 'name': '...'})
+        for index in range(max(1, page - shown_pagination_range_one_direction), min(page_count+1, page + shown_pagination_range_one_direction + 1)):
+            pages.append({'url': "/search?search_type={:s}&query={:s}&page={:d}".format(search_type, urllib.parse.quote(query), index) if page != index else False, 'name': index})
+        if (page < page_count - shown_pagination_range_one_direction - 1):
+            pages.append({'url': False, 'name': '...'})
+        if (page < page_count - shown_pagination_range_one_direction):
+            pages.append({'url': "/search?search_type={:s}&query={:s}&page={:d}".format(search_type, urllib.parse.quote(query), page_count), 'name': page_count})
+        if (page < page_count):
+            pages.append({'url': "/search?search_type={:s}&query={:s}&page={:d}".format(search_type, urllib.parse.quote(query), page + 1), 'name': '>'})
 
     #Render index.html with matches variable
     return render_template('index.html', matches=matches[:10], error=error, query=query, search_type=search_type, docs_total=str(len(matches)), pages=pages)
