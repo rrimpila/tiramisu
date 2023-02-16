@@ -130,8 +130,17 @@
       <!--End for loop-->
       {% endfor %}
 	</table>
-    </div>
-
+      </div>
+      {% if pages -%}
+      <div class="pagination">
+        {% for item in pages %}
+          <span class="pagination-page">
+            {% if item["url"] -%}<a href={{ item["url"]|safe }}>{{ item["name"] }}</a>{% else -%}{{ item["name"] }}{% endif %}
+	  </span>
+        <!--End for loop-->
+        {% endfor %}
+      </div>
+      {% endif %}
 
     <script>
       // Script for which instructions are shown:

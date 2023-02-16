@@ -5,8 +5,10 @@ import numpy as np
 import nltk
 import simplemma
 import pyinflect
+import math
 from pyinflect import getAllInflections
 import shlex
+import urllib.parse
 
 #Initialize Flask instance
 app = Flask(__name__)
@@ -51,14 +53,14 @@ t2i = cv.vocabulary_  # shorter notation: t2i = term-to-index
 
 
 # functions related to non-exact-word matching
-def single_token_inflection(query): # makes a list of all possible inflections of a token for non-exact matching                                                
+def single_token_inflection(query): # makes a list of all possible inflections of a token for non-exact matching
     query = simplemma.lemmatize(query, lang="en") # lemmatizes query in case the token is in inflected form in the query
     all_inf = getAllInflections(query) # gets all inflections of the token and sets them as value in a dictionary (\credits: https://github.com/bjascob/pyInflect)
     all_inf_list = []
-    for i in all_inf.values(): # we only want the values in the generated dict                                 
-        inf = re.sub(r'\W+', '', str(i)) # make a string of the inflections                                
+    for i in all_inf.values(): # we only want the values in the generated dict
+        inf = re.sub(r'\W+', '', str(i)) # make a string of the inflections
         if inf not in all_inf_list:
-            all_inf_list.append(inf) # add to searchlist only if there are no duplicates                                  
+            all_inf_list.append(inf) # add to searchlist only if there are no duplicates
     inf_token = " OR ".join(all_inf_list)
     
     return inf_token #return token with added inflections in format "token OR tokens OR tokened OR tokening"  
@@ -74,7 +76,7 @@ def check_for_inflections(query): # reads the query and returns a rewritten quer
         elif "\"" in i:
             rewritten += " " + i # add tokens enclosed by quotation marks to string as-is
             counter += 1
-        elif re.match(r"\W" ,i): # add any non-word character (such as brackets) to string as-is 
+        elif re.match(r"\W" ,i): # add any non-word character (such as brackets) to string as-is
             rewritten += " " + i
         else:
             rewritten += " ( " + single_token_inflection(i) + " )" # add lowercase unquoted tokens with all their possible inflections to string enclosed by brackets
@@ -161,6 +163,9 @@ def ranking_search(user_query):
 
     return matches, ""
 
+def create_url(search_type, query, page):
+    return "/search?search_type={:s}&query={:s}&page={:d}".format(search_type, urllib.parse.quote(query), page)
+    
 
 '''
 @app.route('/hello')
@@ -172,14 +177,15 @@ def hello_tiramisu():
 @app.route('/')
 def search():
 
-    #Get query from URL variable
+    #Get values from URL variables
     query = request.args.get('query', "")
     search_type = request.args.get('search_type', "boolean_search")
+    page = max(int(request.args.get('page', "1")), 1)
 
     #Initialize list of matches
     matches = []
     error = ""
-    
+
     #If query exists (i.e. is not None)
     if query:
         if search_type == "boolean_search":
@@ -187,6 +193,27 @@ def search():
         elif search_type == "ranking_search":
             (matches, error) = ranking_search(f"{query}")
 
+    # create pagination
+    documents_per_page = 10
+    pages = []
+    page_count = math.ceil(len(matches)/documents_per_page)
+    shown_pagination_range_one_direction = 2
+    page = min(page, page_count)
+    if page_count > 1:
+        if page > 1:
+            pages.append({'url': create_url(search_type, query, page - 1), 'name': '<'})
+        if page > shown_pagination_range_one_direction + 1:
+            pages.append({'url': create_url(search_type, query, 1), 'name': 1})
+        if page > shown_pagination_range_one_direction + 2:
+            pages.append({'url': False, 'name': '...'})
+        for index in range(max(1, page - shown_pagination_range_one_direction), min(page_count+1, page + shown_pagination_range_one_direction + 1)):
+            pages.append({'url': create_url(search_type, query, index) if page != index else False, 'name': index})
+        if page < page_count - shown_pagination_range_one_direction - 1:
+            pages.append({'url': False, 'name': '...'})
+        if page < page_count - shown_pagination_range_one_direction:
+            pages.append({'url': create_url(search_type, query, page_count), 'name': page_count})
+        if page < page_count:
+            pages.append({'url': create_url(search_type, query, page + 1), 'name': '>'})
+
     #Render index.html with matches variable
-    #todo paging to show all results?
-    return render_template('index.html', matches=matches[:10], error=error, query=query, search_type=search_type, docs_total=str(len(matches)))
+    return render_template('index.html', matches=matches[(page - 1)*documents_per_page:page*documents_per_page], error=error, query=query, search_type=search_type, docs_total=str(len(matches)), pages=pages)
