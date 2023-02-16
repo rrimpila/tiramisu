@@ -164,7 +164,7 @@ def ranking_search(user_query):
     return matches, ""
 
 def create_url(search_type, query, page):
-    return "/search?search_type={:s}&query={:s}&page={:d}".format(search_type, urllib.parse.quote(query), page)
+    return "/?search_type={:s}&query={:s}&page={:d}".format(search_type, urllib.parse.quote(query), page)
     
 
 '''
