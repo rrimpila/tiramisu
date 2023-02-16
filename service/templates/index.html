@@ -51,10 +51,12 @@
 
       <!--Headlines etc:-->
       <div class="headlines">
-	<h1 style="color:Teal; text-align:center">TIRAMISU Search Engine</h1><br>
+	<h1 style="color:Teal; text-align:center">TIRAMISU Search Engine</h1>
+	<br>
 	<h2 style="text-align:center">Search for documents:</h2>
 	<!--Reload the page with variable "query" in the URL-->
-	<p style="text-align:center">Please, choose a search engine to see instructions.</p><br>
+	<p style="text-align:center">Please, choose a search engine to see instructions.</p>
+	<br>
 
 	<form style="text-align:center">
 	  <!--Boolean search button:-->
@@ -62,9 +64,10 @@
           <label for="boolean_search">Boolean search</label>
 	  <!--Ranking search button:-->
           <input type="radio" id="ranking_search" name="search_type" value="ranking_search" {% if search_type == "ranking_search" %} checked {% endif %} class="user-info">
-          <label for="ranking_search">Relevance ranking search</label><br>
+          <label for="ranking_search">Relevance ranking search</label>
+	  <br><br>
 	  <!--Search query input:-->
-	  <br><input type="text" name="query" value="{{ query }}"autofocus>
+	  <input type="text" name="query" value="{{ query }}"autofocus>
 	  <input type="submit" value="Search">
         </form>
       </div>
@@ -72,24 +75,33 @@
       <div class="instructions">
 	<!--Show these instructions if boolean search is chosen:-->
 	<div id="boolean">
-	<h3>Instructions for Boolean search:</h3>
-	<p>When searching for combinations of words, use operators AND, NOT, OR:<br>
-	<i>you AND i<br>example AND NOT solution<br>cat OR horse<br>( NOT example OR test ) AND solution</i><br><br>
-	Use quotation marks when searching for multi-word phrases (the program only supports bigrams and trigrams):<br>
-	<i>"you and i"</i><br><br>
-	Multi-word phrases can also be combined with the Boolean operators:<br>
-	<i>"new york" AND "london"</i><br><br>
-	Operators AND, OR, NOT need to be written in ALLCAPS, search words in <u>lowercase</u>.</p>
+	  <h3>Instructions for Boolean search:</h3>
+	  <p>When searching for combinations of words, use operators AND, NOT, OR:
+	    <br><i>you AND i
+	      <br>example AND NOT solution
+	      <br>cat OR horse
+	      <br>( NOT example OR test ) AND solution</i>
+	    <br><br>
+	    Use quotation marks when searching for multi-word phrases (the program only supports bigrams and trigrams):
+	    <br><i>"you and i"</i>
+	    <br><br>
+	    Multi-word phrases can also be combined with the Boolean operators:
+	    <br><i>"new york" AND "london"</i>
+	    <br><br>
+	    Operators AND, OR, NOT need to be written in ALLCAPS, search words in <u>lowercase</u>.</p>
 	</div>
 
 	<!--Show these instructions if ranking search is chosen:-->
 	<div id="ranking">
-	<h3>Instructions for Relevance ranking search:</h3>
-	<p>When searched for multiple words, separate words with space:<br>
-	<i>cat dog horse</i><br><br>
-	Use quotation marks when searching for multi-word phrases (the program only supports bigrams and trigrams):<br>
-	<i>"New York"<br>"you and I"</i><br><br>
-	Search words can be written in lowercase or uppercase letters.</p>
+	  <h3>Instructions for Relevance ranking search:</h3>
+	  <p>When searched for multiple words, separate words with space:
+	    <br><i>cat dog horse</i>
+	    <br><br>
+	    Use quotation marks when searching for multi-word phrases (the program only supports bigrams and trigrams):
+	    <br><i>"New York"
+	      <br>"you and I"</i>
+	    <br><br>
+	    Search words can be written in lowercase or uppercase letters.</p>
 	</div>
       </div>
 
@@ -97,7 +109,7 @@
 	<!--Error message and matching documents:-->
 	<div id="error_message">{{ error }}</div>
 	<h3><u>Matching documents</u>:</h3>
-	<p><b>{{ docs_total }}</b> matching documents in total.</p><br>
+	<p><b>{{ docs_total }}</b> matching documents in total.</p>
       </div>
 
       <div class="results">
@@ -106,13 +118,15 @@
                 search() function in the Flask app-->
             {% for item in matches %}
             <div>
-                <!--Display the name of the item based on the "name" key-->
-                <p><b>Name:</b> {{ item["name"] }}<br>
-		<!--TO DO: Display relevance score only if it exists in the matches:-->
-		<b>Relevance score:</b> {{ item["score"] }}</p>
-                <!--Display the contents of the item based on the "source" key-->
-                <div class="show-less">{{ item["text"]|safe }}</div>
-            </div>
+              <br>
+              <!--Display the name of the item based on the "name" key-->
+              <div><b>Name:</b> {{ item["name"] }}</div>
+	      <!--Display relevance score only if ranking search is used:-->
+	      <div {% if search_type == "ranking_search" %} style="display: block;" {% else %} style="display: none;" {% endif %}><b>Relevance score:</b> {{ item["score"] }}</div>
+              <!--Display the contents of the item based on the "source" key-->
+	      <br>
+            <div class="show-less">{{ item["text"]|safe }}</div>
+        </div>
       <!--End for loop-->
       {% endfor %}
 	</table>
@@ -128,66 +142,64 @@
       </div>
       {% endif %}
 
-
-      <script>
-<!--Script for which instructions are shown:-->
-	function userInfo(target) {
-    var name = target.id
-	    if (name == "boolean_search") {
-		boolean.style.display = "block"
-		ranking.style.display = "none"
-	    }
-	    else if (name == "ranking_search") {
-		boolean.style.display = "none"
-		ranking.style.display = "block"
-	    }
-	    else {
-		boolean.style.display = "none"
-		ranking.style.display = "none"
-	    }
-	}
-
+    <script>
+      // Script for which instructions are shown:
+      function userInfo(target) {
+          var name = target.id
+	  if (name == "boolean_search") {
+	      boolean.style.display = "block"
+	      ranking.style.display = "none"
+	  }
+	  else if (name == "ranking_search") {
+	      boolean.style.display = "none"
+	      ranking.style.display = "block"
+	  }
+	  else {
+	      boolean.style.display = "none"
+	      ranking.style.display = "none"
+	  }
+      }
 
 
-    <!--Script for read-more button:-->
-    function showAll(event) {
-        if (!event.target.matches('.read-less')) {
-            event.target.parentElement.querySelector('.show-less').style.maxHeight = event.target.parentElement.querySelector('.show-less').scrollHeight;
-            event.target.classList.add('read-less')
-            event.target.innerHTML = "Read less";
-        } else {
-            event.target.parentElement.querySelector('.show-less').style.maxHeight = null;
-            event.target.classList.remove('read-less')
-            event.target.innerHTML = "Read more";
-        }
-    }
+      // Script for read-more button:
+      function showAll(event) {
+          if (!event.target.matches('.read-less')) {
+              event.target.parentElement.querySelector('.show-less').style.maxHeight = event.target.parentElement.querySelector('.show-less').scrollHeight;
+              event.target.classList.add('read-less')
+              event.target.innerHTML = "Read less";
+          } else {
+              event.target.parentElement.querySelector('.show-less').style.maxHeight = null;
+              event.target.classList.remove('read-less')
+              event.target.innerHTML = "Read more";
+          }
+      }
+      
+      (function() {
+          // connect all event listeners
+          document.addEventListener('click', function (event) {
+              if (event.target.matches('.read-more'))
+                  showAll(event);
+              if (event.target.matches('.user-info'))
+                  userInfo(event.target);
+          });
 
-        (function() {
-            // connect all event listeners
-            document.addEventListener('click', function (event) {
-                if (event.target.matches('.read-more'))
-                    showAll(event);
-                if (event.target.matches('.user-info'))
-                    userInfo(event.target);
-            });
+          // check userInfo current state to show correct instructions
+          userInfo(document.querySelector('.user-info:checked'));
+          const documentDivs = document.querySelectorAll(".show-less");
 
-            // check userInfo current state to show correct instructions
-            userInfo(document.querySelector('.user-info:checked'));
-            const documentDivs = document.querySelectorAll(".show-less");
-
-            // create read more buttons for documents needing it
-            documentDivs.forEach((documentDiv) => {
-                if (documentDiv.scrollHeight > documentDiv.clientHeight + 2) {
-                    const button = document.createElement("button");
-                    button.innerHTML = "Read more";
-                    button.classList.add("read-more");
-                    documentDiv.parentNode.insertBefore(button, documentDiv.nextSibling);
-                }
-            });
-
-        })();
-      </script>
-
+          // create read more buttons for documents needing it
+          documentDivs.forEach((documentDiv) => {
+              if (documentDiv.scrollHeight > documentDiv.clientHeight + 2) {
+                  const button = document.createElement("button");
+                  button.innerHTML = "Read more";
+                  button.classList.add("read-more");
+                  documentDiv.parentNode.insertBefore(button, documentDiv.nextSibling);
+              }
+          });
+	  
+      })();
+    </script>
+    
     </div>
   </body>
 </html>
