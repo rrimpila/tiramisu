@@ -51,10 +51,10 @@ Activate the environment:
 demoenv/Scripts/activate
 ```
 
-Install Flask:
+Install requirements:
 
 ```
-pip install Flask
+pip3 install -r requirements.txt
 ```
 
 ## Run this Flask example application
