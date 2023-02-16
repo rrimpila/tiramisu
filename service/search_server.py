@@ -79,7 +79,11 @@ def check_for_inflections(query): # reads the query and returns a rewritten quer
         elif re.match(r"\W" ,i): # add any non-word character (such as brackets) to string as-is
             rewritten += " " + i
         else:
-            rewritten += " ( " + single_token_inflection(i) + " )" # add lowercase unquoted tokens with all their possible inflections to string enclosed by brackets
+            single_token_inflected = single_token_inflection(i)
+            if (single_token_inflected.strip()): # add token only if any inflections are found
+                rewritten += " ( " + single_token_inflected + " )" # add lowercase unquoted tokens with all their possible inflections to string enclosed by brackets
+            else:
+                rewritten += " ( " + i + " )" # otherwise add token as-is 
             counter += 1
     if counter == 1 : # if the initial query consisted of only one token...
         rewritten = re.sub(r" [\(\)]", "", rewritten) # remove unneeded brackets from initial query
@@ -104,12 +108,16 @@ def boolean_test_query(query):
     print("Query: '" + query + "'")
     query = check_for_inflections(query)
     print("Query with added inflections: '" + query + " '")
+    rewritten_query = boolean_rewrite_query(query)
+    # check for ) ( since it might create an attempt to call the function, and this is not a syntax error even though it is the wrong syntax
+    if re.match(".*\)\s*\(.*", rewritten_query):
+        return [], "Unknown word, no matches found for the search query. Make sure your query is typed in as instructed."
     matches = []
     try:
-        if np.all(eval(boolean_rewrite_query(query)) == 0):
+        if np.all(eval(rewritten_query) == 0):
             return [], ""
         else:
-            hits_matrix = eval(boolean_rewrite_query(query))
+            hits_matrix = eval(rewritten_query)
             hits_list = list(hits_matrix.nonzero()[1])
             for doc_idx in hits_list:
                matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx].replace("\n", "<br />")
