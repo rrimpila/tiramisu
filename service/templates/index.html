@@ -16,6 +16,13 @@
       #ranking {
 	  display: none;
       }
+      .result-box {
+	  margin: auto; 
+	  border: 1px solid #ddd;
+	  background-color: White;
+	  padding: 10px;
+	  box-shadow: rgba(0, 0, 0, 0.35) 0px -20px 36px -25px inset;
+      }
       .listing {
 	  list-style: none;
       }
@@ -137,7 +144,7 @@
 	      <div {% if search_type == "ranking_search" %} style="display: block;" {% else %} style="display: none;" {% endif %}><b>Relevance score:</b> {{ item["score"] }}</div>
               <!--Display the contents of the item based on the "source" key-->
 	      <br>
-            <div class="show-less">{{ item["text"]|safe }}</div>
+            <div class="show-less result-box">{{ item["text"]|safe }}</div>
         </div>
       <!--End for loop-->
       {% endfor %}
