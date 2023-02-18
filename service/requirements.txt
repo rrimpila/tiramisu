@@ -4,3 +4,4 @@ numpy
 nltk
 simplemma
 pyinflect
+spacy
