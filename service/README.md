@@ -55,6 +55,7 @@ Install requirements:
 
 ```
 pip3 install -r requirements.txt
+python3 -m spacy download en_core_web_sm
 ```
 
 ## Run this Flask example application
@@ -121,9 +122,8 @@ So, run the app:
 flask run
 ```
 
-and __in your browser__ go to `localhost:8000/search` to see the website.
+and __in your browser__ go to `localhost:8000/` to see the website.
 
-__Note:__ If you forget the `/search` you'll only find a minimal Flask application that contains a single function hello_world that is triggered when the route `/` is requested. When it runs, this application binds to all IPs on the system (“0.0.0.0”) and listens on port 8000, which is the one we set.
 
 
 
