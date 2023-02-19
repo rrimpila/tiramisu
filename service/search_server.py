@@ -240,6 +240,12 @@ def search():
         elif search_type == "ranking_search":
             (matches, error) = ranking_search(f"{query}")
 
+    #Variables for paging
+    documents_per_page = 10
+    shown_pagination_range_one_direction = 2
+    page_count = math.ceil(len(matches)/documents_per_page)
+    page = min(page, page_count)
+    matches_shown = matches[(page - 1)*documents_per_page:page*documents_per_page]
 
     # This is spaCy version 2:
     # DO NOT ERASE YET! This code works, but too slowly --> the program crashes when too many matches
@@ -258,11 +264,7 @@ def search():
 
 
     # create pagination
-    documents_per_page = 10
     pages = []
-    page_count = math.ceil(len(matches)/documents_per_page)
-    shown_pagination_range_one_direction = 2
-    page = min(page, page_count)
     if page_count > 1:
         if page > 1:
             pages.append({'url': create_url(search_type, query, page - 1), 'name': '<'})
@@ -280,4 +282,4 @@ def search():
             pages.append({'url': create_url(search_type, query, page + 1), 'name': '>'})
 
     #Render index.html with matches variable
-    return render_template('index.html', matches=matches[(page - 1)*documents_per_page:page*documents_per_page], error=error, query=query, search_type=search_type, docs_total=str(len(matches)), pages=pages)
+    return render_template('index.html', matches=matches_shown, error=error, query=query, search_type=search_type, docs_total=str(len(matches)), pages=pages)
