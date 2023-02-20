@@ -54,8 +54,7 @@ sparse_matrix_3grams = tfv_3grams.fit_transform(documents).T.tocsr() # CSR: comp
 t2i = cv.vocabulary_  # shorter notation: t2i = term-to-index
 
 
-# This is for spaCy version 1:
-# This version works, but too slowly --> crashes when too many matches
+# Necessary dependency for spaCy:
 ner_spacy = spacy.load("en_core_web_sm")
 
 
@@ -127,17 +126,10 @@ def boolean_test_query(query):
             hits_matrix = eval(rewritten_query)
             hits_list = list(hits_matrix.nonzero()[1])
             for doc_idx in hits_list:
-                # This code works for spaCy version 1:
-                text = documents[doc_idx]
-                modified_text = ner_spacy(text)
-                spacy_html = displacy.render(modified_text, style="ent", page=True)
-                matches.append({'name': documents_titles[doc_idx], 'text': spacy_html})
-
-                # This line works for spaCy version 2:
-                #matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx]})
-
+                # This line works for version with spaCy highlighting (spaCy recognizes the linebreaks automatically):
+                matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx]})
                 # This is the working version without spaCy, DO NOT ERASE:
-                #matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx].replace("\n", "<br />")})
+                # matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx].replace("\n", "<br />")})
 
     except SyntaxError:
         return [], "Unknown word, no matches found for the search query. Make sure your query is typed in as instructed."
@@ -170,17 +162,10 @@ def ranking_search(user_query):
         try:
             ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
             for score, i in ranked_scores_and_doc_ids:
-                # This code works for spaCy version 1:
-                text = documents[i]
-                modified_text = ner_spacy(text)
-                spacy_html = displacy.render(modified_text, style="ent", page=True)
-                matches.append({'name': documents_titles[i], 'text': spacy_html, 'score' : score})
-
-                # This line works for spaCy version 2:
-                #matches.append({'name': documents_titles[i], 'text': documents[i], 'score' : score})
-
+                # This line works for version with spaCy highlighting (spaCy recognizes the linebreaks automatically):
+                matches.append({'name': documents_titles[i], 'text': documents[i], 'score' : score})
                 # This is the working version without spaCy, DO NOT ERASE:
-                #matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
+                # matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
 
         except IndexError:
             return [], "Unknown word, no matches found for the search query. Make sure your query is typed in as instructed."
@@ -191,17 +176,10 @@ def ranking_search(user_query):
             hits = np.dot(query_vec, sparse_matrix)
             ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
             for score, i in ranked_scores_and_doc_ids:
-                # This code works for spaCy version 1:
-                text = documents[i]
-                modified_text = ner_spacy(text)
-                spacy_html = displacy.render(modified_text, style="ent", page=True)
-                matches.append({'name': documents_titles[i], 'text': spacy_html, 'score' : score})
-
-                # This line works for spaCy version 2:
-                #matches.append({'name': documents_titles[i], 'text': documents[i], 'score' : score})
-
+                # This line works for version with spaCy highlighting (spaCy recognizes the linebreaks automatically):
+                matches.append({'name': documents_titles[i], 'text': documents[i], 'score' : score})
                 # This is the working version without spaCy, DO NOT ERASE:
-                #matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
+                # matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
 
         except SyntaxError:
             return [], "Unknown word, no matches found for the search query. Make sure your query is typed in as instructed."
@@ -247,21 +225,14 @@ def search():
     page = min(page, page_count)
     matches_shown = matches[(page - 1)*documents_per_page:page*documents_per_page]
 
-    # This is spaCy version 2:
-    # DO NOT ERASE YET! This code works, but too slowly --> the program crashes when too many matches
 
-    # Named entity highlighting with spaCy: Modifying matches variable's text items
-    # all_html = []
-    # for match in matches:
-    #     text = match["text"]
-    #     nlp = spacy.load("en_core_web_sm")
-    #     doc = nlp(text)
-    #     html = displacy.render(doc, style="ent", page=True)
-    #     all_html.append(html)
-
-    # for index, match in enumerate(matches):
-    #     match["text"] = all_html[index]
-
+    # Named entity highlighting with spaCy: Modifying text items of the matches_shown variable
+    for match in matches_shown:
+        text = match["text"]
+        spacy_text = ner_spacy(text)
+        spacy_html = displacy.render(spacy_text, style="ent")
+        match["text"] = spacy_html
+    
 
     # create pagination
     pages = []
