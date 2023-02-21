@@ -12,6 +12,9 @@ import urllib.parse
 import spacy
 from spacy import displacy
 import matplotlib.pyplot as plt
+import random
+import datetime
+import time
 
 #Initialize Flask instance
 app = Flask(__name__)
@@ -207,16 +210,32 @@ def generate_query_plot(query,matches):
     # some values we will use to generate a plot
     dist_dict={}
     for match in matches:
-        dist_dict[match['name']] = len(match['text']) 
+        # TODO this is only for dummy purposes, real data will contain dates
+        match['date'] = random_date()
+        if match['date'] in dist_dict.keys():
+            dist_dict[match['date']] += 1
+        else:
+            dist_dict[match['date']] = 1
     # from a dictionary we can create a plot in two steps:
     #  1) plotting the bar chart 
     #  2) setting the appropriate ticks in the x axis
     plt.bar(range(len(dist_dict)), list(dist_dict.values()), align='center', color="C3")
+    # TODO set days with correct intervals
     plt.xticks(range(len(dist_dict)), list(dist_dict.keys()),rotation=80) # labels are rotated
     # make room for the labels
     plt.gcf().subplots_adjust(bottom=0.30) # if you comment this line, your labels in the x-axis will be cutted
     plt.savefig(f'static/query_{query}_plot.png')
+    
 
+# TODO remove, for dummy use only
+def random_date():
+
+    now_date = datetime.datetime.now()
+    random_days = datetime.timedelta(days=random.randrange(1825))
+    return round((now_date - random_days).timestamp())
+
+# TODO round to day
+# TODO convert labels to days
 
 '''
 @app.route('/hello')
