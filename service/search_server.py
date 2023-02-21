@@ -11,6 +11,7 @@ import shlex
 import urllib.parse
 import spacy
 from spacy import displacy
+import matplotlib.pyplot as plt
 
 #Initialize Flask instance
 app = Flask(__name__)
@@ -199,6 +200,24 @@ def create_url(search_type, query, page):
     return "/?search_type={:s}&query={:s}&page={:d}".format(search_type, urllib.parse.quote(query), page)
     
 
+def generate_query_plot(query,matches):
+    # create a figure
+    fig = plt.figure()
+    plt.title(f"Word distribution per document \n query: {query}")
+    # some values we will use to generate a plot
+    dist_dict={}
+    for match in matches:
+        dist_dict[match['name']] = len(match['text']) 
+    # from a dictionary we can create a plot in two steps:
+    #  1) plotting the bar chart 
+    #  2) setting the appropriate ticks in the x axis
+    plt.bar(range(len(dist_dict)), list(dist_dict.values()), align='center', color="C3")
+    plt.xticks(range(len(dist_dict)), list(dist_dict.keys()),rotation=80) # labels are rotated
+    # make room for the labels
+    plt.gcf().subplots_adjust(bottom=0.30) # if you comment this line, your labels in the x-axis will be cutted
+    plt.savefig(f'static/query_{query}_plot.png')
+
+
 '''
 @app.route('/hello')
 def hello_tiramisu():
@@ -229,6 +248,8 @@ def search():
             (matches, error) = boolean_test_query(f"{query}")
         elif search_type == "ranking_search":
             (matches, error) = ranking_search(f"{query}")
+
+    generate_query_plot(query, matches)
 
     #Variables for paging
     documents_per_page = 10
