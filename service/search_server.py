@@ -57,6 +57,13 @@ t2i = cv.vocabulary_  # shorter notation: t2i = term-to-index
 # Necessary dependency for spaCy:
 ner_spacy = spacy.load("en_core_web_sm")
 
+# categories for highlighting named entities: active if the category is set, name of the index spacy uses, title should be human readable for the form
+# TODO these are just placeholders for example
+spacy_categories = [
+    {"active" : False, "name" : "names", "title" : "Names"}, 
+    {"active" : False, "name" : "dates", "title" : "Dates"}
+]
+
 
 # functions related to non-exact-word matching
 def single_token_inflection(query): # makes a list of all possible inflections of a token for non-exact matching
@@ -207,6 +214,11 @@ def search():
     search_type = request.args.get('search_type', "boolean_search")
     page = max(int(request.args.get('page', "1")), 1)
 
+    # TODO remove if not used
+    for category in spacy_categories:
+        print(request.args.get(category["name"]))
+        category['active'] = request.args.get(category["name"], False)
+
     #Initialize list of matches
     matches = []
     error = ""
@@ -253,4 +265,12 @@ def search():
             pages.append({'url': create_url(search_type, query, page + 1), 'name': '>'})
 
     #Render index.html with matches variable
-    return render_template('index.html', matches=matches_shown, error=error, query=query, search_type=search_type, docs_total=str(len(matches)), pages=pages)
+    return render_template('index.html', 
+        matches=matches_shown, 
+        error=error, 
+        query=query, 
+        search_type=search_type, 
+        docs_total=str(len(matches)), 
+        pages=pages, 
+        spacy_categories=spacy_categories
+    )

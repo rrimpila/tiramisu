@@ -65,6 +65,9 @@
       .pagination .pagination-page a {
           text-decoration: none;
       }
+      fieldset {
+        display: inline-block;
+      }
 
       </style>
         <meta charset="utf-8">
@@ -93,7 +96,17 @@
 	  <br><br>
 	  <!--Search query input:-->
 	  <input type="text" name="query" value="{{ query }}"autofocus>
-	  <input type="submit" value="Search">
+    <input type="submit" value="Search">
+    <div>
+      <fieldset>
+        <legend>Highlight entities:</legend>
+      {% for spacy_category in spacy_categories %}
+      <input type="checkbox" id="{{ spacy_category.name }}" name="{{ spacy_category.name }}" value="{{ spacy_category.name }}" {% if spacy_category.active %} checked {% endif %}>
+      <label for="{{ spacy_category.name }}">{{ spacy_category.title }}</label>
+      <!--End for loop-->
+      {% endfor %}
+      </fieldset>
+    </div>
         </form>
       </div>
 
