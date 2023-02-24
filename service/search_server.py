@@ -64,8 +64,10 @@ ner_spacy = spacy.load("en_core_web_sm")
 # categories for highlighting named entities: active if the category is set, name of the index spacy uses, title should be human readable for the form
 # TODO these are just placeholders for example
 spacy_categories = [
-    {"active" : False, "name" : "names", "title" : "Names"}, 
-    {"active" : False, "name" : "dates", "title" : "Dates"}
+    {"active" : False, "name" : "people", "title" : "People"}, 
+    {"active" : False, "name" : "dates", "title" : "Dates"},
+    {"active" : False, "name" : "languages", "title" : "Languages"},
+    {"active" : False, "name" : "gpe", "title" : "Countries, cities and states"}
 ]
 
 
@@ -282,7 +284,10 @@ def search():
     for match in matches_shown:
         text = match["text"]
         spacy_text = ner_spacy(text)
-        spacy_html = displacy.render(spacy_text, style="ent")
+        # shows only chosen entities (ents) highlighted with chosen colors
+        colors = {"PERSON": "#BECDF4", "DATE": "#ADD6D6", "LANGUAGE": "#F0DDB8", "GPE": "#E5E9E9"}
+        options = {"ents": ["PERSON", "DATE", "LANGUAGE", "GPE"], "colors": colors}
+        spacy_html = displacy.render(spacy_text, style="ent", options=options)
         match["text"] = spacy_html
     
 

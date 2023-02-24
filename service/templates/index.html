@@ -96,17 +96,19 @@
 	  <br><br>
 	  <!--Search query input:-->
 	  <input type="text" name="query" value="{{ query }}"autofocus>
-    <input type="submit" value="Search">
-    <div>
-      <fieldset>
-        <legend>Highlight entities:</legend>
-      {% for spacy_category in spacy_categories %}
-      <input type="checkbox" id="{{ spacy_category.name }}" name="{{ spacy_category.name }}" value="{{ spacy_category.name }}" {% if spacy_category.active %} checked {% endif %}>
-      <label for="{{ spacy_category.name }}">{{ spacy_category.title }}</label>
-      <!--End for loop-->
-      {% endfor %}
-      </fieldset>
-    </div>
+	  <input type="submit" value="Search">
+	  <div>
+	    <br>
+	    <!--Spacy category selection-->
+	    <fieldset>
+              <legend>Highlight entities:</legend>
+	      {% for spacy_category in spacy_categories %}
+	      <input type="checkbox" id="{{ spacy_category.name }}" name="{{ spacy_category.name }}" value="{{ spacy_category.name }}" {% if spacy_category.active %} checked {% endif %}>
+	      <label for="{{ spacy_category.name }}">{{ spacy_category.title }}</label>
+	      <!--End for loop-->
+	      {% endfor %}
+	    </fieldset>
+	  </div>
         </form>
       </div>
 
@@ -148,37 +150,37 @@
 	<div id="error_message">{{ error }}</div>
 	<h3><u>Matching documents</u>:</h3>
 	<p><b>{{ docs_total }}</b> matching documents in total.</p>
-  {% if query %}
-    <img src="./static/query_{{ query }}_plot.png" style="width: 300px; height 100%"><br/>
-  {% endif %}
-  
+	{% if query %}
+	<img src="./static/query_{{ query }}_plot.png" style="width: 300px; height 100%"><br/>
+	{% endif %}
+	
       </div>
 
       <div class="results">
         <table>
-            <!--Go through each item in the "matches" variable sent from
-                search() function in the Flask app-->
-            {% for item in matches %}
-            <div>
-              <br>
-              <!--Display the name of the item based on the "name" key-->
-              <div><b>Name:</b> {{ item["name"] }}</div>
-	      <!--Display relevance score only if ranking search is used:-->
-	      <div {% if search_type == "ranking_search" %} style="display: block;" {% else %} style="display: none;" {% endif %}><b>Relevance score:</b> {{ item["score"] }}</div>
-              <!--Display the contents of the item based on the "source" key-->
-	      <br>
+          <!--Go through each item in the "matches" variable sent from
+              search() function in the Flask app-->
+          {% for item in matches %}
+          <div>
+            <br>
+            <!--Display the name of the item based on the "name" key-->
+            <div><b>Name:</b> {{ item["name"] }}</div>
+	    <!--Display relevance score only if ranking search is used:-->
+	    <div {% if search_type == "ranking_search" %} style="display: block;" {% else %} style="display: none;" {% endif %}><b>Relevance score:</b> {{ item["score"] }}</div>
+            <!--Display the contents of the item based on the "source" key-->
+	    <br>
             <div class="show-less result-box">{{ item["text"]|safe }}</div>
-        </div>
-      <!--End for loop-->
-      {% endfor %}
+          </div>
+	  <!--End for loop-->
+	  {% endfor %}
 	</table>
       </div>
       {% if pages -%}
       <div class="pagination">
         {% for item in pages %}
-          <span class="pagination-page">
-            {% if item["url"] -%}<a href={{ item["url"]|safe }}>{{ item["name"] }}</a>{% else -%}{{ item["name"] }}{% endif %}
-	  </span>
+        <span class="pagination-page">
+          {% if item["url"] -%}<a href={{ item["url"]|safe }}>{{ item["name"] }}</a>{% else -%}{{ item["name"] }}{% endif %}
+	</span>
         <!--End for loop-->
         {% endfor %}
       </div>
