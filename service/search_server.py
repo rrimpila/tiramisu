@@ -12,6 +12,7 @@ import urllib.parse
 import spacy
 from spacy import displacy
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import random
 import datetime
 import time
@@ -206,10 +207,8 @@ def create_url(search_type, query, page):
     
 
 def generate_query_plot(query,matches):
-    # create a figure
-    fig = plt.figure()
-    plt.title(f"Word distribution per document \n query: {query}")
-    # some values we will use to generate a plot
+    if len(matches) == 0:
+        return False;
     dist_dict={}
     for match in matches:
         # TODO this is only for dummy purposes, real data will contain dates
@@ -218,26 +217,24 @@ def generate_query_plot(query,matches):
             dist_dict[match['date']] += 1
         else:
             dist_dict[match['date']] = 1
-    # from a dictionary we can create a plot in two steps:
-    #  1) plotting the bar chart 
-    #  2) setting the appropriate ticks in the x axis
-    plt.bar(range(len(dist_dict)), list(dist_dict.values()), align='center', color="C3")
-    # TODO set days with correct intervals
-    plt.xticks(range(len(dist_dict)), list(dist_dict.keys()),rotation=80) # labels are rotated
-    # make room for the labels
-    plt.gcf().subplots_adjust(bottom=0.30) # if you comment this line, your labels in the x-axis will be cutted
+
+    ax = plt.subplot(111)
+    ax.bar(dist_dict.keys(), dist_dict.values(), width=10)
+    ax.xaxis_date()
+    plt.setp(ax.get_xticklabels(), rotation=30, ha="right")
     plt.savefig(f'static/query_{query}_plot.png')
-    
+    return f'static/query_{query}_plot.png'
+
 
 # TODO remove, for dummy use only
 def random_date():
 
     now_date = datetime.datetime.now()
     random_days = datetime.timedelta(days=random.randrange(1825))
-    return round((now_date - random_days).timestamp())
+    return now_date - random_days
 
-# TODO round to day
-# TODO convert labels to days
+# TODO check if needs to round to day
+# TODO wider graph for more space?
 
 '''
 @app.route('/hello')
@@ -270,7 +267,7 @@ def search():
         elif search_type == "ranking_search":
             (matches, error) = ranking_search(f"{query}")
 
-    generate_query_plot(query, matches)
+    plot_file = generate_query_plot(query, matches)
 
     #Variables for paging
     documents_per_page = 10
@@ -317,5 +314,6 @@ def search():
         search_type=search_type, 
         docs_total=str(len(matches)), 
         pages=pages, 
-        spacy_categories=spacy_categories
+        spacy_categories=spacy_categories,
+        plot=plot_file
     )
