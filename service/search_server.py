@@ -210,20 +210,36 @@ def generate_query_plot(query,matches):
     if len(matches) == 0:
         return False;
     dist_dict={}
+
     for match in matches:
         # TODO this is only for dummy purposes, real data will contain dates
-        match['date'] = random_date()
-        if match['date'] in dist_dict.keys():
-            dist_dict[match['date']] += 1
+        document_week_date = date_aggregated(random_date())
+        if document_week_date in dist_dict.keys():
+            dist_dict[document_week_date] += 1
         else:
-            dist_dict[match['date']] = 1
+            dist_dict[document_week_date] = 1
 
-    ax = plt.subplot(111)
-    ax.bar(dist_dict.keys(), dist_dict.values(), width=10)
+    plt.figure().set_figwidth(15)
+    plt.title(f"Document distribution \n query: {query}")
+    ax = plt.subplot()
+
+    # bar chart with from counted values
+    ax.bar(dist_dict.keys(), dist_dict.values(), width=1)
+    # set y axis to full integer ticks
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+
+
+    # set xaxis as dates
     ax.xaxis_date()
     plt.setp(ax.get_xticklabels(), rotation=30, ha="right")
+
+    # save chart to file
     plt.savefig(f'static/query_{query}_plot.png')
     return f'static/query_{query}_plot.png'
+
+def date_aggregated(date):
+    """ Displaying every document on its own date will not fit, currently aggregating dates to the Monday of their week """
+    return date - datetime.timedelta(days=date.weekday())
 
 
 # TODO remove, for dummy use only
@@ -232,9 +248,6 @@ def random_date():
     now_date = datetime.datetime.now()
     random_days = datetime.timedelta(days=random.randrange(1825))
     return now_date - random_days
-
-# TODO check if needs to round to day
-# TODO wider graph for more space?
 
 '''
 @app.route('/hello')
