@@ -13,6 +13,7 @@ import spacy
 from spacy import displacy
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+from matplotlib.ticker import MaxNLocator
 import random
 import datetime
 import time
