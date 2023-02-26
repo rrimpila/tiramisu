@@ -150,8 +150,8 @@
 	<div id="error_message">{{ error }}</div>
 	<h3><u>Matching documents</u>:</h3>
 	<p><b>{{ docs_total }}</b> matching documents in total.</p>
-	{% if query %}
-	<img src="./static/query_{{ query }}_plot.png" style="width: 300px; height 100%"><br/>
+	{% if plot %}
+	<img src="{{ plot }}" style="width: 800px; height 100%"><br/>
 	{% endif %}
 	
       </div>
