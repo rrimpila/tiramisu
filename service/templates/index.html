@@ -68,6 +68,11 @@
       fieldset {
         display: inline-block;
       }
+      .center-graph {
+        display: block;
+        margin: auto;
+        max-width: 100%;
+      }
 
       </style>
         <meta charset="utf-8">
@@ -151,7 +156,7 @@
 	<h3><u>Matching documents</u>:</h3>
 	<p><b>{{ docs_total }}</b> matching documents in total.</p>
 	{% if plot %}
-	<img src="{{ plot }}" style="width: 800px; height 100%"><br/>
+	<img src="{{ plot }}" class="center-graph">
 	{% endif %}
 	
       </div>
