@@ -6,3 +6,7 @@ simplemma
 pyinflect
 spacy
 matplotlib
+ao3_api
+BeautifulSoup4
+lxml
+requests
