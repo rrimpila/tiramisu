@@ -106,7 +106,7 @@
 	    <br>
 	    <!--Spacy category selection-->
 	    <fieldset>
-              <legend>Highlight entities:</legend>
+              <legend>Highlight chosen entities in matching documents:</legend>
 	      {% for spacy_category in spacy_categories %}
 	      <input type="checkbox" id="{{ spacy_category.name }}" name="{{ spacy_category.name }}" value="{{ spacy_category.name }}" {% if spacy_category.active %} checked {% endif %}>
 	      <label for="{{ spacy_category.name }}">{{ spacy_category.title }}</label>
