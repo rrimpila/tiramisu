@@ -87,14 +87,14 @@
 	<img src="/static/tiramisu.png" alt="tiramisu ingredients" class="tiramimage">
 	<br><br>
 	<h2 style="text-align:center"><u>Archive of Our Own search</u></h2>
-  <p style="text-align:center">Search for most relevant articles from the website Archive of Our Own (insert general instructions for the search here)...</p>
-  <br>
+	<p style="text-align:center">Search for most relevant articles from the website Archive of Our Own (insert general instructions for the search here)...</p>
+	<br>
 	<form style="text-align:center">
-    <!--Search query input:-->
-    <p>Enter query:</p>
+	  <!--Search query input:-->
+	  <p>Enter query:</p>
 	  <input type="text" name="query" value="{{ query }}"autofocus>
 	  <br><br>
-    <p style="text-align:center">Please, choose a search engine to see instructions:</p>
+	  <p>Please, choose a search engine to see instructions:</p>
 	  <!--Boolean search button:-->
 	  <input type="radio" id="boolean_search" name="search_type" value="boolean_search" {% if search_type == "boolean_search" %} checked {% endif %} class="user-info">
           <label for="boolean_search">Boolean search</label>
@@ -104,19 +104,16 @@
 	  <br><br>
 	  <div>
 	    <!--Spacy category selection-->
-	    <fieldset>
-	      <legend>Highlight chosen entities in matching documents:</legend>
-	      {% for spacy_category in spacy_categories %}
-	      <input type="checkbox" id="{{ spacy_category.name }}" name="{{ spacy_category.name }}" value="{{ spacy_category.name }}" {% if spacy_category.active %} checked {% endif %}>
-	      <label for="{{ spacy_category.name }}">{{ spacy_category.title }}</label>
-	      <!--End for loop-->
-	      {% endfor %}
-	    </fieldset>
+	    <p>Highlight chosen entities in matching documents:</p>
+	    {% for spacy_category in spacy_categories %}
+	    <input type="checkbox" id="{{ spacy_category.name }}" name="{{ spacy_category.name }}" value="{{ spacy_category.name }}" {% if spacy_category.active %} checked {% endif %}>
+	    <label for="{{ spacy_category.name }}">{{ spacy_category.title }}</label>
+	    <!--End for loop-->
+	    {% endfor %}
 	  </div>
-    <br>
+	  <br><br>
 	  <input type="submit" value="Search">
 	  <br>
-	  
         </form>
       </div>
 
