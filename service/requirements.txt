@@ -6,7 +6,7 @@ simplemma
 pyinflect
 spacy
 matplotlib
-ao3_api
+git+https://github.com/EtchJetty/ao3_api.git
 BeautifulSoup4
 lxml
 requests
