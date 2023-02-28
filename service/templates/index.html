@@ -27,6 +27,10 @@
       .headlines {
 	  font-family: Georgia, serif;
       }
+      .search-options {
+        font-family: Georgia, serif;
+        text-align: center;
+      }
       .instructions {
 	  border: 2px outset MidnightBlue;
 	  color: MidnightBlue;
@@ -65,55 +69,57 @@
       .pagination .pagination-page a {
           text-decoration: none;
       }
-      fieldset {
-        display: inline-block;
-      }
       .center-graph {
         display: block;
         margin: auto;
         max-width: 100%;
       }
 
-      </style>
-        <meta charset="utf-8">
-        <title>NLP search</title>
-    </head>
+    </style>
+    <meta charset="utf-8">
+    <title>NLP search</title>
+  </head>
   <body>
     <div id="bground">
 
-      <!--Headlines etc:-->
+      <!--Headlines and search options:-->
       <div class="headlines">
-	<h1 style="color:Teal; text-align:center">TIRAMISU Search Engine</h1>
-	<img src="/static/tiramisu.png" alt="tiramisu ingredients" class="tiramimage">
-	<br><br>
-	<h2 style="text-align:center"><u>Archive of Our Own search</u></h2>
-	<p style="text-align:center">Search for most relevant articles from the website Archive of Our Own (insert general instructions for the search here)...</p>
-	<br>
-	<form style="text-align:center">
-	  <!--Search query input:-->
-	  <p>Enter query:</p>
-	  <input type="text" name="query" value="{{ query }}"autofocus>
+	<div class="search-options">
+	  <h1 style="color:Teal">TIRAMISU Search Engine</h1>
+	  <img src="/static/tiramisu.png" alt="tiramisu ingredients" class="tiramimage">
 	  <br><br>
-	  <p>Please, choose a search engine to see instructions:</p>
-	  <!--Boolean search button:-->
-	  <input type="radio" id="boolean_search" name="search_type" value="boolean_search" {% if search_type == "boolean_search" %} checked {% endif %} class="user-info">
-          <label for="boolean_search">Boolean search</label>
-	  <!--Ranking search button:-->
-          <input type="radio" id="ranking_search" name="search_type" value="ranking_search" {% if search_type == "ranking_search" %} checked {% endif %} class="user-info">
-          <label for="ranking_search">Relevance ranking search</label>
-	  <br><br>
-	  <div>
-	    <!--Spacy category selection-->
-	    <p>Highlight chosen entities in matching documents:</p>
-	    {% for spacy_category in spacy_categories %}
-	    <input type="checkbox" id="{{ spacy_category.name }}" name="{{ spacy_category.name }}" value="{{ spacy_category.name }}" {% if spacy_category.active %} checked {% endif %}>
-	    <label for="{{ spacy_category.name }}">{{ spacy_category.title }}</label>
-	    <!--End for loop-->
-	    {% endfor %}
-	  </div>
-	  <br><br>
-	  <input type="submit" value="Search">
+	  <h2><u>Archive of Our Own search</u></h2>
+	  <!--Explanation of how the search engine works:-->
+	  <p>Search for most relevant articles from the website Archive of Our Own (insert general instructions for the search here)...</p>
 	  <br>
+	  <form>
+	    <!--Search query input:-->
+	    <p>Enter query:</p>
+	    <input type="text" name="query" value="{{ query }}"autofocus>
+	    <br><br>
+	    <!--Choosing of search engine:-->
+	    <p>Please, choose a search engine to see instructions:</p>
+	    <!--Boolean search button:-->
+	    <input type="radio" id="boolean_search" name="search_type" value="boolean_search" {% if search_type == "boolean_search" %} checked {% endif %} class="user-info">
+            <label for="boolean_search">Boolean search</label>
+	    <!--Ranking search button:-->
+            <input type="radio" id="ranking_search" name="search_type" value="ranking_search" {% if search_type == "ranking_search" %} checked {% endif %} class="user-info">
+            <label for="ranking_search">Relevance ranking search</label>
+	    <br><br>
+	    <!--Spacy category selection-->
+	    <div>
+	      <p>Highlight chosen entities in matching documents:</p>
+	      {% for spacy_category in spacy_categories %}
+	      <input type="checkbox" id="{{ spacy_category.name }}" name="{{ spacy_category.name }}" value="{{ spacy_category.name }}" {% if spacy_category.active %} checked {% endif %}>
+	      <label for="{{ spacy_category.name }}">{{ spacy_category.title }}</label>
+	      <!--End for loop-->
+	      {% endfor %}
+	    </div>
+	    <br><br>
+	    <!--Search button:-->
+	    <input type="submit" value="Search">
+	    <br>
+	</div>
         </form>
       </div>
 
