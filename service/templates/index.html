@@ -88,17 +88,18 @@
 	  <h1 style="color:Teal">TIRAMISU Search Engine</h1>
 	  <img src="/static/tiramisu.png" alt="tiramisu ingredients" class="tiramimage">
 	  <br><br>
-	  <h2><u>Archive of Our Own search</u></h2>
+	  <h2 style="color:Teal">Search articles from Archive of Our Own</h2>
 	  <!--Explanation of how the search engine works:-->
-	  <p>Search for most relevant articles from the website Archive of Our Own (insert general instructions for the search here)...</p>
+	  <p>The Tiramisu search engine finds the most relevant articles uploaded on the website Archive of Our Own.
+	    <br>(insert more general info about the search here...)</p>
 	  <br>
 	  <form>
 	    <!--Search query input:-->
-	    <p>Enter query:</p>
+	    <p style="color:#006666"><b>Enter query:</b></p>
 	    <input type="text" name="query" value="{{ query }}"autofocus>
 	    <br><br>
 	    <!--Choosing of search engine:-->
-	    <p>Please, choose a search engine to see instructions:</p>
+	    <p style="color:#006666">Choose a search engine to see instructions below:</p>
 	    <!--Boolean search button:-->
 	    <input type="radio" id="boolean_search" name="search_type" value="boolean_search" {% if search_type == "boolean_search" %} checked {% endif %} class="user-info">
             <label for="boolean_search">Boolean search</label>
@@ -108,7 +109,7 @@
 	    <br><br>
 	    <!--Spacy category selection-->
 	    <div>
-	      <p>Highlight chosen entities in matching documents:</p>
+              <p style="color:#006666">Select entities to be highlighted in matching articles:</p>
 	      {% for spacy_category in spacy_categories %}
 	      <input type="checkbox" id="{{ spacy_category.name }}" name="{{ spacy_category.name }}" value="{{ spacy_category.name }}" {% if spacy_category.active %} checked {% endif %}>
 	      <label for="{{ spacy_category.name }}">{{ spacy_category.title }}</label>
