@@ -69,13 +69,13 @@ t2i = cv.vocabulary_  # shorter notation: t2i = term-to-index
 # Necessary dependency for spaCy:
 ner_spacy = spacy.load("en_core_web_sm")
 
-# categories for highlighting named entities: active if the category is set, name of the index spacy uses, title should be human readable for the form
-# TODO these are just placeholders for example
+# Categories for highlighting named entities:
+# category is active if the category is checked, name is the same as the entity category that spaCy uses, title should be human readable for the html form
 spacy_categories = [
-    {"active" : False, "name" : "people", "title" : "People"}, 
-    {"active" : False, "name" : "dates", "title" : "Dates"},
-    {"active" : False, "name" : "languages", "title" : "Languages"},
-    {"active" : False, "name" : "gpe", "title" : "Countries, cities and states"}
+    {"active" : False, "name" : "PERSON", "title" : "People"}, 
+    {"active" : False, "name" : "DATE", "title" : "Dates"},
+    {"active" : False, "name" : "LANGUAGE", "title" : "Languages"},
+    {"active" : False, "name" : "GPE", "title" : "Countries, cities and states"}
 ]
 
 
@@ -272,11 +272,6 @@ def search():
     search_type = request.args.get('search_type', "boolean_search")
     page = max(int(request.args.get('page', "1")), 1)
 
-    # TODO remove if not used
-    for category in spacy_categories:
-        print(request.args.get(category["name"]))
-        category['active'] = request.args.get(category["name"], False)
-
     #Initialize list of matches
     matches = []
     error = ""
@@ -298,13 +293,23 @@ def search():
     matches_shown = matches[(page - 1)*documents_per_page:page*documents_per_page]
 
 
-    # Named entity highlighting with spaCy: Modifying text items of the matches_shown variable
+    # Named entity highlighting with spaCy
+    # making a list of the entities (ents) the user has chosen to highlight:
+    chosen_ents = []
+    for category in spacy_categories:
+        if request.args.get(category["name"]) is not None:
+            chosen_ents.append(request.args.get(category["name"]))
+        category['active'] = request.args.get(category["name"], False)
+
+    if chosen_ents != []:
+        print("Chosen entities:", chosen_ents)
+        
+    # modifying text items of the matches_shown variable with the chosen ents and their corresponding colors:
     for match in matches_shown:
         text = match["text"]
         spacy_text = ner_spacy(text)
-        # shows only chosen entities (ents) highlighted with chosen colors
         colors = {"PERSON": "#BECDF4", "DATE": "#ADD6D6", "LANGUAGE": "#F0DDB8", "GPE": "#E5E9E9"}
-        options = {"ents": ["PERSON", "DATE", "LANGUAGE", "GPE"], "colors": colors}
+        options = {"ents": chosen_ents, "colors": colors}
         spacy_html = displacy.render(spacy_text, style="ent", options=options)
         match["text"] = spacy_html
     
