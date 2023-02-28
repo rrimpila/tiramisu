@@ -117,3 +117,17 @@ flask run
 ```
 
 and __in your browser__ go to `localhost:8000/` to see the website.
+
+## Updating datasets
+
+The repository includes files scraped from Archive of Our Own for the 100 articles with the most kudos for each year between 2018 and 2022. This data is expected to remain fairly static, but to update it, you can run the following commands to scrape the files.
+__NOTE:__ This may take a while.
+
+```
+python3 service/datamine.py --year=2018
+python3 service/datamine.py --year=2019
+python3 service/datamine.py --year=2020
+python3 service/datamine.py --year=2021
+python3 service/datamine.py --year=2022
+
+```

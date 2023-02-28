@@ -69,15 +69,28 @@
       .pagination .pagination-page a {
           text-decoration: none;
       }
-      .center-graph {
-        display: block;
-        margin: auto;
-        max-width: 100%;
+      .graph-element {
+        display: inline-block;
+        max-width: 45%;
+      }
+      input[type=submit], button {
+        padding:10px 35px; 
+        background:#6F4E37;
+        color:#EEE;
+        font-weight: bold;
+        border:0 none;
+        cursor:pointer;
+        -webkit-border-radius: 5px;
+        border-radius: 5px; 
+        margin: 4px 0;
+      }
+      input[type=submit] {
+        font-size: larger;
       }
 
     </style>
     <meta charset="utf-8">
-    <title>NLP search</title>
+    <title>TIRAMISU Search Engine</title>
   </head>
   <body>
     <div id="bground">
@@ -163,7 +176,7 @@
 	<h3><u>Matching documents</u>:</h3>
 	<p><b>{{ docs_total }}</b> matching documents in total.</p>
 	{% if plot %}
-	<img src="{{ plot }}" class="center-graph">
+	<img src="{{ plot }}" class="graph-element">
 	{% endif %}
 	
       </div>
