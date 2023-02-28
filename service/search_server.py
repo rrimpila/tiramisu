@@ -17,12 +17,18 @@ from matplotlib.ticker import MaxNLocator
 import random
 import datetime
 import time
+import os
+
+
 
 #Initialize Flask instance
 app = Flask(__name__)
 
 # read articles from file
-with open('../data/enwiki-20181001-corpus.1000-articles.txt', encoding='utf8') as f:
+absolute_path = os.path.dirname(__file__)
+relative_path = "../data/"
+full_path = os.path.join(absolute_path, relative_path)
+with open(full_path + 'enwiki-20181001-corpus.1000-articles.txt', encoding='utf8') as f:
     content = f.read()
 
 # split by closing article tag, and then remove opening tag
@@ -235,8 +241,9 @@ def generate_query_plot(query,matches):
     plt.setp(ax.get_xticklabels(), rotation=30, ha="right")
 
     # save chart to file
-    plt.savefig(f'static/query_{query}_plot.png')
-    return f'static/query_{query}_plot.png'
+    relative_path = f'static/query_{query}_plot.png'
+    plt.savefig(os.path.join(absolute_path, relative_path))
+    return relative_path
 
 def date_aggregated(date):
     """ Displaying every document on its own date will not fit, currently aggregating dates to the Monday of their week """
