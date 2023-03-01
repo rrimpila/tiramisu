@@ -19,7 +19,7 @@ import datetime
 import time
 import os
 import json
-
+from dateutil import parser
 
 
 #Initialize Flask instance
@@ -63,6 +63,7 @@ for item in documents:
     fic_all_texts.append(fic_text)
     index += 1
 
+works = documents
 documents_titles = fic_all_titles
 documents = fic_all_texts
 
@@ -176,7 +177,7 @@ def boolean_test_query(query):
             hits_list = list(hits_matrix.nonzero()[1])
             for doc_idx in hits_list:
                 # This line works for version with spaCy highlighting (spaCy recognizes the linebreaks automatically):
-                matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx]})
+                matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx], 'work': works[doc_idx]})
                 # This is the working version without spaCy, DO NOT ERASE:
                 # matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx].replace("\n", "<br />")})
 
@@ -212,7 +213,7 @@ def ranking_search(user_query):
             ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
             for score, i in ranked_scores_and_doc_ids:
                 # This line works for version with spaCy highlighting (spaCy recognizes the linebreaks automatically):
-                matches.append({'name': documents_titles[i], 'text': documents[i], 'score' : score})
+                matches.append({'name': documents_titles[i], 'text': documents[i], 'score' : score, 'work': works[i]})
                 # This is the working version without spaCy, DO NOT ERASE:
                 # matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
 
@@ -226,7 +227,7 @@ def ranking_search(user_query):
             ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
             for score, i in ranked_scores_and_doc_ids:
                 # This line works for version with spaCy highlighting (spaCy recognizes the linebreaks automatically):
-                matches.append({'name': documents_titles[i], 'text': documents[i], 'score' : score})
+                matches.append({'name': documents_titles[i], 'text': documents[i], 'score' : score, 'work': works[i]})
                 # This is the working version without spaCy, DO NOT ERASE:
                 # matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
 
@@ -247,8 +248,10 @@ def generate_query_plot(query,matches):
     dist_dict={}
 
     for match in matches:
-        # TODO this is only for dummy purposes, real data will contain dates
-        document_week_date = date_aggregated(random_date())
+        if not match['work']['date_published']:
+            continue
+        yourdate = parser.parse(match['work']['date_published'])
+        document_week_date = date_aggregated(yourdate)
         if document_week_date in dist_dict.keys():
             dist_dict[document_week_date] += 1
         else:
@@ -276,14 +279,6 @@ def generate_query_plot(query,matches):
 def date_aggregated(date):
     """ Displaying every document on its own date will not fit, currently aggregating dates to the Monday of their week """
     return date - datetime.timedelta(days=date.weekday())
-
-
-# TODO remove, for dummy use only
-def random_date():
-
-    now_date = datetime.datetime.now()
-    random_days = datetime.timedelta(days=random.randrange(1825))
-    return now_date - random_days
 
 '''
 @app.route('/hello')
