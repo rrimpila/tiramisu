@@ -18,6 +18,7 @@ import random
 import datetime
 import time
 import os
+import json
 
 
 
@@ -28,15 +29,42 @@ app = Flask(__name__)
 absolute_path = os.path.dirname(__file__)
 relative_path = "../data/"
 full_path = os.path.join(absolute_path, relative_path)
-with open(full_path + 'enwiki-20181001-corpus.1000-articles.txt', encoding='utf8') as f:
+with open(full_path + 'fanfics2018.json', encoding='utf8') as f:
     content = f.read()
 
-# split by closing article tag, and then remove opening tag
-# save document titles in separate array
-documents = content.strip().split('</article>')
-p = re.compile('^\s*<article\s+name="(.*?)"\s*>\s*')
-documents_titles = [p.match(document).group(1) for document in documents if document and p.match(document)]
-documents = [re.sub(p, "", document) for document in documents if document and p.match(document)]
+# Parsing the json files and converting it into python dictionary form
+documents = json.loads(content)
+
+# Metadata can be extracted from the fanfic articles in this manner:
+# fic_date = documents[index]['date_published'][:10] --> the date is in the form: 2017-12-25
+# fic_title = documents[index]['title']
+# fic_id = documents[index]['id']
+# fic_categories = documents[index]['categories'] --> a list
+# fic_characters = documents[index]['characters'] --> a list
+# fic_fandoms = documents[index]['characters'] --> a list
+# fic_tags = documents[index]['tags'] --> a list
+# fic_warnings = documents[index]['warnings'] --> a list
+# fic_text = documents[index]['content'] --> this is the article text, all headlines within text are placed inside <h3></h3> tags and the paragraphs inside <p></p> tags for html
+
+fic_all_dates = []
+fic_all_ids = []
+fic_all_titles = []
+fic_all_texts = []
+
+index = 0
+for item in documents:    
+    fic_date = documents[index]['date_published'][:10]
+    fic_all_dates.append(fic_date)
+    fic_id = documents[index]['id']
+    fic_all_ids.append(fic_id)
+    fic_title = documents[index]['title']
+    fic_all_titles.append(fic_title)
+    fic_text = documents[index]['content']
+    fic_all_texts.append(fic_text)
+    index += 1
+
+documents_titles = fic_all_titles
+documents = fic_all_texts
 
 cv = CountVectorizer(lowercase=True, binary=True, stop_words=None, token_pattern=r'(?u)\b\w+\b', ngram_range=(1,3))
 sparse_matrix = cv.fit_transform(documents)
@@ -303,16 +331,17 @@ def search():
 
     if chosen_ents != []:
         print("Chosen entities:", chosen_ents)
-        
+
     # modifying text items of the matches_shown variable with the chosen ents and their corresponding colors:
     for match in matches_shown:
         text = match["text"]
-        spacy_text = ner_spacy(text)
-        colors = {"PERSON": "#BECDF4", "DATE": "#ADD6D6", "LANGUAGE": "#F0DDB8", "GPE": "#E5E9E9"}
-        options = {"ents": chosen_ents, "colors": colors}
-        spacy_html = displacy.render(spacy_text, style="ent", options=options)
-        match["text"] = spacy_html
-    
+        if len(text) < 100000:
+            spacy_text = ner_spacy(text)
+            colors = {"PERSON": "#BECDF4", "DATE": "#ADD6D6", "LANGUAGE": "#F0DDB8", "GPE": "#E5E9E9"}
+            options = {"ents": chosen_ents, "colors": colors}
+            spacy_html = displacy.render(spacy_text, style="ent", options=options)
+            match["text"] = spacy_html
+        
 
     # create pagination
     pages = []
