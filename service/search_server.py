@@ -330,7 +330,17 @@ def search():
     # modifying text items of the matches_shown variable with the chosen ents and their corresponding colors:
     for match in matches_shown:
         text = match["text"]
-        if len(text) < 100000:
+        print("Length of the article:", len(text)) # for testing
+        if len(text) > 99900:
+            beginning_of_text = text[0:99900]
+            rest_of_text = text[99900:]
+            spacy_text = ner_spacy(beginning_of_text)
+            colors = {"PERSON": "#BECDF4", "DATE": "#ADD6D6", "LANGUAGE": "#F0DDB8", "GPE": "#E5E9E9"}
+            options = {"ents": chosen_ents, "colors": colors}
+            spacy_html = displacy.render(spacy_text, style="ent", options=options)
+            whole_text = spacy_html + rest_of_text
+            match["text"] = whole_text
+        else:
             spacy_text = ner_spacy(text)
             colors = {"PERSON": "#BECDF4", "DATE": "#ADD6D6", "LANGUAGE": "#F0DDB8", "GPE": "#E5E9E9"}
             options = {"ents": chosen_ents, "colors": colors}
