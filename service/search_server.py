@@ -31,28 +31,24 @@ app = Flask(__name__)
 absolute_path = os.path.dirname(__file__)
 relative_path = "../data/"
 full_path = os.path.join(absolute_path, relative_path)
-
 with open(full_path + 'fanfics2018.json', encoding='utf8') as fic18:
     content18 = fic18.read()
     content18 = json.loads(content18)
-# with open(full_path + 'fanfics2019.json', encoding='utf8') as fic19:
-#     content19 = fic19.read()
-#     content19 = json.loads(content19)
-# with open(full_path + 'fanfics2020.json', encoding='utf8') as fic20:
-#     content20 = fic20.read()
-#     content20 = json.loads(content20)
-# with open(full_path + 'fanfics2021.json', encoding='utf8') as fic21:
-#     content21 = fic21.read()
-#     content21 = json.loads(content21)
-# with open(full_path + 'fanfics2022.json', encoding='utf8') as fic22:
-#     content22 = fic22.read()
-#     content22 = json.loads(content22)
+with open(full_path + 'fanfics2019.json', encoding='utf8') as fic19:
+    content19 = fic19.read()
+    content19 = json.loads(content19)
+with open(full_path + 'fanfics2020.json', encoding='utf8') as fic20:
+    content20 = fic20.read()
+    content20 = json.loads(content20)
+with open(full_path + 'fanfics2021.json', encoding='utf8') as fic21:
+    content21 = fic21.read()
+    content21 = json.loads(content21)
+with open(full_path + 'fanfics2022.json', encoding='utf8') as fic22:
+    content22 = fic22.read()
+    content22 = json.loads(content22)
 
 # Combining all contents to one file that can then be processed at once
-# documents = content18 + content19 + content20 + content21 + content22
-
-# FOR TESTING with only one or two json-files at a time:
-documents = content18
+documents = content18 + content19 + content20 + content21 + content22
 
 """
 Metadata can be extracted from the fanfic articles in this manner:
@@ -70,7 +66,6 @@ fic_text = documents[index]['content'] --> this is the article text, all headlin
 # Creating variables from the data to be used in the program
 
 fic_all_dates = []
-fic_all_ids = []
 fic_all_titles = []
 fic_all_texts = []
 
@@ -78,8 +73,6 @@ index = 0
 for item in documents:    
     fic_date = documents[index]['date_published'][:10]
     fic_all_dates.append(fic_date)
-    fic_id = documents[index]['id']
-    fic_all_ids.append(fic_id)
     fic_title = documents[index]['title']
     fic_all_titles.append(fic_title)
     fic_text = documents[index]['content']
@@ -89,11 +82,6 @@ for item in documents:
 works = documents
 documents_titles = fic_all_titles
 documents = fic_all_texts
-
-# FOR TESTING (everything works when only one or two json-files are being handled, EXCEPT that some of the dates = articles are from before 2018):
-# print(documents_titles)
-# print(fic_all_dates)
-# exit()
 
 
 cv = CountVectorizer(lowercase=True, binary=True, stop_words=None, token_pattern=r'(?u)\b\w+\b', ngram_range=(1,3))
@@ -211,8 +199,6 @@ def boolean_test_query(query):
             for doc_idx in hits_list:
                 # This line works for version with spaCy highlighting (spaCy recognizes the linebreaks automatically):
                 matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx], 'work': works[doc_idx]})
-                # This is the working version without spaCy, DO NOT ERASE:
-                # matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx].replace("\n", "<br />")})
 
     except SyntaxError:
         print(f"\n{error_message}\n")
@@ -248,8 +234,6 @@ def ranking_search(user_query):
             for score, i in ranked_scores_and_doc_ids:
                 # This line works for version with spaCy highlighting (spaCy recognizes the linebreaks automatically):
                 matches.append({'name': documents_titles[i], 'text': documents[i], 'score' : score, 'work': works[i]})
-                # This is the working version without spaCy, DO NOT ERASE:
-                # matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
 
         except IndexError:
             print(f"\n{error_message}\n")
@@ -263,8 +247,6 @@ def ranking_search(user_query):
             for score, i in ranked_scores_and_doc_ids:
                 # This line works for version with spaCy highlighting (spaCy recognizes the linebreaks automatically):
                 matches.append({'name': documents_titles[i], 'text': documents[i], 'score' : score, 'work': works[i]})
-                # This is the working version without spaCy, DO NOT ERASE:
-                # matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
 
         except SyntaxError:
             print(f"\n{error_message}\n")
