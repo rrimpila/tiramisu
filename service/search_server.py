@@ -25,12 +25,26 @@ from dateutil import parser
 #Initialize Flask instance
 app = Flask(__name__)
 
-# read articles from file
+# read articles from fanfic files of 2018-2022 in data folder
 absolute_path = os.path.dirname(__file__)
 relative_path = "../data/"
 full_path = os.path.join(absolute_path, relative_path)
-with open(full_path + 'fanfics2018.json', encoding='utf8') as f:
-    content = f.read()
+
+with open(full_path + 'fanfics2018.json', encoding='utf8') as fic18:
+    content = fic18.read()
+    
+# with open(full_path + 'fanfics2019.json', encoding='utf8') as fic19:
+#     content = fic19.read()
+
+# with open(full_path + 'fanfics2020.json', encoding='utf8') as fic20:
+#     content = fic20.read()
+    
+# with open(full_path + 'fanfics2021.json', encoding='utf8') as fic21:
+#     content = fic21.read()
+    
+# with open(full_path + 'fanfics2022.json', encoding='utf8') as fic22:
+#     content = fic22.read()
+
 
 # Parsing the json files and converting it into python dictionary form
 documents = json.loads(content)
@@ -317,36 +331,36 @@ def search():
 
 
     # Named entity highlighting with spaCy
-    # First, making a list of the entities (ents) that the user has chosen to highlight:
+    # First, we'll make a list of the entities (ents) that the user has chosen to highlight:
     chosen_ents = []
     for category in spacy_categories:
         if request.args.get(category["name"]) is not None:
             chosen_ents.append(request.args.get(category["name"]))
         category['active'] = request.args.get(category["name"], False)
 
+    # Second, if user has chosen to highlight entities:
+    # we'll modify text items of the matches_shown variable with the chosen ents and their corresponding colors
+    # (because of reasons concerning temporary memory, spaCy highlighting is only processed for the first 100 000 characters of each document)
     if chosen_ents != []:
         print("Chosen entities:", chosen_ents)
-
-    # Second, modifying text items of the matches_shown variable with the chosen ents and their corresponding colors
-    # because of reasons concerning temporary memory, spaCy highlighting is only processed for the first 100 000 characters of each document
-    for match in matches_shown:
-        text = match["text"]
-        print("Length of the article:", len(text)) # for testing
-        if len(text) > 100000:
-            beginning_of_text = text[0:100000]
-            rest_of_text = text[100000:]
-            spacy_text = ner_spacy(beginning_of_text)
-            colors = {"PERSON": "#BECDF4", "DATE": "#ADD6D6", "LANGUAGE": "#F0DDB8", "GPE": "#E5E9E9"}
-            options = {"ents": chosen_ents, "colors": colors}
-            spacy_html = displacy.render(spacy_text, style="ent", options=options)
-            whole_text = spacy_html + rest_of_text
-            match["text"] = whole_text
-        else:
-            spacy_text = ner_spacy(text)
-            colors = {"PERSON": "#BECDF4", "DATE": "#ADD6D6", "LANGUAGE": "#F0DDB8", "GPE": "#E5E9E9"}
-            options = {"ents": chosen_ents, "colors": colors}
-            spacy_html = displacy.render(spacy_text, style="ent", options=options)
-            match["text"] = spacy_html
+        for match in matches_shown:
+            text = match["text"]
+            print("Length of the article:", len(text)) # for testing, will remove later
+            if len(text) > 100000:
+                beginning_of_text = text[0:100000]
+                rest_of_text = text[100000:]
+                spacy_text = ner_spacy(beginning_of_text)
+                colors = {"PERSON": "#BECDF4", "DATE": "#ADD6D6", "LANGUAGE": "#F0DDB8", "GPE": "#E5E9E9"}
+                options = {"ents": chosen_ents, "colors": colors}
+                spacy_html = displacy.render(spacy_text, style="ent", options=options)
+                whole_text = spacy_html + rest_of_text
+                match["text"] = whole_text
+            else:
+                spacy_text = ner_spacy(text)
+                colors = {"PERSON": "#BECDF4", "DATE": "#ADD6D6", "LANGUAGE": "#F0DDB8", "GPE": "#E5E9E9"}
+                options = {"ents": chosen_ents, "colors": colors}
+                spacy_html = displacy.render(spacy_text, style="ent", options=options)
+                match["text"] = spacy_html
         
 
     # create pagination
