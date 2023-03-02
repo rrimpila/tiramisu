@@ -21,6 +21,7 @@ import os
 import json
 from dateutil import parser
 
+plt.switch_backend('Agg') # Added to avoid site crashing on mac
 
 #Initialize Flask instance
 app = Flask(__name__)
@@ -375,7 +376,7 @@ def search():
                 colors = {"PERSON": "#BECDF4", "DATE": "#ADD6D6", "LANGUAGE": "#F0DDB8", "GPE": "#E5E9E9"}
                 options = {"ents": chosen_ents, "colors": colors}
                 spacy_html = displacy.render(spacy_text, style="ent", options=options)
-                whole_text = spacy_html + rest_of_text
+                whole_text = spacy_html + rest_of_text.replace("\n", "<br />")
                 match["text"] = whole_text
             else:
                 spacy_text = ner_spacy(text)
@@ -383,7 +384,9 @@ def search():
                 options = {"ents": chosen_ents, "colors": colors}
                 spacy_html = displacy.render(spacy_text, style="ent", options=options)
                 match["text"] = spacy_html
-        
+    else:
+        for match in matches_shown:
+            match["text"] = match["text"].replace("\n", "<br />")
 
     # create pagination
     pages = []

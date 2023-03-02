@@ -64,9 +64,9 @@ while total_document_count < max_documents_per_year: # look for the first 100 wo
       content = "";
       for chapter in result.chapters:
         if chapter.title:
-          content += "<h3>" + chapter.title + "</h3>"
+          content += chapter.title + "\n"
         if chapter.text:
-          content += "<p>" + chapter.text + "</p>"
+          content += chapter.text + "\n"
       fanfic['content'] = content
       fanfics.append(fanfic)
       total_document_count += 1
