@@ -25,40 +25,48 @@ from dateutil import parser
 #Initialize Flask instance
 app = Flask(__name__)
 
-# read articles from fanfic files of 2018-2022 in data folder
+# Reading articles from fanfic files of 2018-2022 in data folder
+# Parsing the json files and converting the contents of each file into python dictionary form
 absolute_path = os.path.dirname(__file__)
 relative_path = "../data/"
 full_path = os.path.join(absolute_path, relative_path)
 
 with open(full_path + 'fanfics2018.json', encoding='utf8') as fic18:
-    content = fic18.read()
-    
+    content18 = fic18.read()
+    content18 = json.loads(content18)
 # with open(full_path + 'fanfics2019.json', encoding='utf8') as fic19:
-#     content = fic19.read()
-
+#     content19 = fic19.read()
+#     content19 = json.loads(content19)
 # with open(full_path + 'fanfics2020.json', encoding='utf8') as fic20:
-#     content = fic20.read()
-    
+#     content20 = fic20.read()
+#     content20 = json.loads(content20)
 # with open(full_path + 'fanfics2021.json', encoding='utf8') as fic21:
-#     content = fic21.read()
-    
+#     content21 = fic21.read()
+#     content21 = json.loads(content21)
 # with open(full_path + 'fanfics2022.json', encoding='utf8') as fic22:
-#     content = fic22.read()
+#     content22 = fic22.read()
+#     content22 = json.loads(content22)
 
+# Combining all contents to one file that can then be processed at once
+# documents = content18 + content19 + content20 + content21 + content22
 
-# Parsing the json files and converting it into python dictionary form
-documents = json.loads(content)
+# FOR TESTING with only one or two json-files at a time:
+documents = content18
 
-# Metadata can be extracted from the fanfic articles in this manner:
-# fic_date = documents[index]['date_published'][:10] --> the date is in the form: 2017-12-25
-# fic_title = documents[index]['title']
-# fic_id = documents[index]['id']
-# fic_categories = documents[index]['categories'] --> a list
-# fic_characters = documents[index]['characters'] --> a list
-# fic_fandoms = documents[index]['characters'] --> a list
-# fic_tags = documents[index]['tags'] --> a list
-# fic_warnings = documents[index]['warnings'] --> a list
-# fic_text = documents[index]['content'] --> this is the article text, all headlines within text are placed inside <h3></h3> tags and the paragraphs inside <p></p> tags for html
+"""
+Metadata can be extracted from the fanfic articles in this manner:
+fic_date = documents[index]['date_published'][:10] --> the date is in the form: 2018-12-25
+fic_title = documents[index]['title']
+fic_id = documents[index]['id']
+fic_categories = documents[index]['categories'] --> a list
+fic_characters = documents[index]['characters'] --> a list
+fic_fandoms = documents[index]['characters'] --> a list
+fic_tags = documents[index]['tags'] --> a list
+fic_warnings = documents[index]['warnings'] --> a list
+fic_text = documents[index]['content'] --> this is the article text, all headlines within text are placed inside <h3></h3> tags and the paragraphs inside <p></p> tags for html
+"""
+
+# Creating variables from the data to be used in the program
 
 fic_all_dates = []
 fic_all_ids = []
@@ -80,6 +88,12 @@ for item in documents:
 works = documents
 documents_titles = fic_all_titles
 documents = fic_all_texts
+
+# FOR TESTING (everything works when only one or two json-files are being handled, EXCEPT that some of the dates = articles are from before 2018):
+# print(documents_titles)
+# print(fic_all_dates)
+# exit()
+
 
 cv = CountVectorizer(lowercase=True, binary=True, stop_words=None, token_pattern=r'(?u)\b\w+\b', ngram_range=(1,3))
 sparse_matrix = cv.fit_transform(documents)
@@ -160,6 +174,9 @@ def check_for_inflections(query): # reads the query and returns a rewritten quer
     rewritten = rewritten.strip()
     return rewritten # return rewritten query
 
+# error message
+error_message = "Unknown word, no matches found for the search query. Make sure your query is typed in as instructed."
+
 # boolean search-related functions
 def boolean_query_matrix(t):
     """
@@ -181,7 +198,8 @@ def boolean_test_query(query):
     rewritten_query = boolean_rewrite_query(query)
     # check for ) ( since it might create an attempt to call the function, and this is not a syntax error even though it is the wrong syntax
     if re.match(".*\)\s*\(.*", rewritten_query):
-        return [], "Unknown word, no matches found for the search query. Make sure your query is typed in as instructed."
+        print(f"\n{error_message}\n")
+        return [], error_message
     matches = []
     try:
         if np.all(eval(rewritten_query) == 0):
@@ -196,7 +214,8 @@ def boolean_test_query(query):
                 # matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx].replace("\n", "<br />")})
 
     except SyntaxError:
-        return [], "Unknown word, no matches found for the search query. Make sure your query is typed in as instructed."
+        print(f"\n{error_message}\n")
+        return [], error_message
     return matches, ""
 
 def ranking_search(user_query):
@@ -232,7 +251,8 @@ def ranking_search(user_query):
                 # matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
 
         except IndexError:
-            return [], "Unknown word, no matches found for the search query. Make sure your query is typed in as instructed."
+            print(f"\n{error_message}\n")
+            return [], error_message
 
     else:
         try:
@@ -246,9 +266,11 @@ def ranking_search(user_query):
                 # matches.append({'name': documents_titles[i], 'text': documents[i].replace("\n", "<br />"), 'score' : score})
 
         except SyntaxError:
-            return [], "Unknown word, no matches found for the search query. Make sure your query is typed in as instructed."
+            print(f"\n{error_message}\n")
+            return [], error_message
         except IndexError:
-            return [], "Unknown word, no matches found for the search query. Make sure your query is typed in as instructed."
+            print(f"\n{error_message}\n")
+            return [], error_message
 
     return matches, ""
 
