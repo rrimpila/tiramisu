@@ -97,6 +97,10 @@
       .result-metadata td {
         padding: 4px;
       }
+      a.article-title {
+        color: #000;
+        font-weight: bold;
+      }
 
     </style>
     <meta charset="utf-8">
@@ -200,7 +204,7 @@
         <div>
           <table class="result-metadata">
             <!--Display the name of the item based on the "name" key-->
-            <tr><td><b>Name</b></td><td>{{ item["name"] }}</td></tr>
+            <tr><td><b>Name</b></td><td><a class="article-title" href="https://archiveofourown.org/works/{{ item["work"]["id"] }}" target="_blank">{{ item["name"] }}</a></td></tr>
 	    <!--Display relevance score only if ranking search is used:-->
             {% if search_type == "ranking_search" %}
               <tr><td><b>Relevance score</b></td><td>{{ item["score"] }}</td></tr>
