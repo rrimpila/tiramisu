@@ -87,6 +87,16 @@
       input[type=submit] {
         font-size: larger;
       }
+      .tag {
+        padding:3px 5px;
+        margin: 3px;
+        background:#FFF;
+        -webkit-border-radius: 5px;
+        border-radius: 5px; 
+      }
+      .result-metadata td {
+        padding: 4px;
+      }
 
     </style>
     <meta charset="utf-8">
@@ -184,23 +194,87 @@
       </div>
 
       <div class="results">
-        <table>
-          <!--Go through each item in the "matches" variable sent from
-              search() function in the Flask app-->
-          {% for item in matches %}
-          <div>
-            <br>
+        <!--Go through each item in the "matches" variable sent from
+            search() function in the Flask app-->
+        {% for item in matches %}
+        <div>
+          <table class="result-metadata">
             <!--Display the name of the item based on the "name" key-->
-            <div><b>Name:</b> {{ item["name"] }}</div>
+            <tr><td><b>Name</b></td><td>{{ item["name"] }}</td></tr>
 	    <!--Display relevance score only if ranking search is used:-->
-	    <div {% if search_type == "ranking_search" %} style="display: block;" {% else %} style="display: none;" {% endif %}><b>Relevance score:</b> {{ item["score"] }}</div>
+            {% if search_type == "ranking_search" %}
+              <tr><td><b>Relevance score</b></td><td>{{ item["score"] }}</td></tr>
+            {% endif %}
+	    <!--Display categories if present :-->
+            {% if item["work"]["categories"] %}
+              <tr><td><b>Categories</b></td><td>
+                {% for tag in item["work"]["categories"] %}
+                  <span class="tag">{{ tag }}</span>
+                {% endfor %}
+              </td></tr>
+            {% endif %}
+	    <!--Display characters if present :-->
+            {% if item["work"]["characters"] %}
+              <tr><td><b>Characters</b></td><td>
+                {% for tag in item["work"]["characters"] %}
+                  <span class="tag">{{ tag }}</span>
+                {% endfor %}
+              </td></tr>
+            {% endif %}
+	    <!--Display fandoms if present :-->
+            {% if item["work"]["fandoms"] %}
+              <tr><td><b>Fandoms</b></td><td>
+                {% for tag in item["work"]["fandoms"] %}
+                  <span class="tag">{{ tag }}</span>
+                {% endfor %}
+              </td></tr>
+            {% endif %}
+	    <!--Display rating if present :-->
+            {% if item["work"]["rating"] %}
+              <tr><td><b>Rating</b></td><td><span class="tag">{{ item["work"]["rating"] }}</span></td></tr>
+            {% endif %}
+	    <!--Display relationships if present :-->
+            {% if item["work"]["relationships"] %}
+              <tr><td><b>Relationships</b></td><td>
+                {% for tag in item["work"]["relationships"] %}
+                  <span class="tag">{{ tag }}</span>
+                {% endfor %}
+              </td></tr>
+            {% endif %}
+	    <!--Display tags if present :-->
+            {% if item["work"]["tags"] %}
+              <tr><td><b>General tags</b></td><td>
+                {% for tag in item["work"]["tags"] %}
+                  <span class="tag">{{ tag }}</span>
+                {% endfor %}
+              </td></tr>
+            {% endif %}
+	    <!--Display warnings if present :-->
+            {% if item["work"]["warnings"] %}
+              <tr><td><b>Warnings</b></td><td>
+                {% for tag in item["work"]["warnings"] %}
+                  <span class="tag">{{ tag }}</span>
+                {% endfor %}
+              </td></tr>
+            {% endif %}
+	    <!--Display date_published if present :-->
+            {% if item["work"]["date_published"] %}
+              <tr><td><b>Date published</b></td><td><span class="tag">{{ item["work"]["date_published"] }}</span></td></tr>
+            {% endif %}
+	    <!--Display date_edited if present :-->
+            {% if item["work"]["date_edited"] %}
+              <tr><td><b>Date edited</b></td><td><span class="tag">{{ item["work"]["date_edited"] }}</span></td></tr>
+            {% endif %}
+	    <!--Display date_updated if present :-->
+            {% if item["work"]["date_updated"] %}
+              <tr><td><b>Date updated</b></td><td><span class="tag">{{ item["work"]["date_updated"] }}</span></td></tr>
+            {% endif %}
+	    </table>
             <!--Display the contents of the item based on the "source" key-->
-	    <br>
-            <div class="show-less result-box">{{ item["text"]|safe }}</div>
+	    <div class="show-less result-box">{{ item["text"]|safe }}</div>
           </div>
 	  <!--End for loop-->
 	  {% endfor %}
-	</table>
       </div>
       {% if pages -%}
       <div class="pagination">
