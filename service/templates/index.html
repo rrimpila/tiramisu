@@ -69,9 +69,14 @@
       .pagination .pagination-page a {
           text-decoration: none;
       }
-      .graph-element {
+      .graph-element-container {
         display: inline-block;
-        max-width: 45%;
+        width: 48%;
+	overflow-x: auto;
+      }
+      .graph-element {
+	display: block;
+	margin: auto;
       }
       input[type=submit], button {
         padding:10px 35px; 
@@ -193,7 +198,9 @@
 	<h3><u>Matching documents</u>:</h3>
 	<p><b>{{ docs_total }}</b> matching documents in total.</p>
 	{% if plot %}
-	<img src="{{ plot }}" class="graph-element">
+	<div class="graph-element-container">
+	  <img src="{{ plot }}" class="graph-element">
+	</div>
 	{% endif %}
 	
       </div>

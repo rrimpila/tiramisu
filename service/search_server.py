@@ -282,30 +282,55 @@ def generate_query_plot(query,matches):
         else:
             dist_dict[document_week_date] = 1
 
+    # calculate required width
+    # we count the days between start and end, and translate it to months
+    time_difference = max(dist_dict.keys()) - min(dist_dict.keys())
+    time_difference_in_months = time_difference.days / 356 * 12
+
     # create plot
-    plt.figure(figsize=(10,4))
+    plt.figure(figsize=(max(time_difference_in_months * 0.2, 6.4),4.8))
     plt.gcf().subplots_adjust(bottom=0.20)
-    plt.title(f"Weekly distribution of the documents")   
+    plt.title(f"Monthly distribution of the documents", ha='left', x=-0)   
     ax = plt.subplot()
 
     # bar chart with from counted values
-    ax.bar(dist_dict.keys(), dist_dict.values(), width=1)
+    ax.bar(dist_dict.keys(), dist_dict.values(), width=25)
     # set y axis to full integer ticks
     ax.yaxis.set_major_locator(MaxNLocator(integer=True))
 
-
     # set xaxis as dates
     ax.xaxis_date()
+
+    if time_difference_in_months > 12: # we have multiple years of data
+
+        # Set minor ticks to months
+        ax.xaxis.set_minor_locator(mdates.MonthLocator(interval=1))
+
+        # set major ticks to year
+        ax.xaxis.set_major_locator(mdates.YearLocator())
+
+        # set formatter
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+
+    else: # less than a year, format with monhtly major ticks
+
+        # Set major ticks to months
+        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
+
+        # set formatter
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+
+    # set rotation for date tick labels 
     plt.setp(ax.get_xticklabels(), rotation=30, ha="right")
 
     # save chart to file
     relative_path = f'static/query_{query}_plot.png'
-    plt.savefig(os.path.join(absolute_path, relative_path))
+    plt.savefig(os.path.join(absolute_path, relative_path), bbox_inches='tight')
     return relative_path
 
 def date_aggregated(date):
-    """ Displaying every document on its own date will not fit, currently aggregating dates to the Monday of their week """
-    return date - datetime.timedelta(days=date.weekday())
+    """ Displaying every document on its own date will not fit, currently aggregating dates to the 1st month """
+    return date - datetime.timedelta(days=date.day)
 
 '''
 @app.route('/hello')
