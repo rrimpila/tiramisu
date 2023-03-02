@@ -317,7 +317,7 @@ def search():
 
 
     # Named entity highlighting with spaCy
-    # making a list of the entities (ents) the user has chosen to highlight:
+    # First, making a list of the entities (ents) that the user has chosen to highlight:
     chosen_ents = []
     for category in spacy_categories:
         if request.args.get(category["name"]) is not None:
@@ -327,13 +327,14 @@ def search():
     if chosen_ents != []:
         print("Chosen entities:", chosen_ents)
 
-    # modifying text items of the matches_shown variable with the chosen ents and their corresponding colors:
+    # Second, modifying text items of the matches_shown variable with the chosen ents and their corresponding colors
+    # because of reasons concerning temporary memory, spaCy highlighting is only processed for the first 100 000 characters of each document
     for match in matches_shown:
         text = match["text"]
         print("Length of the article:", len(text)) # for testing
-        if len(text) > 99900:
-            beginning_of_text = text[0:99900]
-            rest_of_text = text[99900:]
+        if len(text) > 100000:
+            beginning_of_text = text[0:100000]
+            rest_of_text = text[100000:]
             spacy_text = ner_spacy(beginning_of_text)
             colors = {"PERSON": "#BECDF4", "DATE": "#ADD6D6", "LANGUAGE": "#F0DDB8", "GPE": "#E5E9E9"}
             options = {"ents": chosen_ents, "colors": colors}
