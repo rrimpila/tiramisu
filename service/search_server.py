@@ -26,6 +26,12 @@ plt.switch_backend('Agg') # Added to avoid site crashing on mac
 #Initialize Flask instance
 app = Flask(__name__)
 
+# template formatter for unifying shown dates
+@app.template_filter()
+def format_date(value):
+    mydate = parser.parse(value)
+    return mydate.strftime('%Y-%m-%d')
+
 # Reading articles from fanfic files of 2018-2022 in data folder
 # Parsing the json files and converting the contents of each file into python dictionary form
 absolute_path = os.path.dirname(__file__)

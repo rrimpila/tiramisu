@@ -259,15 +259,15 @@
             {% endif %}
 	    <!--Display date_published if present :-->
             {% if item["work"]["date_published"] %}
-              <tr><td><b>Date published</b></td><td><span class="tag">{{ item["work"]["date_published"] }}</span></td></tr>
+              <tr><td><b>Date published</b></td><td><span class="tag">{{ item["work"]["date_published"]|format_date }}</span></td></tr>
             {% endif %}
 	    <!--Display date_edited if present :-->
             {% if item["work"]["date_edited"] %}
-              <tr><td><b>Date edited</b></td><td><span class="tag">{{ item["work"]["date_edited"] }}</span></td></tr>
+              <tr><td><b>Date edited</b></td><td><span class="tag">{{ item["work"]["date_edited"]|format_date }}</span></td></tr>
             {% endif %}
 	    <!--Display date_updated if present :-->
             {% if item["work"]["date_updated"] %}
-              <tr><td><b>Date updated</b></td><td><span class="tag">{{ item["work"]["date_updated"] }}</span></td></tr>
+              <tr><td><b>Date updated</b></td><td><span class="tag">{{ item["work"]["date_updated"]|format_date }}</span></td></tr>
             {% endif %}
 	    </table>
             <!--Display the contents of the item based on the "source" key-->
