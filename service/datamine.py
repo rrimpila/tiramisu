@@ -59,14 +59,23 @@ while total_document_count < max_documents_per_year: # look for the first 100 wo
       fanfic['warnings'] = result.warnings
       fanfic['id'] = result.id
       fanfic['date_published'] = result.date_published
+      fanfic['date_edited'] = result.date_edited
+      fanfic['date_updated'] = result.date_updated
       if fanfic['date_published']:
         fanfic['date_published'] = fanfic['date_published'].isoformat()
+      if fanfic['date_edited']:
+        fanfic['date_edited'] = fanfic['date_edited'].isoformat()
+      if fanfic['date_updated']:
+        fanfic['date_updated'] = fanfic['date_updated'].isoformat()
       content = "";
-      for chapter in result.chapters:
-        if chapter.title:
-          content += chapter.title + "\n"
-        if chapter.text:
-          content += chapter.text + "\n"
+      # Only take first chapter for processing power
+      if result.chapters[0]:
+        if result.chapters[0].title:
+          content += result.chapters[0].title + "\n"
+        if result.chapters[0].text:
+          content += result.chapters[0].text
+        if result.nchapters > 1:
+          content += "\n..."
       fanfic['content'] = content
       fanfics.append(fanfic)
       total_document_count += 1
