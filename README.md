@@ -9,7 +9,7 @@ Building an NLP application, a Helsinki University course project by Tiia Poikaj
 
 __NOTE:__ Make sure you are in your `myproject` directory.
 
-__Clone this git repository (just use one of the options below!)__:
+### Clone this git repository (just use one of the options below!):
 
 ```
 git clone git@github.com:rrimpila/tiramisu.git # ssh cloning
@@ -19,7 +19,7 @@ cd tiramisu
 
 We will use a virtual environment to contain the project. This way, if you want to export the codebase to a different machine you just have to follow the same instructions to avoid version control problems. If you want to know more about virtual environments and good practices read [this entry](https://docs.python-guide.org/dev/virtualenvs/) - it will save you a lot of headaches...
 
-__Setting up demoenv__
+### Setting up demoenv
 
 *(__NOTE:__ Scroll down for instructions for Windows users)*  
 
@@ -80,7 +80,7 @@ python3 -m spacy download en_core_web_sm
 (When you are finished working in the demoenv, you can deactivate the environment using command ```deactivate```.)  
 
 
-__How to run Flask__
+### How to run Flask
 
 The `search_server.py` file is the application's root. This is where all the Flask application goodness will go.  We create an environment variable that points to that file by setting the following environment variables. For your project you can set up that environment variable in your environment's activate script.
 
