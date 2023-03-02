@@ -294,8 +294,10 @@ def generate_query_plot(query,matches):
         else:
             dist_dict[document_week_date] = 1
 
-    plt.figure().set_figwidth(15)
-    plt.title(f"Document distribution \n query: {query}")
+    # create plot
+    plt.figure(figsize=(10,4))
+    plt.gcf().subplots_adjust(bottom=0.20)
+    plt.title(f"Weekly distribution of the documents")   
     ax = plt.subplot()
 
     # bar chart with from counted values
