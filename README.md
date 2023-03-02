@@ -66,7 +66,7 @@ demoenv\Scripts\activate
 Install requirements for application:
 
 ```
-pip3 install -r service\requirements.txt
+python3 -m pip install -r service\requirements.txt
 python3 -m spacy download en_core_web_sm
 
 ```
