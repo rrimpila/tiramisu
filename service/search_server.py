@@ -21,6 +21,7 @@ import os
 import json
 from dateutil import parser
 
+plt.switch_backend('Agg') # Added to avoid site crashing on mac
 
 #Initialize Flask instance
 app = Flask(__name__)
