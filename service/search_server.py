@@ -172,6 +172,24 @@ def check_for_inflections(query): # reads the query and returns a rewritten quer
 # error message
 error_message = "Unknown word, no matches found for the search query. Make sure your query is typed in as instructed."
 
+# function for making list of inflected forms of the search query
+def inflections(query):
+    inflections_list = re.split(" *OR *| *AND *| *NOT *|\( | \)", query)
+    query_list = []
+    for item in inflections_list:
+        # if item is empty, don't take into account:
+        if item == "" or item == " ":
+            continue
+        # if query is an exact match, loose quotation marks:
+        elif re.fullmatch("\".+\"", item):
+            exact_query = re.sub("\"", "", item)
+            query_list.append(exact_query)
+        else:
+            query_list.append(item)
+
+    return query_list
+
+
 # boolean search-related functions
 def boolean_query_matrix(t):
     """
@@ -187,18 +205,19 @@ def boolean_rewrite_query(query): # rewrite every token in the query
     return " ".join(boolean_rewrite_token(t) for t in shlex.split(query))
 
 def boolean_test_query(query):
-    print("Query: '" + query + "'")
     query = check_for_inflections(query)
     print("Query with added inflections: '" + query + " '")
     rewritten_query = boolean_rewrite_query(query)
+    inflections_list = inflections(query)
+
     # check for ) ( since it might create an attempt to call the function, and this is not a syntax error even though it is the wrong syntax
     if re.match(".*\)\s*\(.*", rewritten_query):
         print(f"\n{error_message}\n")
-        return [], error_message
+        return [], error_message, []
     matches = []
     try:
         if np.all(eval(rewritten_query) == 0):
-            return [], ""
+            return [], "", []
         else:
             hits_matrix = eval(rewritten_query)
             hits_list = list(hits_matrix.nonzero()[1])
@@ -209,11 +228,13 @@ def boolean_test_query(query):
     except SyntaxError:
         print(f"\n{error_message}\n")
         return [], error_message
-    return matches, ""
+    return matches, "", inflections_list
 
 def ranking_search(user_query):
     user_query = check_for_inflections(user_query)
     print("Query with added inflections: '" + user_query + " '")
+    inflections_list = inflections(user_query)
+
     matches = []
     if re.fullmatch("\".+\"", user_query): # Finds exact queries
         user_query_stripped = user_query[1:-1]
@@ -243,7 +264,7 @@ def ranking_search(user_query):
 
         except IndexError:
             print(f"\n{error_message}\n")
-            return [], error_message
+            return [], error_message, []
 
     else:
         try:
@@ -256,12 +277,12 @@ def ranking_search(user_query):
 
         except SyntaxError:
             print(f"\n{error_message}\n")
-            return [], error_message
+            return [], error_message, []
         except IndexError:
             print(f"\n{error_message}\n")
-            return [], error_message
+            return [], error_message, []
 
-    return matches, ""
+    return matches, "", inflections_list
 
 def create_url(search_type, query, page):
     return "/?search_type={:s}&query={:s}&page={:d}".format(search_type, urllib.parse.quote(query), page)
@@ -347,16 +368,19 @@ def search():
     search_type = request.args.get('search_type', "boolean_search")
     page = max(int(request.args.get('page', "1")), 1)
 
-    #Initialize list of matches
+    #Initialize list of matches and list of query inflections
     matches = []
     error = ""
+    inflections_list = []
 
     #If query exists (i.e. is not None)
     if query:
+        print(f"Query: {query}")
         if search_type == "boolean_search":
-            (matches, error) = boolean_test_query(f"{query}")
+            (matches, error, inflections_list) = boolean_test_query(f"{query}")
         elif search_type == "ranking_search":
-            (matches, error) = ranking_search(f"{query}")
+            (matches, error, inflections_list) = ranking_search(f"{query}")
+        print(f"Query inflections list: {inflections_list}\n")
 
     plot_file = generate_query_plot(query, matches)
 
@@ -366,6 +390,9 @@ def search():
     page_count = math.ceil(len(matches)/documents_per_page)
     page = min(page, page_count)
     matches_shown = matches[(page - 1)*documents_per_page:page*documents_per_page]
+
+    # Emphasizing query words and their inflected forms within matching fanwork texts:
+    # if query word found, change the color or styling
 
 
     # Named entity highlighting with spaCy
