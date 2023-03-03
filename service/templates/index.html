@@ -95,17 +95,19 @@
       .tag {
         padding:3px 5px;
         margin: 3px;
-        background:#FFF;
+        background:#F4F4F9;
         -webkit-border-radius: 5px;
         border-radius: 5px; 
         display: inline-block; 
       }
       .result-metadata td {
         padding: 4px;
+        color: #006666;
       }
       a.article-title {
-        color: #000;
+        color: teal;
         font-weight: bold;
+        font-size: 25px;
       }
 
     </style>
@@ -125,7 +127,7 @@
 	  <!--Explanation of how the search engine works:-->
 	  <p>The Tiramisu search engine finds the most relevant articles uploaded on the website Archive of Our Own.
 	    <br>For memory reasons the spaCy entity highlighting processes only the first 100 000 characters of each article.
-      <br>
+	    <br>
 	    <br>(insert more general info about the search here...)</p>
 	  <br>
 	  <form>
@@ -195,7 +197,7 @@
       <div class="headlines">
 	<!--Error message and matching documents:-->
 	<div id="error_message">{{ error }}</div>
-	<h3><u>Matching documents</u>:</h3>
+	<h3 style="color:#006666"><u>Matching documents</u>:</h3>
 	<p><b>{{ docs_total }}</b> matching documents in total.</p>
 	{% if plot %}
 	<div class="graph-element-container">
@@ -204,89 +206,91 @@
 	{% endif %}
 	
       </div>
-
+      
+      <!--Show results:-->
       <div class="results">
         <!--Go through each item in the "matches" variable sent from
             search() function in the Flask app-->
         {% for item in matches %}
         <div>
+          <br><br>
           <table class="result-metadata">
             <!--Display the name of the item based on the "name" key-->
-            <tr><td><b>Name</b></td><td><a class="article-title" href="https://archiveofourown.org/works/{{ item["work"]["id"] }}" target="_blank">{{ item["name"] }}</a></td></tr>
+            <tr><td><b>Title</b></td><td><a class="article-title" href="https://archiveofourown.org/works/{{ item["work"]["id"] }}" target="_blank">{{ item["name"] }}</a></td></tr>
 	    <!--Display relevance score only if ranking search is used:-->
             {% if search_type == "ranking_search" %}
-              <tr><td><b>Relevance score</b></td><td>{{ item["score"] }}</td></tr>
+            <tr><td><b>Relevance score</b></td><td>{{ item["score"] }}</td></tr>
             {% endif %}
 	    <!--Display categories if present :-->
             {% if item["work"]["categories"] %}
-              <tr><td><b>Categories</b></td><td>
+            <tr><td><b>Categories</b></td><td>
                 {% for tag in item["work"]["categories"] %}
-                  <span class="tag">{{ tag }}</span>
+                <span class="tag">{{ tag }}</span>
                 {% endfor %}
-              </td></tr>
+            </td></tr>
             {% endif %}
 	    <!--Display characters if present :-->
             {% if item["work"]["characters"] %}
-              <tr><td><b>Characters</b></td><td>
+            <tr><td><b>Characters</b></td><td>
                 {% for tag in item["work"]["characters"] %}
-                  <span class="tag">{{ tag }}</span>
+                <span class="tag">{{ tag }}</span>
                 {% endfor %}
-              </td></tr>
+            </td></tr>
             {% endif %}
 	    <!--Display fandoms if present :-->
             {% if item["work"]["fandoms"] %}
-              <tr><td><b>Fandoms</b></td><td>
+            <tr><td><b>Fandoms</b></td><td>
                 {% for tag in item["work"]["fandoms"] %}
-                  <span class="tag">{{ tag }}</span>
+                <span class="tag">{{ tag }}</span>
                 {% endfor %}
-              </td></tr>
+            </td></tr>
             {% endif %}
 	    <!--Display rating if present :-->
             {% if item["work"]["rating"] %}
-              <tr><td><b>Rating</b></td><td><span class="tag">{{ item["work"]["rating"] }}</span></td></tr>
+            <tr><td><b>Rating</b></td><td><span class="tag">{{ item["work"]["rating"] }}</span></td></tr>
             {% endif %}
 	    <!--Display relationships if present :-->
             {% if item["work"]["relationships"] %}
-              <tr><td><b>Relationships</b></td><td>
+            <tr><td><b>Relationships</b></td><td>
                 {% for tag in item["work"]["relationships"] %}
-                  <span class="tag">{{ tag }}</span>
+                <span class="tag">{{ tag }}</span>
                 {% endfor %}
-              </td></tr>
+            </td></tr>
             {% endif %}
 	    <!--Display tags if present :-->
             {% if item["work"]["tags"] %}
-              <tr><td><b>General tags</b></td><td>
+            <tr><td><b>General tags</b></td><td>
                 {% for tag in item["work"]["tags"] %}
-                  <span class="tag">{{ tag }}</span>
+                <span class="tag">{{ tag }}</span>
                 {% endfor %}
-              </td></tr>
+            </td></tr>
             {% endif %}
 	    <!--Display warnings if present :-->
             {% if item["work"]["warnings"] %}
-              <tr><td><b>Warnings</b></td><td>
+            <tr><td><b>Warnings</b></td><td>
                 {% for tag in item["work"]["warnings"] %}
-                  <span class="tag">{{ tag }}</span>
+                <span class="tag">{{ tag }}</span>
                 {% endfor %}
-              </td></tr>
+            </td></tr>
             {% endif %}
 	    <!--Display date_published if present :-->
             {% if item["work"]["date_published"] %}
-              <tr><td><b>Date published</b></td><td><span class="tag">{{ item["work"]["date_published"]|format_date }}</span></td></tr>
+            <tr><td><b>Date published</b></td><td><span class="tag">{{ item["work"]["date_published"]|format_date }}</span></td></tr>
             {% endif %}
 	    <!--Display date_edited if present :-->
             {% if item["work"]["date_edited"] %}
-              <tr><td><b>Date edited</b></td><td><span class="tag">{{ item["work"]["date_edited"]|format_date }}</span></td></tr>
+            <tr><td><b>Date edited</b></td><td><span class="tag">{{ item["work"]["date_edited"]|format_date }}</span></td></tr>
             {% endif %}
 	    <!--Display date_updated if present :-->
             {% if item["work"]["date_updated"] %}
-              <tr><td><b>Date updated</b></td><td><span class="tag">{{ item["work"]["date_updated"]|format_date }}</span></td></tr>
+            <tr><td><b>Date updated</b></td><td><span class="tag">{{ item["work"]["date_updated"]|format_date }}</span></td></tr>
             {% endif %}
-	    </table>
-            <!--Display the contents of the item based on the "source" key-->
-	    <div class="show-less result-box">{{ item["text"]|safe }}</div>
-          </div>
-	  <!--End for loop-->
-	  {% endfor %}
+	  </table>
+          <!--Display the contents of the item based on the "source" key-->
+	  <div class="show-less result-box">{{ item["text"]|safe }}</div>
+        </div>
+	<!--End for loop-->
+	{% endfor %}
       </div>
       {% if pages -%}
       <div class="pagination">
@@ -298,65 +302,65 @@
         {% endfor %}
       </div>
       {% endif %}
-
-    <script>
-      // Script for which instructions are shown:
-      function userInfo(target) {
-          var name = target.id
-	  if (name == "boolean_search") {
-	      boolean.style.display = "block"
-	      ranking.style.display = "none"
-	  }
-	  else if (name == "ranking_search") {
-	      boolean.style.display = "none"
-	      ranking.style.display = "block"
-	  }
-	  else {
-	      boolean.style.display = "none"
-	      ranking.style.display = "none"
-	  }
-      }
-
-
-      // Script for read-more button:
-      function showAll(event) {
-          if (!event.target.matches('.read-less')) {
-              event.target.parentElement.querySelector('.show-less').style.maxHeight = event.target.parentElement.querySelector('.show-less').scrollHeight;
-              event.target.classList.add('read-less')
-              event.target.innerHTML = "Read less";
-          } else {
-              event.target.parentElement.querySelector('.show-less').style.maxHeight = null;
-              event.target.classList.remove('read-less')
-              event.target.innerHTML = "Read more";
-          }
-      }
       
-      (function() {
-          // connect all event listeners
-          document.addEventListener('click', function (event) {
-              if (event.target.matches('.read-more'))
-                  showAll(event);
-              if (event.target.matches('.user-info'))
-                  userInfo(event.target);
-          });
+      <script>
+	// Script for which instructions are shown:
+	function userInfo(target) {
+            var name = target.id
+	    if (name == "boolean_search") {
+		boolean.style.display = "block"
+		ranking.style.display = "none"
+	    }
+	    else if (name == "ranking_search") {
+		boolean.style.display = "none"
+		ranking.style.display = "block"
+	    }
+	    else {
+		boolean.style.display = "none"
+		ranking.style.display = "none"
+	    }
+	}
 
-          // check userInfo current state to show correct instructions
-          userInfo(document.querySelector('.user-info:checked'));
-          const documentDivs = document.querySelectorAll(".show-less");
 
-          // create read more buttons for documents needing it
-          documentDivs.forEach((documentDiv) => {
-              if (documentDiv.scrollHeight > documentDiv.clientHeight + 2) {
-                  const button = document.createElement("button");
-                  button.innerHTML = "Read more";
-                  button.classList.add("read-more");
-                  documentDiv.parentNode.insertBefore(button, documentDiv.nextSibling);
-              }
-          });
-	  
-      })();
-    </script>
-    
+	// Script for read-more button:
+	function showAll(event) {
+            if (!event.target.matches('.read-less')) {
+		event.target.parentElement.querySelector('.show-less').style.maxHeight = event.target.parentElement.querySelector('.show-less').scrollHeight;
+		event.target.classList.add('read-less')
+		event.target.innerHTML = "Read less";
+            } else {
+		event.target.parentElement.querySelector('.show-less').style.maxHeight = null;
+		event.target.classList.remove('read-less')
+		event.target.innerHTML = "Read more";
+            }
+	}
+	
+	(function() {
+            // connect all event listeners
+            document.addEventListener('click', function (event) {
+		if (event.target.matches('.read-more'))
+                    showAll(event);
+		if (event.target.matches('.user-info'))
+                    userInfo(event.target);
+            });
+	    
+            // check userInfo current state to show correct instructions
+            userInfo(document.querySelector('.user-info:checked'));
+            const documentDivs = document.querySelectorAll(".show-less");
+	    
+            // create read more buttons for documents needing it
+            documentDivs.forEach((documentDiv) => {
+		if (documentDiv.scrollHeight > documentDiv.clientHeight + 2) {
+                    const button = document.createElement("button");
+                    button.innerHTML = "Read more";
+                    button.classList.add("read-more");
+                    documentDiv.parentNode.insertBefore(button, documentDiv.nextSibling);
+		}
+            });
+	    
+	})();
+      </script>
+      
     </div>
   </body>
 </html>
