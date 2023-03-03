@@ -34,7 +34,7 @@
       .instructions {
 	  border: 2px outset MidnightBlue;
 	  color: MidnightBlue;
-	  background-color: Snow;
+	  background-color: #fbfaff;
 	  font-family: Courier New, monospace;
 	  font-size: smaller;
 	  text-align: center;
@@ -123,10 +123,10 @@
 	  <h1 style="color:Teal">TIRAMISU Search Engine</h1>
 	  <img src="/static/tiramisu.png" alt="tiramisu ingredients" class="tiramimage">
 	  <br><br>
-	  <h2 style="color:Teal">Search articles from Archive of Our Own</h2>
+	  <h2 style="color:Teal">Search fanworks from Archive of Our Own</h2>
 	  <!--Explanation of how the search engine works:-->
-	  <p>The Tiramisu search engine finds the most relevant articles uploaded on the website Archive of Our Own.
-	    <br>For memory reasons the spaCy entity highlighting processes only the first 100 000 characters of each article.
+	  <p>The Tiramisu search engine finds the most relevant fanworks uploaded on the fan fiction website Archive of Our Own.
+	    <br>For memory reasons the spaCy entity highlighting processes only the first 100 000 characters of each fanwork.
 	    <br>
 	    <br>(insert more general info about the search here...)</p>
 	  <br>
@@ -146,7 +146,7 @@
 	    <br><br>
 	    <!--Spacy category selection-->
 	    <div>
-              <p style="color:#006666">Select entities to be highlighted in matching articles:</p>
+              <p style="color:#006666">Select entities to be highlighted in matching fanworks:</p>
 	      {% for spacy_category in spacy_categories %}
 	      <input type="checkbox" id="{{ spacy_category.name }}" name="{{ spacy_category.name }}" value="{{ spacy_category.name }}" {% if spacy_category.active %} checked {% endif %}>
 	      <label for="{{ spacy_category.name }}">{{ spacy_category.title }}</label>
@@ -285,6 +285,7 @@
             {% if item["work"]["date_updated"] %}
             <tr><td><b>Date updated</b></td><td><span class="tag">{{ item["work"]["date_updated"]|format_date }}</span></td></tr>
             {% endif %}
+            <tr><td><b>Work sample</b></td></tr>
 	  </table>
           <!--Display the contents of the item based on the "source" key-->
 	  <div class="show-less result-box">{{ item["text"]|safe }}</div>
