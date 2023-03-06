@@ -184,19 +184,14 @@ def inflections(query):
         # if query is an exact match, loose quotation marks:
         elif re.fullmatch("\".+\"", item):
             exact_query = re.sub("\"", "", item)
-            print("exact query:", exact_query)
-            capital = exact_query.replace(f"{exact_query[0]}", f"{exact_query[0].upper()}")
-            print("uppercase:", capital)
+            capital = exact_query.replace(f"{exact_query}", f"{exact_query.capitalize()}")
             query_list.append(exact_query)
             query_list.append(capital)
         else:
-            print("item:", item)
-            capital = item.replace(f"{item[0]}", f"{item[0].upper()}")
-            print("uppercase:", capital)
+            capital = item.replace(f"{item}", f"{item.capitalize()}")
             query_list.append(item)
             query_list.append(capital)
 
-    print("inflections_list:", query_list)
     return query_list
 
 
