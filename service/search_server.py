@@ -20,6 +20,7 @@ import time
 import os
 import json
 from dateutil import parser
+import unicodedata
 
 plt.switch_backend('Agg') # Added to avoid site crashing on mac
 
@@ -355,7 +356,8 @@ def generate_query_plot(query,matches):
     plt.setp(ax.get_xticklabels(), rotation=30, ha="right")
 
     # save chart to file
-    relative_path = f'static/query_{query}_plot.png'
+    safe_query = safe_filename(query)
+    relative_path = f'static/query_{safe_query}_plot.png'
     plt.savefig(os.path.join(absolute_path, relative_path), bbox_inches='tight')
     return relative_path
 
@@ -363,6 +365,14 @@ def date_aggregated(date):
     """ Displaying every document on its own date will not fit, currently aggregating dates to the 1st month """
     return date - datetime.timedelta(days=date.day)
 
+def safe_filename(query):
+    """
+    Make query safe for filename
+    From https://stackoverflow.com/questions/295135/turn-a-string-into-a-valid-filena
+    """
+    value = unicodedata.normalize('NFKD', query).encode('ascii', 'ignore').decode('ascii')
+    value = re.sub(r'[^\w\s-]', '', value.lower())
+    return re.sub(r'[-\s]+', '-', value).strip('-_')
 
 '''
 @app.route('/hello')
