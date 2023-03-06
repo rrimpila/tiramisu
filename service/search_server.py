@@ -428,10 +428,11 @@ def search():
                 colors = {"PERSON": "#BECDF4", "DATE": "#ADD6D6", "LANGUAGE": "#F0DDB8", "GPE": "#E5E9E9"}
                 options = {"ents": chosen_ents, "colors": colors}
                 spacy_html = displacy.render(spacy_text, style="ent", options=options)
-                # replace all words in inflections_list with different styling and color
+                rest_of_text = rest_of_text.replace("\n", "<br />")
+                # replace all words in inflections_list with different styling (class in the index.html)
                 for item in inflections_list:
-                    rest_of_text = rest_of_text.replace(f" {item} ", f" <b class=\"query-words\">{item}</b> ")
-                whole_text = spacy_html + rest_of_text.replace("\n", "<br />")
+                    rest_of_text = re.sub(rf"( |<br />|[`´'\"])({item})([ \n.,:;!?´`'\"]+)", r'\1<b class="query-words">\2</b>\3', rest_of_text)
+                whole_text = spacy_html + rest_of_text
                 match["text"] = whole_text
             else:
                 spacy_text = ner_spacy(text)
@@ -443,10 +444,11 @@ def search():
     else:
         for match in matches_shown:
             match["text"] = match["text"].replace("\n", "<br />")
-            # replace all words in inflections_list with different styling and color
+            # replace all words in inflections_list with different styling (class in the index.html)
             for item in inflections_list:
                 text = match["text"]
-                bolded_text = text.replace(f" {item} ", f" <b class=\"query-words\">{item}</b> ")
+                # bolded_text = text.replace(f" {item} ", f" <b class=\"query-words\">{item}</b> ") # here for testing, will remove later
+                bolded_text = re.sub(rf"( |<br />|[`´'\"])({item})([ \n.,:;!?´`'\"]+)", r'\1<b class="query-words">\2</b>\3', text)
                 match["text"] = bolded_text
 
 
