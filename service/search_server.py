@@ -133,11 +133,12 @@ spacy_categories = [
 
 # functions related to non-exact-word matching
 def single_token_inflection(query): # makes a list of all possible inflections of a token for non-exact matching
+    all_inf_list = [ query ] # put original query in list of all inflections
     query = simplemma.lemmatize(query, lang="en") # lemmatizes query in case the token is in inflected form in the query
     all_inf = getAllInflections(query) # gets all inflections of the token and sets them as value in a dictionary (\credits: https://github.com/bjascob/pyInflect)
-    all_inf_list = []
     for i in all_inf.values(): # we only want the values in the generated dict
-        inf = re.sub(r'\W+', '', str(i)) # make a string of the inflections
+        stringed = re.sub(r'[^\w\s]', '', str(i)) # make a string of the dictionary values (remove anything besides word or space characters)
+        inf = re.sub(r'[\s]', ' OR ', stringed) # whether there is a space character, replace it with ' OR ' as it implies the dictionary value in question contained more than one token
         if inf not in all_inf_list:
             all_inf_list.append(inf) # add to searchlist only if there are no duplicates
     inf_token = " OR ".join(all_inf_list)
