@@ -70,11 +70,9 @@ fic_text = documents[index]['content'] --> this is the article text, all headlin
 """
 
 # Creating variables from the data to be used in the program
-
 fic_all_dates = []
 fic_all_titles = []
 fic_all_texts = []
-
 index = 0
 for item in documents:    
     fic_date = documents[index]['date_published'][:10]
@@ -94,11 +92,13 @@ cv = CountVectorizer(lowercase=True, binary=True, stop_words=None, token_pattern
 sparse_matrix = cv.fit_transform(documents)
 sparse_td_matrix = sparse_matrix.T.tocsr()
 
+# Operator replacements:
 d = {"AND": "&",
      "OR": "|",
      "NOT": "1 -",
-     "(": "(", ")": ")"}          # operator replacements
+     "(": "(", ")": ")"}
 # For the operators we'll only use AND, OR, NOT in ALLCAPS in order to avoid conflict with the corresponding words in lowercase letters in the documents
+
 
 tfv = TfidfVectorizer(lowercase=True, sublinear_tf=True, use_idf=True, norm="l2", stop_words=None, token_pattern=r'(?u)\b\w+\b')
 sparse_matrix = tfv.fit_transform(documents).T.tocsr() # CSR: compressed sparse row format => order by terms
@@ -144,7 +144,6 @@ def single_token_inflection(query): # makes a list of all possible inflections o
     
     return inf_token #return token with added inflections in format "token OR tokens OR tokened OR tokening"  
 
-
 def check_for_inflections(query): # reads the query and returns a rewritten query that includes inflections when a searchword is not enclosed in quotation marks
     rewritten = ""
     counter = 0 # counter for last if-statement
@@ -169,8 +168,6 @@ def check_for_inflections(query): # reads the query and returns a rewritten quer
     rewritten = rewritten.strip()
     return rewritten # return rewritten query
 
-# error message
-error_message = "Unknown word, no matches found for the search query. Make sure your query is typed in as instructed."
 
 # function for making list of inflected forms of the search query
 def inflections(query):
@@ -189,6 +186,9 @@ def inflections(query):
 
     return query_list
 
+
+# error message
+error_message = "Unknown word, no matches found for the search query. Make sure your query is typed in as instructed."
 
 # boolean search-related functions
 def boolean_query_matrix(t):
@@ -222,7 +222,6 @@ def boolean_test_query(query):
             hits_matrix = eval(rewritten_query)
             hits_list = list(hits_matrix.nonzero()[1])
             for doc_idx in hits_list:
-                # This line works for version with spaCy highlighting (spaCy recognizes the linebreaks automatically):
                 matches.append({'name': documents_titles[doc_idx], 'text': documents[doc_idx], 'work': works[doc_idx]})
 
     except SyntaxError:
@@ -230,6 +229,8 @@ def boolean_test_query(query):
         return [], error_message
     return matches, "", inflections_list
 
+
+# ranking search related function
 def ranking_search(user_query):
     user_query = check_for_inflections(user_query)
     print("Query with added inflections: '" + user_query + " '")
@@ -259,7 +260,6 @@ def ranking_search(user_query):
         try:
             ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
             for score, i in ranked_scores_and_doc_ids:
-                # This line works for version with spaCy highlighting (spaCy recognizes the linebreaks automatically):
                 matches.append({'name': documents_titles[i], 'text': documents[i], 'score' : score, 'work': works[i]})
 
         except IndexError:
@@ -272,7 +272,6 @@ def ranking_search(user_query):
             hits = np.dot(query_vec, sparse_matrix)
             ranked_scores_and_doc_ids = sorted(zip(np.array(hits[hits.nonzero()])[0], hits.nonzero()[1]), reverse=True)
             for score, i in ranked_scores_and_doc_ids:
-                # This line works for version with spaCy highlighting (spaCy recognizes the linebreaks automatically):
                 matches.append({'name': documents_titles[i], 'text': documents[i], 'score' : score, 'work': works[i]})
 
         except SyntaxError:
@@ -284,10 +283,13 @@ def ranking_search(user_query):
 
     return matches, "", inflections_list
 
+
+
 def create_url(search_type, query, page):
     return "/?search_type={:s}&query={:s}&page={:d}".format(search_type, urllib.parse.quote(query), page)
     
 
+# plot/graph related functions
 def generate_query_plot(query,matches):
     if len(matches) == 0:
         return False;
@@ -353,6 +355,7 @@ def date_aggregated(date):
     """ Displaying every document on its own date will not fit, currently aggregating dates to the 1st month """
     return date - datetime.timedelta(days=date.day)
 
+
 '''
 @app.route('/hello')
 def hello_tiramisu():
@@ -391,12 +394,11 @@ def search():
     page = min(page, page_count)
     matches_shown = matches[(page - 1)*documents_per_page:page*documents_per_page]
 
-    # Emphasizing query words and their inflected forms within matching fanwork texts:
-    # if query word found, change the color or styling
 
+    # Named entity highlighting with spaCy AND
+    # Emphasizing query words and their inflected forms within the matching fanwork texts
 
-    # Named entity highlighting with spaCy
-    # First, we'll make a list of the entities (ents) that the user has chosen to highlight:
+    # First, we'll make a list of the entities (ents) that the user has chosen to highlight (with spaCy):
     chosen_ents = []
     for category in spacy_categories:
         if request.args.get(category["name"]) is not None:
@@ -405,12 +407,12 @@ def search():
 
     # Second, if user has chosen to highlight entities:
     # we'll modify text items of the matches_shown variable with the chosen ents and their corresponding colors
-    # (because of reasons concerning temporary memory, spaCy highlighting is only processed for the first 100 000 characters of each document)
     if chosen_ents != []:
         print("Chosen entities:", chosen_ents)
         for match in matches_shown:
             text = match["text"]
             print("Length of the article:", len(text)) # for testing, will remove later
+            # (because of reasons concerning temporary memory, spaCy highlighting is only processed for the first 100 000 characters of each document)
             if len(text) > 100000:
                 beginning_of_text = text[0:100000]
                 rest_of_text = text[100000:]
@@ -418,6 +420,9 @@ def search():
                 colors = {"PERSON": "#BECDF4", "DATE": "#ADD6D6", "LANGUAGE": "#F0DDB8", "GPE": "#E5E9E9"}
                 options = {"ents": chosen_ents, "colors": colors}
                 spacy_html = displacy.render(spacy_text, style="ent", options=options)
+                # replace all words in inflections_list with different styling and color
+                for item in inflections_list:
+                    rest_of_text = rest_of_text.replace(f" {item} ", f" <b class=\"query-words\">{item}</b> ")
                 whole_text = spacy_html + rest_of_text.replace("\n", "<br />")
                 match["text"] = whole_text
             else:
@@ -426,9 +431,16 @@ def search():
                 options = {"ents": chosen_ents, "colors": colors}
                 spacy_html = displacy.render(spacy_text, style="ent", options=options)
                 match["text"] = spacy_html
+    # If user has chosen not to highlight any entities:
     else:
         for match in matches_shown:
             match["text"] = match["text"].replace("\n", "<br />")
+            # replace all words in inflections_list with different styling and color
+            for item in inflections_list:
+                text = match["text"]
+                bolded_text = text.replace(f" {item} ", f" <b class=\"query-words\">{item}</b> ")
+                match["text"] = bolded_text
+
 
     # create pagination
     pages = []
@@ -447,6 +459,7 @@ def search():
             pages.append({'url': create_url(search_type, query, page_count), 'name': page_count})
         if page < page_count:
             pages.append({'url': create_url(search_type, query, page + 1), 'name': '>'})
+
 
     #Render index.html with matches variable
     return render_template('index.html', 
