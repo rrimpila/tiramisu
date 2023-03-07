@@ -255,8 +255,10 @@ def boolean_test_query(query):
 # ranking search related function
 def ranking_search(user_query):
     user_query = check_for_inflections(user_query)
-    print("Query with added inflections: '" + user_query + " '")
     inflections_list = inflections(user_query)
+    # remove ORs and parentheses since ranking search doesn't utilise them
+    user_query = user_query.replace(" ( ", " ").replace(" ) ", " ").replace(" OR ", " ")
+    print("Query with added inflections: '" + user_query + " '")
     matches = []
     if re.fullmatch("\".+\"", user_query): # Finds exact queries
         user_query_stripped = user_query[1:-1]
