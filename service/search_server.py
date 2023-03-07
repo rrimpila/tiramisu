@@ -450,7 +450,7 @@ def search():
                 rest_of_text = rest_of_text.replace("\n", "<br />")
                 # replace all words in inflections_list with different styling (class in the index.html)
                 for item in inflections_list:
-                    rest_of_text = re.sub(rf"( |<br />|[`´'\"])({item})([ \n.,:;!?´`'\"]+)", r'\1<b class="query-words">\2</b>\3', rest_of_text)
+                    rest_of_text = re.sub(rf"( |<br />|[‘`´'“\"])({item})([ \n.,:;!?’´`'”\"]+)", r'\1<b class="query-words">\2</b>\3', rest_of_text)
                 whole_text = spacy_html + rest_of_text
                 match["text"] = whole_text
             else:
@@ -466,8 +466,7 @@ def search():
             # replace all words in inflections_list with different styling (class in the index.html)
             for item in inflections_list:
                 text = match["text"]
-                # bolded_text = text.replace(f" {item} ", f" <b class=\"query-words\">{item}</b> ") # here for testing, will remove later
-                bolded_text = re.sub(rf"( |<br />|[`´'\"])({item})([ \n.,:;!?´`'\"]+)", r'\1<b class="query-words">\2</b>\3', text)
+                bolded_text = re.sub(rf"( |<br />|[‘`´'“\"])({item})([ \n.,:;!?’´`'”\"]+)", r'\1<b class="query-words">\2</b>\3', text)
                 match["text"] = bolded_text
 
 
