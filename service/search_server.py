@@ -185,9 +185,18 @@ def inflections(query):
         # if query is an exact match, loose quotation marks:
         elif re.fullmatch("\".+\"", item):
             exact_query = re.sub("\"", "", item)
-            capital = exact_query.replace(f"{exact_query}", f"{exact_query.capitalize()}")
+            capital_firstword = exact_query.replace(f"{exact_query}", f"{exact_query.capitalize()}")
+            allwords = exact_query.split(" ")
+            capital_allwords = ""
+            for word in allwords:
+                word = word.capitalize()
+                if capital_allwords == "":
+                    capital_allwords = word
+                else:
+                    capital_allwords = capital_allwords + " " + word
             query_list.append(exact_query)
-            query_list.append(capital)
+            query_list.append(capital_firstword)
+            query_list.append(capital_allwords)
         else:
             capital = item.replace(f"{item}", f"{item.capitalize()}")
             query_list.append(item)
@@ -426,7 +435,7 @@ def search():
     # Second, if user has chosen to highlight entities:
     # we'll modify text items of the matches_shown variable with the chosen ents and their corresponding colors
     if chosen_ents != []:
-        print("Chosen entities:", chosen_ents)
+        print(f"Chosen entities: {chosen_ents}\n")
         for match in matches_shown:
             text = match["text"]
             print("Length of the article:", len(text)) # for testing, will remove later
