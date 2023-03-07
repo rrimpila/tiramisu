@@ -422,8 +422,7 @@ def search():
     matches_shown = matches[(page - 1)*documents_per_page:page*documents_per_page]
 
 
-    # Named entity highlighting with spaCy AND
-    # Emphasizing query words and their inflected forms within the matching fanwork texts
+    # Named entity highlighting with spaCy AND emphasizing query words and their inflected forms within the matching fanwork texts
 
     # First, we'll make a list of the entities (ents) that the user has chosen to highlight (with spaCy):
     chosen_ents = []
@@ -438,7 +437,6 @@ def search():
         print(f"Chosen entities: {chosen_ents}\n")
         for match in matches_shown:
             text = match["text"]
-            print("Length of the article:", len(text)) # for testing, will remove later
             # (because of reasons concerning temporary memory, spaCy highlighting is only processed for the first 100 000 characters of each document)
             if len(text) > 100000:
                 beginning_of_text = text[0:100000]
@@ -447,10 +445,16 @@ def search():
                 colors = {"PERSON": "#BECDF4", "DATE": "#ADD6D6", "LANGUAGE": "#F0DDB8", "GPE": "#E5E9E9"}
                 options = {"ents": chosen_ents, "colors": colors}
                 spacy_html = displacy.render(spacy_text, style="ent", options=options)
-                rest_of_text = rest_of_text.replace("\n", "<br />")
-                # replace all words in inflections_list with different styling (class in the index.html)
+                # replace all words in inflections_list with different styling (class in the index.html) in spacy_html
                 for item in inflections_list:
-                    rest_of_text = re.sub(rf"( |<br />|[‘`´'“\"])({item})([ \n.,:;!?’´`'”\"]+)", r'\1<b class="query-words">\2</b>\3', rest_of_text)
+                    text = spacy_html
+                    bolded_text = re.sub(rf"(</br>|[ ‘`´'“\"])({item})(</br>|[ .,:;!?’´`'”\"]+)", r'\1<b class="query-words">\2</b>\3', text)
+                    spacy_html = bolded_text
+                # replace all words in inflections_list with different styling (class in the index.html) in rest_of_text
+                rest_of_text = rest_of_text.replace("\n", "<br />")
+                for item in inflections_list:
+                    rest_of_text = re.sub(rf"(<br />|[ ‘`´'“\"])({item})(<br />|[ .,:;!?’´`'”\"]+)", r'\1<b class="query-words">\2</b>\3', rest_of_text)
+                # combine the spacied text and rest of the text
                 whole_text = spacy_html + rest_of_text
                 match["text"] = whole_text
             else:
@@ -459,14 +463,20 @@ def search():
                 options = {"ents": chosen_ents, "colors": colors}
                 spacy_html = displacy.render(spacy_text, style="ent", options=options)
                 match["text"] = spacy_html
-    # If user has chosen not to highlight any entities:
+                # replace all words in inflections_list with different styling (class in the index.html) in spacy_html
+                for item in inflections_list:
+                    text = match["text"]
+                    bolded_text = re.sub(rf"(</br>|[ ‘`´'“\"])({item})(</br>|[ .,:;!?’´`'”\"]+)", r'\1<b class="query-words">\2</b>\3', text)
+                    match["text"] = bolded_text
+                
+    # If user has chosen not to highlight any entities, we'll only emphasize the query words:
     else:
         for match in matches_shown:
             match["text"] = match["text"].replace("\n", "<br />")
-            # replace all words in inflections_list with different styling (class in the index.html)
+            # replace all words in inflections_list with different styling (class in the index.html) in match["text"]
             for item in inflections_list:
                 text = match["text"]
-                bolded_text = re.sub(rf"( |<br />|[‘`´'“\"])({item})([ \n.,:;!?’´`'”\"]+)", r'\1<b class="query-words">\2</b>\3', text)
+                bolded_text = re.sub(rf"(<br />|[ ‘`´'“\"])({item})(<br />|[ .,:;!?’´`'”\"]+)", r'\1<b class="query-words">\2</b>\3', text)
                 match["text"] = bolded_text
 
 
