@@ -244,7 +244,13 @@ def boolean_test_query(query):
 
     except SyntaxError:
         print(f"\n{error_message}\n")
-        return [], error_message
+        return [], error_message, []
+    except IndexError:
+        print(f"\n{error_message}\n")
+        return [], error_message, []
+    except ValueError:
+        print(f"\n{error_message}\n")
+        return [], error_message, []
     return matches, "", inflections_list
 
 
@@ -280,7 +286,13 @@ def ranking_search(user_query):
             for score, i in ranked_scores_and_doc_ids:
                 matches.append({'name': documents_titles[i], 'text': documents[i], 'score' : score, 'work': works[i]})
 
+        except SyntaxError:
+            print(f"\n{error_message}\n")
+            return [], error_message, []
         except IndexError:
+            print(f"\n{error_message}\n")
+            return [], error_message, []
+        except ValueError:
             print(f"\n{error_message}\n")
             return [], error_message, []
 
@@ -296,6 +308,9 @@ def ranking_search(user_query):
             print(f"\n{error_message}\n")
             return [], error_message, []
         except IndexError:
+            print(f"\n{error_message}\n")
+            return [], error_message, []
+        except ValueError:
             print(f"\n{error_message}\n")
             return [], error_message, []
 
@@ -407,8 +422,10 @@ def search():
     if query:
         print(f"Query: {query}")
         if search_type == "boolean_search":
+            print("Search type:", search_type)
             (matches, error, inflections_list) = boolean_test_query(f"{query}")
         elif search_type == "ranking_search":
+            print("Search type:", search_type)
             (matches, error, inflections_list) = ranking_search(f"{query}")
         print(f"Query inflections list: {inflections_list}\n")
 
