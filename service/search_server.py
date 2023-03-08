@@ -153,12 +153,16 @@ def check_for_inflections(query): # reads the query and returns a rewritten quer
     rewritten = ""
     counter = 0 # counter for last if-statement
     token_list = query.split() # split query into individual tokens
+    is_quote_open = False
     for i in token_list:
-        if i.isupper() is True: 
-            rewritten += " " + i # add uppercase tokens (operators) to string as they are
-        elif "\"" in i:
+        if is_quote_open or i.startswith("\""):
+            is_quote_open = True
             rewritten += " " + i # add tokens enclosed by quotation marks to string as-is
-            counter += 1
+            if i.endswith("\""):
+                is_quote_open = False # quote ends
+                counter += 1
+        elif i.isupper() is True: 
+            rewritten += " " + i # add uppercase tokens (operators) to string as they are
         elif re.match(r"\W" ,i): # add any non-word character (such as brackets) to string as-is
             rewritten += " " + i
         else:
@@ -257,9 +261,10 @@ def boolean_test_query(query):
 # ranking search related function
 def ranking_search(user_query):
     user_query = check_for_inflections(user_query)
-    print("Query with added inflections: '" + user_query + " '")
     inflections_list = inflections(user_query)
-
+    # remove ORs and parentheses since ranking search doesn't utilise them
+    user_query = user_query.replace(" ( ", " ").replace(" ) ", " ").replace(" OR ", " ")
+    print("Query with added inflections: '" + user_query + " '")
     matches = []
     if re.fullmatch("\".+\"", user_query): # Finds exact queries
         user_query_stripped = user_query[1:-1]
@@ -277,7 +282,7 @@ def ranking_search(user_query):
             tfv_grams = tfv_3grams
             sparse_matrix_grams = sparse_matrix_3grams
         else:
-            return []
+            return matches, "", inflections_list
 
         query_vec = tfv_grams.transform([user_query_stripped]).tocsc()
         hits = np.dot(query_vec, sparse_matrix_grams)
@@ -291,10 +296,7 @@ def ranking_search(user_query):
             return [], error_message, []
         except IndexError:
             print(f"\n{error_message}\n")
-            return [], error_message, []
-        except ValueError:
-            print(f"\n{error_message}\n")
-            return [], error_message, []
+            return matches, error_message, inflections_list
 
     else:
         try:
@@ -306,13 +308,10 @@ def ranking_search(user_query):
 
         except SyntaxError:
             print(f"\n{error_message}\n")
-            return [], error_message, []
+            return matches, error_message, inflections_list
         except IndexError:
             print(f"\n{error_message}\n")
-            return [], error_message, []
-        except ValueError:
-            print(f"\n{error_message}\n")
-            return [], error_message, []
+            return matches, error_message, inflections_list
 
     return matches, "", inflections_list
 
