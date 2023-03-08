@@ -74,6 +74,8 @@ fic_text = documents[index]['content'] --> this is the article text, all headlin
 fic_all_dates = []
 fic_all_titles = []
 fic_all_texts = []
+fic_all_warnings = []
+
 index = 0
 for item in documents:    
     fic_date = documents[index]['date_published'][:10]
@@ -82,12 +84,14 @@ for item in documents:
     fic_all_titles.append(fic_title)
     fic_text = documents[index]['content']
     fic_all_texts.append(fic_text)
+    fic_warnings = documents[index]['warnings']
+    fic_all_warnings.append(fic_warnings)
     index += 1
 
 works = documents
 documents_titles = fic_all_titles
 documents = fic_all_texts
-
+warnings = fic_all_warnings
 
 cv = CountVectorizer(lowercase=True, binary=True, stop_words=None, token_pattern=r'(?u)\b\w+\b', ngram_range=(1,3))
 sparse_matrix = cv.fit_transform(documents)
@@ -367,7 +371,7 @@ def generate_query_plot(query,matches):
         # set formatter
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
 
-    else: # less than a year, format with monhtly major ticks
+    else: # less than a year, format with monthly major ticks
 
         # Set major ticks to months
         ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
@@ -385,6 +389,8 @@ def generate_query_plot(query,matches):
     return relative_path
 
 def generate_scatter_plot(query, matches):    # for generating scatter plot which takes date_published, warnings and their frequency as values
+    if len(matches) == 0:
+        return False;
     
     datadict = {}   # dict to collect all data from matches neatly into keys of dates. The values consist of dicts with warnings as keys and their occurrences on the key date as values
     for match in matches:    
