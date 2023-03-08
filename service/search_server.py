@@ -384,6 +384,31 @@ def generate_query_plot(query,matches):
     plt.savefig(os.path.join(absolute_path, relative_path), bbox_inches='tight')
     return relative_path
 
+def generate_scatter_plot(query, matches):    # for generating scatter plot which takes date_published, warnings and their frequency as values
+    
+    datadict = {}   # dict to collect all data from matches neatly into keys of dates. The values consist of dicts with warnings as keys and their occurrences on the key date as values
+    for match in matches:    
+        date = match['date_published'][0]
+        warn = match['warnings']
+        if datadict == {} :  
+            datadict[date] = {'Major Character Death': 0, 'No Archive Warnings Apply': 0, 'Rape/Non-con': 0, 'Underage': 0,'Graphic Depictions Of Violence': 0,'Creator Chose Not To Use Archive Warnings': 0}
+            for w in warn:
+                if w in datadict[date]:
+                    datadict[date][w] += 1
+        else :
+            if date in datadict.keys():
+                for w in warn:
+                    if w in datadict[date]:
+                        datadict[date][w] += 1
+            else:
+                warnbase = {'Major Character Death': 0, 'No Archive Warnings Apply': 0, 'Rape/Non-con': 0, 'Underage': 0,'Graphic Depictions Of Violence': 0,'Creator Chose Not To Use Archive Warnings': 0}
+                for w in warn:
+                    if w in warnbase.keys():
+                        warnbase[w] += 1
+                datadict[date] = warnbase
+# I have yet to figure out a sensible way to create the scatter plot for this (chances are I will have to change the data retreival method)
+# For now I add this function to the main code
+                
 def date_aggregated(date):
     """ Displaying every document on its own date will not fit, currently aggregating dates to the 1st month """
     return date - datetime.timedelta(days=date.day)
