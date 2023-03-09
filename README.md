@@ -3,8 +3,8 @@ Building an NLP application, a Helsinki University course project by Tiia Poikaj
 
 ## Search engine application for fan fiction from Archive of Our Own
 
-[Archive of Our Own](https://archiveofourown.org/) is a website that offers a nonprofit hosting place for fan fiction works. __The Tiramisu search engine__ finds fanworks matching to the user's search query from our defined dataset of fanworks.
-Tiramisu dataset contains a collection of 500 of the most popular fanworks (that is, those that have received the most *kudos* from the users) from works that have been updated or edited between between the years 2018 through 2022. The engine also provides different search options for the user in order to search for variety of interesting things within those fanworks.
+[Archive of Our Own](https://archiveofourown.org/) is a website that offers a nonprofit hosting place for fan fiction works. __The Tiramisu search engine__ finds fanworks matching to the user's search query from our defined dataset of fanworks.  
+Tiramisu dataset contains a collection of 500 of the most popular fanworks (that is, those that have received the most *kudos* from the users) from works that have been published, updated, or edited between between the years 2018 through 2022. The engine also provides different search options for the user in order to search for variety of interesting things within those fanworks.
 
 # How to run this application
 
@@ -39,7 +39,7 @@ Activate the environment:
 . demoenv/bin/activate
 ```
 
-Install requirements for application:
+Install requirements for application (the list of necessary requirements for the app is in the requirements.txt):
 
 ```
 pip3 install -r service/requirements.txt
@@ -70,7 +70,7 @@ Activate the environment:
 demoenv\Scripts\activate
 ```
 
-Install requirements for application:
+Install requirements for application (the list of necessary requirements for the app is in the requirements.txt):
 
 ```
 python3 -m pip install -r service\requirements.txt
@@ -79,8 +79,8 @@ python3 -m spacy download en_core_web_sm
 ```
 
 (When you are finished working in the demoenv, you can deactivate the environment using command ```deactivate```.)  
-
-
+  
+  
 ### How to run Flask
 
 The `search_server.py` file is the application's root. This is where all the Flask application goodness will go.  We create an environment variable that points to that file by setting the following environment variables. For your project you can set up that environment variable in your environment's activate script.
@@ -130,10 +130,11 @@ flask run
 ```
 
 and __in your browser__ go to `localhost:8000/` to see the website.
-
+  
+  
 ## Updating datasets
 
-The repository includes files scraped from Archive of Our Own (The first chapters of 100 articles with the most *kudos* from each year between 2018 and 2022). This data is expected to remain fairly static, but to update it, you can run the following commands to scrape the files.  
+The repository includes files scraped from Archive of Our Own (metadata and the first chapter of 100 fanworks per year, from most relevant works that have been published, updated, or edited between the years 2018 and 2022). This data is expected to remain fairly static, but to update it, you can run the following commands to scrape the files.  
 __NOTE:__ This may take a while. The connection may also time out, in that case, run the timed out scraper again.
 
 ```
