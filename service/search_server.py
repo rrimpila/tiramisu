@@ -214,7 +214,7 @@ def inflections(query):
 
 
 # error message
-error_message = "Unknown word, no matches found for the search query. Make sure your query is typed in as instructed."
+error_message = "Unknown query, no matches found for the search query. Make sure your query is typed in as instructed."
 
 # boolean search-related functions
 def boolean_query_matrix(t):
@@ -233,8 +233,13 @@ def boolean_rewrite_query(query): # rewrite every token in the query
 def boolean_test_query(query):
     query = check_for_inflections(query)
     print("Query with added inflections: '" + query + " '")
-    rewritten_query = boolean_rewrite_query(query)
     inflections_list = inflections(query)
+    print(f"Query inflections list: {inflections_list}")
+    try:
+        rewritten_query = boolean_rewrite_query(query)
+    except ValueError:
+        print(f"\n{error_message}\n")
+        return [], error_message, []
 
     # check for ) ( since it might create an attempt to call the function, and this is not a syntax error even though it is the wrong syntax
     if re.match(".*\)\s*\(.*", rewritten_query):
@@ -266,6 +271,7 @@ def boolean_test_query(query):
 def ranking_search(user_query):
     user_query = check_for_inflections(user_query)
     inflections_list = inflections(user_query)
+    print(f"Query inflections list: {inflections_list}")
     # remove ORs and parentheses since ranking search doesn't utilise them
     user_query = user_query.replace(" ( ", " ").replace(" ) ", " ").replace(" OR ", " ")
     print("Query with added inflections: '" + user_query + " '")
@@ -457,7 +463,6 @@ def search():
         elif search_type == "ranking_search":
             print("Search type:", search_type)
             (matches, error, inflections_list) = ranking_search(f"{query}")
-        print(f"Query inflections list: {inflections_list}\n")
 
     plot_file = generate_query_plot(query, matches)
 
