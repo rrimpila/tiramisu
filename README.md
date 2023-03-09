@@ -3,13 +3,14 @@ Building an NLP application, a Helsinki University course project by Tiia Poikaj
 
 ## Search engine application for fan fiction from Archive of Our Own
 
-[Archive of Our Own](https://archiveofourown.org/) is a website that offers a nonprofit hosting place for fan fiction works. The Tiramisu search engine finds fanworks matching to the user's search query from our defined dataset of fanworks. Tiramisu dataset contains the most popular fanworks (that is, those that have received the most *kudos* from the users) from between the years 2018 and 2022. The engine also provides different search options for the user in order to search for variety of interesting things within those fanworks.
+[Archive of Our Own](https://archiveofourown.org/) is a website that offers a nonprofit hosting place for fan fiction works. __The Tiramisu search engine__ finds fanworks matching to the user's search query from our defined dataset of fanworks.
+Tiramisu dataset contains a collection of 500 of the most popular fanworks (that is, those that have received the most *kudos* from the users) from works that have been updated or edited between between the years 2018 through 2022. The engine also provides different search options for the user in order to search for variety of interesting things within those fanworks.
 
 # How to run this application
 
 __NOTE:__ Make sure you are in your `myproject` directory.
 
-### Clone this git repository (just use one of the options below!):
+### Clone this git repository (just use one of the options below!)
 
 ```
 git clone git@github.com:rrimpila/tiramisu.git # ssh cloning
