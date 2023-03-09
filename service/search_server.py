@@ -424,20 +424,26 @@ def generate_scatter_plot(query, matches):    # for generating scatter plot whic
                             item[w] += 1
 
     # Arranging data into lists for x and y axis and s value of scatter plot
-    xvalues = list(datadict.keys()) #values for x axis
-    yvalues = []                    #values for y axis
-    zvalues = []                    #values to determine size of scatter plot balls
-    for dl in datadict.values():
+    xvalues = []    #values for x axis
+    yvalues = []    #values for y axis
+    zvalues = []    #values to determine s
+
+    for date in datadict:
+        xl = []
         yl = []
         zl = []
-        for d in dl:
-            for k in d:
-                if d[k] != 0:
-                    yl.append((dl.index(d) + 1))
-                    zl.append(d[k])
+    
+        for warning in datadict[date]:
+            for n in warning.values():
+                if n != 0 :
+                    yl.append((datadict[date].index(warning) + 1))
+                    zl.append(n)
+                    xl.append(date)
+        
         yvalues.append(yl)
         zvalues.append(zl)
-# I have yet to figure out how to create the scatter plot
+        xvalues.append(xl)
+    # I have yet to figure out how to create the scatter plot
                 
 def date_aggregated(date):
     """ Displaying every document on its own date will not fit, currently aggregating dates to the 1st month """
