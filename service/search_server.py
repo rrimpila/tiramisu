@@ -394,7 +394,7 @@ def generate_query_plot(query,matches):
     plt.savefig(os.path.join(absolute_path, relative_path), bbox_inches='tight')
     return relative_path
 
-def generate_scatter_plot(query, matches):    # for generating scatter plot which takes date_published, warnings and their frequency as values
+def generate_warning_plot(query, matches):    # for generating scatter plot which takes date_published, warnings and their frequency as values
     if len(matches) == 0:
         return False;
     
@@ -424,26 +424,31 @@ def generate_scatter_plot(query, matches):    # for generating scatter plot whic
                             item[w] += 1
 
     # Arranging data into lists for x and y axis and s value of scatter plot
-    xvalues = []    #values for x axis
-    yvalues = []    #values for y axis
-    zvalues = []    #values to determine s
+    x = []    #values for x axis
+    y = []    #values for y axis
+    z = []    #values to determine s
 
     for date in datadict:
-        xl = []
-        yl = []
-        zl = []
-    
         for warning in datadict[date]:
             for n in warning.values():
                 if n != 0 :
-                    yl.append((datadict[date].index(warning) + 1))
-                    zl.append(n)
-                    xl.append(date)
-        
-        yvalues.append(yl)
-        zvalues.append(zl)
-        xvalues.append(xl)
+                    y.append((datadict[date].index(warning) + 1))
+                    z.append(n)
+                    x.append(date)
     # I have yet to figure out how to create the scatter plot
+    plt.figure(figsize=(max(60 * 0.2, 6.4),4.8)) #TODO change to be similar to other plot
+    plt.gcf().subplots_adjust(bottom=0.20)
+    plt.title(f"Distribution and amount of content warnings in months", ha='left', x=-0)   
+    ax = plt.subplot()
+    #ax = plt.gca()
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    ax.xaxis.set_major_locator(mdates.DayLocator())
+    ax.scatter(x, y, s=z)
+
+    # save chart to file                                                                                                                                                                                    
+    safe_query = safe_filename(query)
+    relative_path = f'static/query_{safe_query}_warning.png'
+    plt.savefig(os.path.join(absolute_path, relative_path), bbox_inches='tight')
                 
 def date_aggregated(date):
     """ Displaying every document on its own date will not fit, currently aggregating dates to the 1st month """
