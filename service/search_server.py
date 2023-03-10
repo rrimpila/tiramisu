@@ -400,7 +400,7 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
     
     dist_dict={}
 
-for match in matches:
+    for match in matches:
         if not match['work']['date_published']:
             continue
         yourdate = parser.parse(match['work']['date_published'])
@@ -516,7 +516,7 @@ def search():
             (matches, error, inflections_list) = ranking_search(f"{query}")
 
     plot_file = generate_query_plot(query, matches)
-
+    warning_plot_file = generate_warning_plot(query, matches)
     #Variables for paging
     documents_per_page = 10
     shown_pagination_range_one_direction = 2
@@ -611,5 +611,6 @@ def search():
         docs_total=str(len(matches)), 
         pages=pages, 
         spacy_categories=spacy_categories,
-        plot=plot_file
+                           plot=plot_file,
+        warningplot=warning_plot_file
     )
