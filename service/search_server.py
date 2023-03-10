@@ -452,10 +452,9 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
     for date in datadict:
         for warning in datadict[date]:
             for n in warning.values():
-                if n != 0 :
-                    y.append((datadict[date].index(warning) + 1))
-                    z.append(n*10) # n*10 to make markers more visible
-                    x.append(date)
+                y.append((datadict[date].index(warning) + 1))
+                z.append(n)
+                x.append(date)
 
     # make plot
     plt.figure(figsize=(max(time_difference_in_months * 0.2, 6.4),4.8))
@@ -485,8 +484,14 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
         # set formatter
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
 
-    ax.scatter(x, y, s=z, c=c)
-    # set rotation for date tick labels                                                                                                                                                                    
+    scatterplot = ax.scatter(x, y, s=z, c=c)
+    # set legend
+    pos = ax.get_position()
+    ax.set_position([pos.x0, pos.y0, pos.width, pos.height*0.85])
+    h, l = scatterplot.legend_elements(prop="sizes", num=3, alpha=0.6)
+    legend = ax.legend(h, l, loc="upper center", bbox_to_anchor=(0.5, -0.1), ncol=3, title="Amount of matches")
+
+    # set rotation for date tick labels                                                                     
     plt.setp(ax.get_xticklabels(), rotation=30, ha="right")
 
     # save chart to file                                                                                        
