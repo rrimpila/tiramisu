@@ -209,7 +209,11 @@
 	  <img src="{{ plot }}" class="graph-element">
 	</div>
 	{% endif %}
-	
+	{% if warningplot %}
+	<div class="graph-element-container">
+          <img src="{{ warningplot }}" class="graph-element">
+        </div>
+	{% endif %}
       </div>
       
       <!--Show results:-->

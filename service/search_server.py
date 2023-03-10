@@ -471,7 +471,8 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
     safe_query = safe_filename(query)
     relative_path = f'static/query_{safe_query}_warning.png'
     plt.savefig(os.path.join(absolute_path, relative_path), bbox_inches='tight')
-                
+    return relative_path
+    
 def date_aggregated(date):
     """ Displaying every document on its own date will not fit, currently aggregating dates to the 1st month """
     return date - datetime.timedelta(days=date.day)
