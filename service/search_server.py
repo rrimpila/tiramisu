@@ -466,7 +466,7 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
     c = [colours[key] for key in y]
 
     ax.xaxis_date()
-    ax.scatter(x, y, s=z, c=y)
+    ax.scatter(x, y, s=z, c=c)
     
     if time_difference_in_months > 12: # we have multiple years of data
         # Set minor ticks to months
