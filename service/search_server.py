@@ -419,7 +419,9 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
     
     # Get required data
     for match in matches:
-        date = match['work']['date_published'][0]
+        if not match['work']['date_published']:
+            continue
+        date = match['work']['date_published']
         warn = match['work']['warnings']
         if datadict == {} :  
             datadict[date] = [{'Creator Chose Not To Use Archive Warnings': 0},{'No Archive Warnings Apply': 0},{'Major Character Death': 0},
@@ -452,22 +454,23 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
             for n in warning.values():
                 if n != 0 :
                     y.append((datadict[date].index(warning) + 1))
-                    z.append(n)
+                    z.append(n*10) # n*10 to make markers more visible
                     x.append(date)
 
-    # make graph
+    # make plot
     plt.figure(figsize=(max(time_difference_in_months * 0.2, 6.4),4.8))
     plt.gcf().subplots_adjust(bottom=0.20)
-    plt.yticks([])
-    plt.title(f"Distribution and amount of content warnings in months", ha='left', x=-0)   
+    warnings = {1:'Creator Chose\n Not To Use\n Archive Warnings',2:'No Archive\n Warnings Apply',3:'Major\n Character Death',
+                4:'Graphic\n Depictions\n Of Violence',5:'Rape/Non-con',6:'Underage'}
+    labels = [warnings[key] for key in y]
+    plt.yticks(y,labels)
+    plt.title(f"Monthly distribution and amount of content warnings", ha='left', x=-0)
+    x = mdates.date2num(x)
     ax = plt.subplot()
     
     colours = {1:'#092733',2:'#00475B',3:'#336A7F',4:'#5A8FA5',5:'#81B5CD',6:'#A8DEF6'}
     c = [colours[key] for key in y]
 
-    ax.xaxis_date()
-    ax.scatter(x, y, s=z, c=c)
-    
     if time_difference_in_months > 12: # we have multiple years of data
         # Set minor ticks to months
         ax.xaxis.set_minor_locator(mdates.MonthLocator(interval=1))
@@ -482,7 +485,11 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
         # set formatter
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
 
-    # save chart to file                                                                                                                                                                                   
+    ax.scatter(x, y, s=z, c=c)
+    # set rotation for date tick labels                                                                                                                                                                    
+    plt.setp(ax.get_xticklabels(), rotation=30, ha="right")
+
+    # save chart to file                                                                                        
     safe_query = safe_filename(query)
     relative_path = f'static/query_{safe_query}_warning.png'
     plt.savefig(os.path.join(absolute_path, relative_path), bbox_inches='tight')
