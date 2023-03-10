@@ -398,13 +398,31 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
     if len(matches) == 0:
         return False;
     
-    datadict = {}   # dict to collect all data from matches neatly into keys of dates. The values consist of a list of dicts with warnings as keys for each dict and their respective occurrences on the key date as values
+    dist_dict={}
+
+for match in matches:
+        if not match['work']['date_published']:
+            continue
+        yourdate = parser.parse(match['work']['date_published'])
+        document_week_date = date_aggregated(yourdate)
+        if document_week_date in dist_dict.keys():
+            dist_dict[document_week_date] += 1
+        else:
+            dist_dict[document_week_date] = 1
+
+    # calculate required width
+    # we count the days between start and end, and translate it to months  
+    time_difference = max(dist_dict.keys()) - min(dist_dict.keys())
+    time_difference_in_months = time_difference.days / 356 * 12
+    
+    datadict = {}   # dict to collect all data from matches neatly into keys of dates
+    # The values consist of a list of dicts with warnings as keys for each dict and their respective occurrences on the key date as values
     for match in matches:    
         date = match['date_published'][0]
         warn = match['warnings']
         if datadict == {} :  
-            datadict[date] = [{'Major Character Death': 0},{'No Archive Warnings Apply': 0}, {'Rape/Non-con': 0},
-                          {'Underage': 0},{'Graphic Depictions Of Violence': 0},{'Creator Chose Not To Use Archive Warnings': 0}]
+            datadict[date] = [{'Creator Chose Not To Use Archive Warnings': 0},{'No Archive Warnings Apply': 0},{'Major Character Death': 0},
+                              {'Graphic Depictions Of Violence': 0},{'Rape/Non-con': 0},{'Underage': 0}]
             for w in warn:
                 for item in datadict[date]:
                     if w in item.keys():
@@ -416,8 +434,8 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
                         if w in item.keys():
                             item[w] += 1
             else:
-                datadict[date] = [{'Major Character Death': 0},{'No Archive Warnings Apply': 0}, {'Rape/Non-con': 0},
-                          {'Underage': 0},{'Graphic Depictions Of Violence': 0},{'Creator Chose Not To Use Archive Warnings': 0}]
+                datadict[date] = [{'Creator Chose Not To Use Archive Warnings': 0},{'No Archive Warnings Apply': 0},{'Major Character Death': 0},
+                                  {'Graphic Depictions Of Violence': 0},{'Rape/Non-con': 0},{'Underage': 0}]
                 for w in warn:
                     for item in datadict[date]:
                         if w in item.keys():
@@ -435,15 +453,19 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
                     y.append((datadict[date].index(warning) + 1))
                     z.append(n)
                     x.append(date)
-    # I have yet to figure out how to create the scatter plot
-    plt.figure(figsize=(max(60 * 0.2, 6.4),4.8)) #TODO change to be similar to other plot
+
+    # I have yet to figure out how to create a satisfying scatter plot
+    plt.figure(figsize=(max(time_difference_in_months * 0.2, 6.4),4.8))
     plt.gcf().subplots_adjust(bottom=0.20)
+    plt.yticks([])
     plt.title(f"Distribution and amount of content warnings in months", ha='left', x=-0)   
     ax = plt.subplot()
-    #ax = plt.gca()
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-    ax.xaxis.set_major_locator(mdates.DayLocator())
-    ax.scatter(x, y, s=z)
+
+    #list of colours I want to use. Still unsure of how to implement these
+    colours = ['#00475B','#336A7F','#5A8FA5','#81B5CD','#A8DEF6']
+    
+    ax.xaxis_date()
+    ax.scatter(x, y, s=z, c=y)
 
     # save chart to file                                                                                                                                                                                    
     safe_query = safe_filename(query)
