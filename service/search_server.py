@@ -418,8 +418,8 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
     datadict = {}   # dict to collect all data from matches neatly into keys of dates
     # The values consist of a list of dicts with warnings as keys for each dict and their respective occurrences on the key date as values
     for match in matches:    
-        date = match['date_published'][0]
-        warn = match['warnings']
+        date = match['work']['date_published'][0]
+        warn = match['work']['warnings']
         if datadict == {} :  
             datadict[date] = [{'Creator Chose Not To Use Archive Warnings': 0},{'No Archive Warnings Apply': 0},{'Major Character Death': 0},
                               {'Graphic Depictions Of Violence': 0},{'Rape/Non-con': 0},{'Underage': 0}]
