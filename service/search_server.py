@@ -402,27 +402,12 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
     dist_dict={}
     datadict = {}   # Dict to collect all data from matches neatly into keys of dates                                                                                                                      
     # The values consist of a list of dicts with warnings as keys for each dict and their respective occurrences on the key date as values
-
-    for match in matches:
-        if not match['work']['date_published']:
-            continue
-        yourdate = parser.parse(match['work']['date_published'])
-        document_week_date = date_aggregated(yourdate)
-        if document_week_date in dist_dict.keys():
-            dist_dict[document_week_date] += 1
-        else:
-            dist_dict[document_week_date] = 1
-
-    # calculate required width
-    # we count the days between start and end, and translate it to months  
-    time_difference = max(dist_dict.keys()) - min(dist_dict.keys())
-    time_difference_in_months = time_difference.days / 356 * 12
     
     # Get required data
     for match in matches:
         if not match['work']['date_published']:
             continue
-        date = match['work']['date_published']
+        date = date_aggregated(parser.parse(match['work']['date_published']))
         warn = match['work']['warnings']
         if datadict == {} :  
             datadict[date] = [{'Creator Chose Not To Use Archive Warnings': 0},{'No Archive Warnings Apply': 0},{'Major Character Death': 0},
@@ -456,6 +441,11 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
                 y.append((datadict[date].index(warning) + 1))
                 z.append(n)
                 x.append(date)
+
+    # calculate required width
+    # we count the days between start and end, and translate it to months  
+    time_difference = max(x) - min(x)
+    time_difference_in_months = time_difference.days / 356 * 12
 
     # make plot
     plt.figure(figsize=(max(time_difference_in_months * 0.2, 6.4),4.35))
