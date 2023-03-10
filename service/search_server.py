@@ -458,8 +458,8 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
                 x.append(date)
 
     # make plot
-    plt.figure(figsize=(max(time_difference_in_months * 0.2, 6.4),4.8))
-    plt.gcf().subplots_adjust(bottom=0.20)
+    plt.figure(figsize=(max(time_difference_in_months * 0.2, 6.4),4.35))
+
     warnings = {1:'Creator Chose\n Not To Use\n Archive Warnings',2:'No Archive\n Warnings Apply',3:'Major\n Character Death',
                 4:'Graphic\n Depictions\n Of Violence',5:'Rape/Non-con',6:'Underage'}
     labels = [warnings[key] for key in y]
