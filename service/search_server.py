@@ -399,6 +399,8 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
         return False;
     
     dist_dict={}
+    datadict = {}   # Dict to collect all data from matches neatly into keys of dates                                                                                                                      
+    # The values consist of a list of dicts with warnings as keys for each dict and their respective occurrences on the key date as values
 
     for match in matches:
         if not match['work']['date_published']:
@@ -415,9 +417,8 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
     time_difference = max(dist_dict.keys()) - min(dist_dict.keys())
     time_difference_in_months = time_difference.days / 356 * 12
     
-    datadict = {}   # dict to collect all data from matches neatly into keys of dates
-    # The values consist of a list of dicts with warnings as keys for each dict and their respective occurrences on the key date as values
-    for match in matches:    
+    # Get required data
+    for match in matches:
         date = match['work']['date_published'][0]
         warn = match['work']['warnings']
         if datadict == {} :  
@@ -454,20 +455,34 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
                     z.append(n)
                     x.append(date)
 
-    # I have yet to figure out how to create a satisfying scatter plot
+    # make graph
     plt.figure(figsize=(max(time_difference_in_months * 0.2, 6.4),4.8))
     plt.gcf().subplots_adjust(bottom=0.20)
     plt.yticks([])
     plt.title(f"Distribution and amount of content warnings in months", ha='left', x=-0)   
     ax = plt.subplot()
-
-    #list of colours I want to use. Still unsure of how to implement these
-    colours = ['#00475B','#336A7F','#5A8FA5','#81B5CD','#A8DEF6']
     
+    colours = {1:'#092733',2:'#00475B',3:'#336A7F',4:'#5A8FA5',5:'#81B5CD',6:'#A8DEF6'}
+    c = [colours[key] for key in y]
+
     ax.xaxis_date()
     ax.scatter(x, y, s=z, c=y)
+    
+    if time_difference_in_months > 12: # we have multiple years of data
+        # Set minor ticks to months
+        ax.xaxis.set_minor_locator(mdates.MonthLocator(interval=1))
+        # set major ticks to year
+        ax.xaxis.set_major_locator(mdates.YearLocator())
+        # set formatter
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
 
-    # save chart to file                                                                                                                                                                                    
+    else: # less than a year, format with monthly major ticks
+        # Set major ticks to months
+        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
+        # set formatter
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+
+    # save chart to file                                                                                                                                                                                   
     safe_query = safe_filename(query)
     relative_path = f'static/query_{safe_query}_warning.png'
     plt.savefig(os.path.join(absolute_path, relative_path), bbox_inches='tight')
