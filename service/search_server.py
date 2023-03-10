@@ -271,10 +271,11 @@ def boolean_test_query(query):
 def ranking_search(user_query):
     user_query = check_for_inflections(user_query)
     inflections_list = inflections(user_query)
-    print(f"Query inflections list: {inflections_list}")
     # remove ORs and parentheses since ranking search doesn't utilise them
     user_query = user_query.replace(" ( ", " ").replace(" ) ", " ").replace(" OR ", " ")
     print("Query with added inflections: '" + user_query + " '")
+    print(f"Query inflections list: {inflections_list}")
+
     matches = []
     if re.fullmatch("\".+\"", user_query): # Finds exact queries
         user_query_stripped = user_query[1:-1]
@@ -545,6 +546,8 @@ def search():
 
     plot_file = generate_query_plot(query, matches)
     warning_plot_file = generate_warning_plot(query, matches)
+
+
     #Variables for paging
     documents_per_page = 10
     shown_pagination_range_one_direction = 2
@@ -639,6 +642,6 @@ def search():
         docs_total=str(len(matches)), 
         pages=pages, 
         spacy_categories=spacy_categories,
-                           plot=plot_file,
+        plot=plot_file,
         warningplot=warning_plot_file
     )
