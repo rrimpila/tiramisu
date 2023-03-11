@@ -479,8 +479,8 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
     # set legend
     pos = ax.get_position()
     ax.set_position([pos.x0, pos.y0, pos.width, pos.height*0.85])
-    h, l = scatterplot.legend_elements(prop="sizes", num=3, alpha=0.6)
-    legend = ax.legend(h, l, loc="upper center", bbox_to_anchor=(0.5, -0.1), ncol=3, title="Amount of matches")
+    h, l = scatterplot.legend_elements(prop="sizes", num=5, alpha=0.6)
+    legend = ax.legend(h, l, loc="upper center", bbox_to_anchor=(0.5, -0.1), ncol=5, title="Amount of matches")
 
     # set rotation for date tick labels                                                                     
     plt.setp(ax.get_xticklabels(), rotation=30, ha="right")
