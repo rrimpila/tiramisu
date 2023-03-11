@@ -129,11 +129,15 @@
 	  <br><br>
 	  <h2 style="color:Teal">Search fanworks from Archive of Our Own</h2>
 	  <!--Explanation of how the search engine works:-->
-	  <p>The Tiramisu search engine finds the most relevant fanworks uploaded on the fan fiction website Archive of Our Own. The dataset which is used by the search engine contains a collection of 500 of the most popular fanworks (that is, those that have received the most <i>kudos</i> from the users) from works that have been updated or edited between between the years 2018 through 2022.
-	    <nr><br>(insert something about the different search options here?)
-	    <br><br>For memory reasons the spaCy entity highlighting processes only the first 100 000 characters of each fanwork.
-	    <br>
-	    <br>(insert more general info about the search here...)</p>
+	  <p>The Tiramisu search engine finds the most relevant fanworks uploaded on the fan fiction website Archive of Our Own. On the website one may read or publish works and tag them according to their content. Additional tags regarding the content may be added by the user.
+	    <br><br>The dataset which is used by the search engine contains a collection of 500 of the most popular fanworks (that is, those that have received the most <i>kudos</i> from the users) from works that have been updated or edited between between the years 2018 through 2022.
+	    <br><br>Users have two search options: <b>boolean</b> and <b>relevance ranking</b> search. Additional information on how to conduct each search can be found below by selecting the preferred search option below.
+	    <br>Along with either search the user may select certain entities to be highlighted in the results. The query word(s) will be highlighted in the search results by default.
+	    <br><br>The search results return not only the first chapter of each work, but also the tags added by the user and self-explanatory metadata.
+	    <br>Graphs on the monthly distribution of works and content warnings will be displayed (you will need to scroll left and right or open them in another tab to see them fully).
+	    <br><br>For memory reasons the spaCy entity highlighting processes only the first 100 000 characters of each fanwork, and for comfort’s sake only the first chapter of each work is displayed on this site.
+	    <br>A link to the source material is provided in case one wishes to study a specific work more thoroughly.
+	  </p>
 	  <br>
 	  <form>
 	    <!--Search query input:-->
@@ -170,32 +174,39 @@
 	<!--Show these instructions if boolean search is chosen:-->
 	<div id="boolean">
 	  <h3>Instructions for Boolean search:</h3>
-	  <p>When searching for combinations of words, use operators AND, NOT, OR:
+	  <p>Boolean search allows the user to look for either single or multi-word queries along with combinations or exclusions of certain words
+	    <br>(i.e. one may ask the search engine to look for works containing the word “cat” but excluding those containing the word “horse”).
+	    <br>When searching for combinations of words, use operators AND, NOT, OR:
 	    <br><i>you AND i
 	      <br>example AND NOT solution
 	      <br>cat OR horse
 	      <br>( NOT example OR test ) AND solution</i>
 	    <br><br>
-	    Use quotation marks when searching for multi-word phrases (the program only supports bigrams and trigrams):
+	    Unless otherwise specified by the user, the search will be conducted on all possible inflections of the search query.
+	    <br>Use quotation marks when searching for multi-word phrases (the program only supports bigrams and trigrams):
 	    <br><i>"you and i"</i>
 	    <br><br>
 	    Multi-word phrases can also be combined with the Boolean operators:
 	    <br><i>"new york" AND "london"</i>
 	    <br><br>
-	    Operators AND, OR, NOT need to be written in ALLCAPS, search words in <u>lowercase</u>.</p>
+	    Operators AND, OR, NOT need to be written in ALLCAPS, search words in <u>lowercase</u>.
+	  <br>The search will return all matching documents.</p>
 	</div>
 
 	<!--Show these instructions if ranking search is chosen:-->
 	<div id="ranking">
 	  <h3>Instructions for Relevance ranking search:</h3>
-	  <p>When searched for multiple words, separate words with space:
+	  <p>Relevance ranking search allows single and multi-word queries, but not word combinations/exclusions. 
+	    <br>When searched for multiple words, separate words with space:
 	    <br><i>cat dog horse</i>
 	    <br><br>
 	    Use quotation marks when searching for multi-word phrases (the program only supports bigrams and trigrams):
 	    <br><i>"New York"
 	      <br>"you and I"</i>
 	    <br><br>
-	    Search words can be written in lowercase or uppercase letters.</p>
+	    Search words can be written in lowercase or uppercase letters.
+	    <br>The search will return all matching documents in descending order of relevance.
+	    <br>With each work its relevance ranking score will be displayed before the metadata.</p>
 	</div>
       </div>
 
