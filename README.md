@@ -3,9 +3,9 @@ Building an NLP application, a Helsinki University course project by Tiia Poikaj
 
 ## Search engine application for fan fiction from Archive of Our Own
 
-[Archive of Our Own](https://archiveofourown.org/) is a website that offers a nonprofit hosting place for fan fiction works. On the website one may read or publish works and tag them according to what relationship category, fandom (fanatic domain, aka the work's source material), rating and content warning(s) they fit best. Additional tags regarding the content of the works may be added freely by the user.
-__The Tiramisu search engine__ finds fanworks matching to the user's search query from our defined dataset of fanworks.  
-Tiramisu dataset contains a collection of 500 of the most popular fanworks (that is, those that have received the most *kudos* from the users) from works in English that have been published, updated, or edited between between the years 2018 through 2022. The engine also provides different search options for the user in order to search for variety of interesting things within those fanworks.
+[Archive of Our Own](https://archiveofourown.org/) is a website that offers a nonprofit hosting place for fan fiction works. On the website one may read or publish works and tag them according to what relationship category, fandom (fanatic domain, aka the work's source material), rating and content warning(s) they fit best. Additional tags regarding the content of the works may be added freely by the user.  
+
+__The Tiramisu search engine__ finds fanworks matching to the user's search query from our defined dataset of fanworks. Tiramisu dataset contains a collection of 500 of the most popular fanworks (that is, those that have received the most *kudos* from the users) from works in English that have been published, updated, or edited between between the years 2018 through 2022. The engine also provides different search options for the user in order to search for variety of interesting things within those fanworks.
 
 The two main search options are **boolean** and **relevance ranking** search.
 - **Boolean** search allows the user to look for both single or multi-word queries along with combinations or exclusions of certain words (i.e. one may ask the search engine to look for works containing the word “cat” but excluding those containing the word “horse”).
