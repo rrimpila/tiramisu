@@ -20,7 +20,7 @@ The search results return not only the first chapter of each work with highlight
 
 ```
 git clone git@github.com:rrimpila/tiramisu.git # ssh cloning
-git https://github.com/rrimpila/tiramisu.git # https cloning
+git clone https://github.com/rrimpila/tiramisu.git # https cloning
 cd tiramisu
 ```
 
