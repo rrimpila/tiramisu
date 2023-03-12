@@ -32,9 +32,6 @@ We will use a virtual environment to contain the project. This way, if you want 
 
 *(__NOTE:__ Scroll down for instructions for Windows users)*  
 
-
-__NOTE:__ Make sure you are in your `tiramisu` directory.  
-
 Add a virtual environment `demoenv`:
 
 ```
