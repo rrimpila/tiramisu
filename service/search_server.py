@@ -411,7 +411,7 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
         warn = match['work']['warnings']
         if datadict == {} :  
             datadict[date] = [{'Creator Chose Not To Use Archive Warnings': 0},{'No Archive Warnings Apply': 0},{'Major Character Death': 0},
-                              {'Graphic Depictions Of Violence': 0},{'Rape/Non-con': 0},{'Underage': 0}]
+                              {'Graphic Depictions Of Violence': 0},{'Rape/Non-Con': 0},{'Underage': 0}]
             for w in warn:
                 for item in datadict[date]:
                     if w in item.keys():
@@ -424,7 +424,7 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
                             item[w] += 1
             else:
                 datadict[date] = [{'Creator Chose Not To Use Archive Warnings': 0},{'No Archive Warnings Apply': 0},{'Major Character Death': 0},
-                                  {'Graphic Depictions Of Violence': 0},{'Rape/Non-con': 0},{'Underage': 0}]
+                                  {'Graphic Depictions Of Violence': 0},{'Rape/Non-Con': 0},{'Underage': 0}]
                 for w in warn:
                     for item in datadict[date]:
                         if w in item.keys():
@@ -439,7 +439,7 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
         for warning in datadict[date]:
             for n in warning.values():
                 y.append((datadict[date].index(warning) + 1))
-                z.append(n)
+                z.append(n*3)    # *3 for better size in graph
                 x.append(date)
 
     # calculate required width
@@ -451,7 +451,7 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
     plt.figure(figsize=(max(time_difference_in_months * 0.2, 6.4),4.35))
 
     warnings = {1:'Creator Chose\n Not To Use\n Archive Warnings',2:'No Archive\n Warnings Apply',3:'Major\n Character Death',
-                4:'Graphic\n Depictions\n Of Violence',5:'Rape/Non-con',6:'Underage'}
+                4:'Graphic\n Depictions\n Of Violence',5:'Rape/Non-Con',6:'Underage'}
     labels = [warnings[key] for key in y]
     plt.yticks(y,labels)
     plt.title(f"Monthly distribution and amount of content warnings", ha='left', x=-0)
@@ -479,8 +479,8 @@ def generate_warning_plot(query, matches):    # for generating scatter plot whic
     # set legend
     pos = ax.get_position()
     ax.set_position([pos.x0, pos.y0, pos.width, pos.height*0.85])
-    h, l = scatterplot.legend_elements(prop="sizes", num=5, alpha=0.6)
-    legend = ax.legend(h, l, loc="upper center", bbox_to_anchor=(0.5, -0.1), ncol=5, title="Amount of matches")
+    kw = dict(prop="sizes", num=4, color=scatterplot.cmap(3), fmt="{x:.0f}",func=lambda s: s/3)
+    legend = ax.legend(*scatterplot.legend_elements(**kw), loc="upper center", bbox_to_anchor=(0.5, -0.1), ncol=4, title="Amount of matches")
 
     # set rotation for date tick labels                                                                     
     plt.setp(ax.get_xticklabels(), rotation=30, ha="right")
