@@ -16,8 +16,6 @@ The search results return not only the first chapter of each work with highlight
 
 # How to run this application
 
-__NOTE:__ Make sure you are in your `myproject` directory.
-
 ### Clone this git repository (just use one of the options below!)
 
 ```
@@ -31,6 +29,9 @@ We will use a virtual environment to contain the project. This way, if you want 
 ### Setting up demoenv
 
 *(__NOTE:__ Scroll down for instructions for Windows users)*  
+
+
+__NOTE:__ Make sure you are in your `tiramisu` directory.  
 
 Add a virtual environment `demoenv`:
 
