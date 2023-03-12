@@ -16,8 +16,6 @@ The search results return not only the first chapter of each work with highlight
 
 # How to run this application
 
-__NOTE:__ Make sure you are in your `myproject` directory.
-
 ### Clone this git repository (just use one of the options below!)
 
 ```
@@ -142,7 +140,7 @@ and __in your browser__ go to `localhost:8000/` to see the website.
   
 ## Updating datasets
 
-The repository includes files scraped from Archive of Our Own (metadata and the first chapter of 100 fanworks per year, from most relevant works that have been published, updated, or edited between the years 2018 and 2022). This data is expected to remain fairly static, but to update it, you can run the following commands to scrape the files.  
+The repository includes files scraped from Archive of Our Own (metadata and the first chapter of at least 100 fanworks per year, from most relevant works that have been published, updated, or edited between the years 2018 and 2022). This data is expected to remain fairly static, but to update it, you can run the following commands to scrape the files.  
 __NOTE:__ This may take a while. The connection may also time out, in that case, run the timed out scraper again.
 
 ```
