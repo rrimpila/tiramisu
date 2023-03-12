@@ -7,6 +7,13 @@ Building an NLP application, a Helsinki University course project by Tiia Poikaj
 __The Tiramisu search engine__ finds fanworks matching to the user's search query from our defined dataset of fanworks.  
 Tiramisu dataset contains a collection of 500 of the most popular fanworks (that is, those that have received the most *kudos* from the users) from works in english that have been published, updated, or edited between between the years 2018 through 2022. The engine also provides different search options for the user in order to search for variety of interesting things within those fanworks.
 
+The two main search options are **boolean** and **relevance ranking** search.
+**Boolean** search allows the user to look for both single or multi-word queries along with combinations or exclusions of certain words (i.e. one may ask the search engine to look for works containing the word “cat” but excluding those containing the word “horse”).
+Unless otherwise specified by the user, the search will be conducted on all possible inflections of the search query. The search will return all matching documents.
+**Relevance** ranking search allows single and multi-word queries as well, but not word combinations nor exclusions. The search will return all matching documents in descending order of relevance. With each work its relevance ranking score will be displayed (that is, how similar the work is to the search query).
+Along with either search the user may select certain entities to be highlighted in the results. The highlighted entities will be displayed along with their category (person, date, language, country/city/state).
+The search results return not only the first chapter of each work with highlighted entities and query, but also the previously-mentioned achive tags and the dates in which the works have been published, edited and updated.
+
 # How to run this application
 
 __NOTE:__ Make sure you are in your `myproject` directory.
